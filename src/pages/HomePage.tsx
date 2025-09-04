@@ -1,9 +1,6 @@
-// Archivo: src/pages/HomePage.tsx (Versión Final y Definitiva)
-
 import {
   Suspense,
   useRef,
-  useLayoutEffect,
   useState,
   useCallback,
   useEffect,
@@ -34,7 +31,6 @@ const AUDIO_CONFIG = {
 const SCROLL_CONFIG = {
   PORTAL_TRIGGER_PERCENTAGE: 70,
   GLITCH_TRIGGER_PERCENTAGE: 68,
-  // Versión embebida usa valores diferentes para glitch
   EMBEDDED_GLITCH_START: 60,
   EMBEDDED_GLITCH_END: 65,
   EMBEDDED_GLITCH_THRESHOLD: 65,
@@ -242,12 +238,8 @@ const HomePage: FC<HomePageProps> = ({
     return {
       webgl: {
         antialias: true,
-        precision: "highp" as const,
         powerPreference: "high-performance" as const,
         pixelRatio: Math.min(window.devicePixelRatio, 2),
-      },
-      animations: {
-        scrollThrottleInterval: 1,
       },
       mouseTrail: {
         maxPoints: 35,
@@ -277,10 +269,6 @@ const HomePage: FC<HomePageProps> = ({
             }
           });
         }
-
-        if ((window as any).gc) {
-          (window as any).gc();
-        }
       } catch (error) {
         console.warn("Cleanup WebGL context:", error);
       }
@@ -290,28 +278,18 @@ const HomePage: FC<HomePageProps> = ({
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const detectAndFixScrollIssues = () => {
+    const timeoutId = setTimeout(() => {
       const scrollElement = scrollRef.current;
-      if (!scrollElement) return;
-
-      const hasValidHeight = scrollElement.offsetHeight > 0;
-      const hasValidScrollHeight =
-        scrollElement.scrollHeight >= scrollElement.clientHeight;
-
-      if (!hasValidHeight || !hasValidScrollHeight) {
-        console.warn("Fixing scroll element height issues");
+      if (scrollElement && scrollElement.offsetHeight === 0) {
         scrollElement.style.minHeight = UI_CONFIG.SCROLL_HEIGHT;
       }
-    };
-
-    const timeoutId = setTimeout(detectAndFixScrollIssues, 500);
+    }, 500);
 
     return () => {
       clearTimeout(timeoutId);
     };
   }, []);
 
-  // 🎵 HELPER FUNCTION: Configuración consolidada de audio con TypeScript y manejo de errores
   const createAudioElement = useCallback(
     (config: {
       src: string;
@@ -323,16 +301,13 @@ const HomePage: FC<HomePageProps> = ({
       try {
         const audio = new Audio(config.src);
 
-        // Configuración básica
-        audio.volume = Math.max(0, Math.min(1, config.volume)); // Clamp entre 0 y 1
+        audio.volume = Math.max(0, Math.min(1, config.volume));
         audio.preload = config.preload || "auto";
 
-        // Configuración opcional
         if (config.loop) {
           audio.loop = config.loop;
         }
 
-        // Manejo de errores opcional
         if (config.onError) {
           audio.addEventListener("error", () => {
             config.onError?.(new Error(`Audio load failed: ${config.src}`));
@@ -583,7 +558,6 @@ const HomePage: FC<HomePageProps> = ({
         ctx.strokeStyle = gradient;
         ctx.lineWidth = TRAIL_CONFIG.LINE_WIDTH;
 
-        // Dibujar línea continua
         ctx.beginPath();
         ctx.moveTo(activePoints[0].x, activePoints[0].y);
 
@@ -675,14 +649,13 @@ const HomePage: FC<HomePageProps> = ({
   const [isCanvasReady, setIsCanvasReady] = useState(false);
   const setupScrollTriggerRef = useRef<(() => void) | null>(null);
 
-  // ✅ COORDINACIÓN MEJORADA: Sincronizar Canvas ready con ScrollTrigger setup
   useEffect(() => {
     if (isCanvasReady && setupScrollTriggerRef.current) {
       setupScrollTriggerRef.current();
     }
   }, [isCanvasReady]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const canvas = trailCanvasRef.current;
     const container = mainRef.current;
 
@@ -711,7 +684,7 @@ const HomePage: FC<HomePageProps> = ({
     };
   }, [handleMouseMove, handleMouseLeave]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const isReady = () => {
       return !!(
         sceneRef.current?.children.length &&
@@ -764,10 +737,7 @@ const HomePage: FC<HomePageProps> = ({
               ? Math.min(progress, maxScrollPercentage)
               : progress;
 
-            const throttleInterval = config.animations.scrollThrottleInterval;
-            if (
-              Math.abs(effectiveProgress - scrollPercentage) >= throttleInterval
-            ) {
+            if (Math.abs(effectiveProgress - scrollPercentage) >= 1) {
               setScrollPercentage(effectiveProgress);
             }
           },
@@ -783,7 +753,6 @@ const HomePage: FC<HomePageProps> = ({
           onUpdate: (self) => {
             const progress = self.progress * 100;
 
-            // 🔥 Activar efecto de falla digital al 68%
             if (
               progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
               progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
@@ -792,13 +761,11 @@ const HomePage: FC<HomePageProps> = ({
               glitchTriggeredRef.current = true;
               setIsDigitalGlitch(true);
 
-              // Desactivar el efecto después de 600ms (duración de la animación)
               setTimeout(() => {
                 setIsDigitalGlitch(false);
               }, SCROLL_CONFIG.GLITCH_DURATION);
             }
 
-            // Activar portal exactamente al 70% del scroll progress
             if (
               progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
               !portalTriggeredRef.current &&
@@ -811,7 +778,6 @@ const HomePage: FC<HomePageProps> = ({
           },
         });
       } else {
-        // 🎯 SCROLL TRIGGER PARA VERSIÓN EMBEBIDA - Sin transición de portal
         ScrollTrigger.create({
           trigger: scrollElement,
           start: "top top",
@@ -839,7 +805,6 @@ const HomePage: FC<HomePageProps> = ({
         });
       }
 
-      // MANTENER todas las animaciones exactamente iguales
       timeline.to(
         cameraRef.current!.position,
         {
@@ -850,7 +815,6 @@ const HomePage: FC<HomePageProps> = ({
         0
       );
 
-      // ✅ SIMPLIFICADO: Animaciones de elementos de la escena sin verificaciones redundantes
       if (logoMesh?.position) {
         timeline.to(
           logoMesh.position,
@@ -939,14 +903,12 @@ const HomePage: FC<HomePageProps> = ({
 
     return () => {
       ScrollTrigger.killAll();
-      // Reset estados al limpiar
       portalTriggeredRef.current = false;
       glitchTriggeredRef.current = false;
       setIsTransitioning(false);
     };
   }, [
     triggerPortalTransition,
-    config.animations.scrollThrottleInterval,
     scrollContainer,
     isEmbedded,
     maxScrollPercentage,
@@ -954,7 +916,6 @@ const HomePage: FC<HomePageProps> = ({
 
   return (
     <div ref={mainRef} className="homepage-container">
-      {/* Canvas optimizado para la estela del cursor */}
       <canvas
         ref={trailCanvasRef}
         className="cursor-trail-canvas full-viewport-fixed gpu-accelerated"
@@ -974,7 +935,6 @@ const HomePage: FC<HomePageProps> = ({
             alpha: true,
             stencil: false,
             depth: true,
-            precision: config.webgl.precision,
           }}
           onCreated={({ gl }) => {
             gl.setClearColor(0x000000, 0);
@@ -1004,15 +964,11 @@ const HomePage: FC<HomePageProps> = ({
         </Canvas>
       </div>
 
-      {/* Div que genera la barra de scroll */}
       <div
         className="scroll-content responsive-scroll-height gpu-accelerated-scroll"
         ref={scrollRef}
-      >
-        {/* Contenido de la página - aquí puedes agregar tus elementos */}
-      </div>
+      ></div>
 
-      {/* 🎵 Visualizador de Audio - Control del Audio Ambiente */}
       <AudioVisualizer onAudioToggle={handleAudioVisualizerToggle} />
     </div>
   );
