@@ -35,9 +35,13 @@ const SCROLL_CONFIG = {
   PORTAL_TRIGGER_PERCENTAGE: 70,
   GLITCH_TRIGGER_PERCENTAGE: 68,
   GLITCH_DURATION: 600,
-  TEXT_VISIBILITY_THRESHOLD: 70,
   SETUP_RETRY_DELAY: 300,
   MOUSE_IDLE_TIMEOUT: 300,
+  TEXT_PHASE2_LINE1_START: 45,
+  TEXT_PHASE2_LINE1_END: 55,
+  TEXT_PHASE2_LINE2_START: 55,
+  TEXT_PHASE2_LINE2_END: 60,
+  TEXT_PHASE2_VISIBLE_THRESHOLD: 70,
 } as const;
 
 const ANIMATION_CONFIG = {
@@ -52,7 +56,7 @@ const ANIMATION_CONFIG = {
 } as const;
 
 const TRAIL_CONFIG = {
-  COLOR_RGB: "218, 128, 35", // Color base del trail
+  COLOR_RGB: "218, 128, 35",
   LINE_WIDTH: 3,
   SHADOW_BLUR: 10,
   OPACITY_DECAY: 0.85,
@@ -131,8 +135,20 @@ const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
     );
 
     const opacidades = useMemo(() => {
-      const line1Opacity = scrollPercentage > 70 ? 1 : calculateOpacity(45, 55);
-      const line2Opacity = scrollPercentage > 70 ? 1 : calculateOpacity(55, 60);
+      const line1Opacity =
+        scrollPercentage > SCROLL_CONFIG.TEXT_PHASE2_VISIBLE_THRESHOLD
+          ? 1
+          : calculateOpacity(
+              SCROLL_CONFIG.TEXT_PHASE2_LINE1_START,
+              SCROLL_CONFIG.TEXT_PHASE2_LINE1_END
+            );
+      const line2Opacity =
+        scrollPercentage > SCROLL_CONFIG.TEXT_PHASE2_VISIBLE_THRESHOLD
+          ? 1
+          : calculateOpacity(
+              SCROLL_CONFIG.TEXT_PHASE2_LINE2_START,
+              SCROLL_CONFIG.TEXT_PHASE2_LINE2_END
+            );
 
       return { line1Opacity, line2Opacity };
     }, [scrollPercentage, calculateOpacity]);
@@ -198,7 +214,7 @@ const HomePage: FC<HomePageProps> = ({
 
   const navigate = useNavigate();
 
-  const responsiveConfig = useMemo(() => {
+  const config = useMemo(() => {
     return {
       webgl: {
         antialias: true,
@@ -207,14 +223,11 @@ const HomePage: FC<HomePageProps> = ({
         pixelRatio: Math.min(window.devicePixelRatio, 2),
       },
       animations: {
-        duration: 1.2,
-        fps: 60,
         scrollThrottleInterval: 1,
       },
       mouseTrail: {
         maxPoints: 35,
         updateInterval: 16,
-        particleSize: 12,
       },
     };
   }, []);
@@ -245,48 +258,35 @@ const HomePage: FC<HomePageProps> = ({
           (window as any).gc();
         }
       } catch (error) {
-        console.debug("Cleanup WebGL context:", error);
+        console.warn("Cleanup WebGL context:", error);
       }
     };
   }, []);
 
-  // ✅ NUEVA VERIFICACIÓN: Detectar problemas de scroll en tiempo real
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const detectScrollIssues = () => {
+    const detectAndFixScrollIssues = () => {
       const scrollElement = scrollRef.current;
       if (scrollElement) {
         const hasHeight = scrollElement.offsetHeight > 0;
 
-        // ✅ CORREGIDO: Solo loggear si hay problemas reales
-        // Si no hay altura, es un problema real
         if (!hasHeight) {
-          console.warn("⚠️ Scroll element has no height:", {
-            offsetHeight: scrollElement.offsetHeight,
-            scrollHeight: scrollElement.scrollHeight,
-            clientHeight: scrollElement.clientHeight,
-          });
+          console.warn("Fixing scroll element height issue");
+          scrollElement.style.minHeight = "200vh";
         }
-        // Si hay altura pero scrollHeight es menor que clientHeight, es un problema real
-        else if (
+
+        if (
           hasHeight &&
           scrollElement.scrollHeight < scrollElement.clientHeight
         ) {
-          console.warn("⚠️ Scroll element height inconsistency:", {
-            offsetHeight: scrollElement.offsetHeight,
-            scrollHeight: scrollElement.scrollHeight,
-            clientHeight: scrollElement.clientHeight,
-          });
+          console.warn("Fixing scroll content height issue");
+          scrollElement.style.minHeight = "200vh";
         }
-        // ✅ CASO NORMAL: scrollHeight === clientHeight (no hay contenido que desborde)
-        // No mostrar warning en este caso
       }
     };
 
-    // ✅ OPTIMIZADO: Verificar solo una vez después de que el componente se estabilice
-    // En modo desarrollo, React ejecuta efectos dos veces, así que esto previene spam de logs
-    const timeoutId = setTimeout(detectScrollIssues, 500); // Una sola verificación optimizada
+    const timeoutId = setTimeout(detectAndFixScrollIssues, 500);
 
     return () => {
       clearTimeout(timeoutId);
@@ -323,7 +323,7 @@ const HomePage: FC<HomePageProps> = ({
 
         return audio;
       } catch (error) {
-        console.error(`Error creating audio element for ${config.src}:`, error);
+        console.warn(`Error creating audio element for ${config.src}:`, error);
         return new Audio();
       }
     },
@@ -382,29 +382,32 @@ const HomePage: FC<HomePageProps> = ({
     };
   }, [hasStartedAmbientSound]);
 
-  const handleAudioVisualizerToggle = useCallback(async (isActive: boolean) => {
-    try {
-      if (isActive) {
-        setAreSoundsEnabled(true);
-        if (ambientAudioRef.current) {
-          await ambientAudioRef.current.play();
-          setHasStartedAmbientSound(true);
-        }
-      } else {
-        setAreSoundsEnabled(false);
+  const handleAudioVisualizerToggle = useCallback(
+    async (isActive: boolean) => {
+      try {
+        if (isActive) {
+          setAreSoundsEnabled(true);
+          if (ambientAudioRef.current) {
+            await ambientAudioRef.current.play();
+            setHasStartedAmbientSound(true);
+          }
+        } else {
+          setAreSoundsEnabled(false);
 
-        if (ambientAudioRef.current) {
-          ambientAudioRef.current.pause();
-        }
+          if (ambientAudioRef.current) {
+            ambientAudioRef.current.pause();
+          }
 
-        if (transitionAudioRef.current) {
-          transitionAudioRef.current.pause();
+          if (transitionAudioRef.current) {
+            transitionAudioRef.current.pause();
+          }
         }
+      } catch (error) {
+        console.warn("Error al manejar audio:", error);
       }
-    } catch (error) {
-      console.warn("Error al manejar audio:", error);
-    }
-  }, []);
+    },
+    [setAreSoundsEnabled, setHasStartedAmbientSound]
+  );
 
   const trailPointsRef = useRef<{ x: number; y: number; opacity: number }[]>(
     []
@@ -422,24 +425,18 @@ const HomePage: FC<HomePageProps> = ({
 
     if (!canvas || !scene || !camera) return;
 
-    if (
-      transitionAudioRef.current &&
-      hasStartedAmbientSound &&
-      areSoundsEnabled
-    ) {
+    if (transitionAudioRef.current && areSoundsEnabled) {
       transitionAudioRef.current.currentTime = 0;
 
       const playTransitionSound = async () => {
         try {
-          if (areSoundsEnabled) {
-            await transitionAudioRef.current?.play();
+          await transitionAudioRef.current?.play();
 
-            setTimeout(() => {
-              if (transitionAudioRef.current) {
-                transitionAudioRef.current.pause();
-              }
-            }, AUDIO_CONFIG.TRANSITION_DURATION);
-          }
+          setTimeout(() => {
+            if (transitionAudioRef.current) {
+              transitionAudioRef.current.pause();
+            }
+          }, AUDIO_CONFIG.TRANSITION_DURATION);
         } catch (error) {
           if (import.meta.env.DEV) {
             console.log("Transition audio skipped");
@@ -603,8 +600,7 @@ const HomePage: FC<HomePageProps> = ({
     (e: MouseEvent) => {
       const currentTime = performance.now();
 
-      // 🎯 THROTTLING RESPONSIVO: Intervalos adaptativos según dispositivo
-      const updateInterval = responsiveConfig.mouseTrail.updateInterval;
+      const updateInterval = config.mouseTrail.updateInterval;
       if (currentTime - lastUpdateTimeRef.current < updateInterval) return;
       lastUpdateTimeRef.current = currentTime;
 
@@ -620,7 +616,7 @@ const HomePage: FC<HomePageProps> = ({
         opacity: 1,
       });
 
-      const maxPoints = responsiveConfig.mouseTrail.maxPoints;
+      const maxPoints = config.mouseTrail.maxPoints;
       if (trailPointsRef.current.length > maxPoints) {
         trailPointsRef.current.shift();
       }
@@ -633,11 +629,7 @@ const HomePage: FC<HomePageProps> = ({
         isMouseActiveRef.current = false;
       }, SCROLL_CONFIG.MOUSE_IDLE_TIMEOUT);
     },
-    [
-      renderTrail,
-      responsiveConfig.mouseTrail.updateInterval,
-      responsiveConfig.mouseTrail.maxPoints,
-    ]
+    [renderTrail, config.mouseTrail.updateInterval]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -747,8 +739,7 @@ const HomePage: FC<HomePageProps> = ({
               ? Math.min(progress, maxScrollPercentage)
               : progress;
 
-            const throttleInterval =
-              responsiveConfig.animations.scrollThrottleInterval;
+            const throttleInterval = config.animations.scrollThrottleInterval;
             if (
               Math.abs(effectiveProgress - scrollPercentage) >= throttleInterval
             ) {
@@ -804,26 +795,21 @@ const HomePage: FC<HomePageProps> = ({
           onUpdate: (self) => {
             const progress = self.progress * 100;
 
-            // 🎯 LIMITAR SCROLL AL MÁXIMO PERMITIDO (por defecto 65% para evitar portal)
-            const clampedProgress = Math.min(progress, maxScrollPercentage);
+            const limitedProgress = Math.min(progress, maxScrollPercentage);
 
-            // 🔥 Activar efecto de falla digital solo si está dentro del rango permitido
             if (
-              clampedProgress >= 60 &&
-              clampedProgress < 65 &&
+              limitedProgress >= 60 &&
+              limitedProgress < 65 &&
               !glitchTriggeredRef.current &&
               maxScrollPercentage > 65
             ) {
               glitchTriggeredRef.current = true;
               setIsDigitalGlitch(true);
 
-              // Desactivar el efecto después de 600ms
               setTimeout(() => {
                 setIsDigitalGlitch(false);
               }, SCROLL_CONFIG.GLITCH_DURATION);
             }
-
-            // 🚫 NO ACTIVAR PORTAL EN VERSIÓN EMBEBIDA
           },
         });
       }
@@ -888,14 +874,12 @@ const HomePage: FC<HomePageProps> = ({
 
       ScrollTrigger.refresh();
 
-      // ✅ VALIDACIÓN FINAL: Solo loggear en caso de problemas
       const activeScrollTriggers = ScrollTrigger.getAll();
       if (activeScrollTriggers.length === 0) {
-        console.warn("⚠️ No ScrollTriggers were created");
+        console.warn("No ScrollTriggers were created");
       }
     };
 
-    // ✅ INICIALIZACIÓN MEJORADA: Usar requestAnimationFrame para mejor sincronización
     const initializeScrollTrigger = () => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -904,32 +888,24 @@ const HomePage: FC<HomePageProps> = ({
       });
     };
 
-    // ✅ INICIALIZACIÓN MEJORADA: Guardar la función para coordinarla con Canvas
     setupScrollTriggerRef.current = initializeScrollTrigger;
 
-    // ✅ DELAY AUMENTADO: Dar más tiempo para que Three.js se inicialice completamente
-    const timeoutId = setTimeout(() => {
-      // Solo ejecutar si el Canvas no está listo aún (fallback)
-      if (!isCanvasReady) {
-        initializeScrollTrigger();
-      }
-    }, 500); // Aumentado para dar más tiempo
+    if (isCanvasReady) {
+      initializeScrollTrigger();
+    }
 
     return () => {
-      clearTimeout(timeoutId);
       ScrollTrigger.killAll();
-      // Reset portal trigger state
       portalTriggeredRef.current = false;
-      // Reset glitch trigger state
       glitchTriggeredRef.current = false;
     };
   }, [
     triggerPortalTransition,
-    responsiveConfig.animations.scrollThrottleInterval,
+    config.animations.scrollThrottleInterval,
     scrollContainer,
     isEmbedded,
     maxScrollPercentage,
-  ]); // 🎯 Dependencias corregidas - hasStartedAmbientSound removido para estabilidad
+  ]);
 
   return (
     <div ref={mainRef} className="homepage-container">
@@ -944,21 +920,19 @@ const HomePage: FC<HomePageProps> = ({
       >
         <Canvas
           gl={{
-            preserveDrawingBuffer: false, // Optimización: reducir uso de memoria
-            powerPreference: responsiveConfig.webgl.powerPreference, // 🎯 RESPONSIVE: Configuración adaptiva
-            antialias: responsiveConfig.webgl.antialias, // 🎯 RESPONSIVE: Antialias adaptivo
+            preserveDrawingBuffer: false,
+            powerPreference: config.webgl.powerPreference,
+            antialias: config.webgl.antialias,
             alpha: true,
-            stencil: false, // Optimización: desactivar stencil buffer
+            stencil: false,
             depth: true,
-            precision: responsiveConfig.webgl.precision, // 🎯 RESPONSIVE: Precisión adaptiva
+            precision: config.webgl.precision,
           }}
           onCreated={({ gl }) => {
             gl.setClearColor(0x000000, 0);
-            // 🎯 RESPONSIVE: Optimizaciones adicionales del renderer
-            gl.setPixelRatio(responsiveConfig.webgl.pixelRatio); // Pixel ratio adaptivo
+            gl.setPixelRatio(config.webgl.pixelRatio);
             gl.outputColorSpace = THREE.SRGBColorSpace;
 
-            // ✅ NUEVA COORDINACIÓN: Señalar que el Canvas está listo
             setIsCanvasReady(true);
           }}
         >
