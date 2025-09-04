@@ -429,28 +429,9 @@ body,
 
 /* 🎯 CURSOR CAD - OCULTO POR EFECTOS ESPECIALES */
 
-/* 🎯 CURSOR CAD - CUADRADO CENTRAL DE MIRA */
-.rebecca-container::after {
-  content: "";
-  position: fixed; /* 🔧 CORREGIDO: Cambiar de absolute a fixed */
-  width: 4px;
-  height: 4px;
-  left: var(--cursor-x);
-  top: var(--cursor-y);
-  background: var(--color-orange-alpha-90);
-  border: 1px solid var(--color-white-alpha-50);
-  pointer-events: none;
-  z-index: 51;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  /* 🎯 TRANSITION CONSOLIDADA ARRIBA */
-  will-change: transform, opacity;
-}
+/* 🎯 CURSOR CAD - CUADRADO CENTRAL DE MIRA - REMOVIDO (OPACITY: 0 PERMANENTE) */
 
-/* 🎯 ACTIVAR CURSOR CAD */
-.rebecca-container.custom-cursor::after {
-  opacity: 1;
-}
+/* 🎯 CURSOR CAD - ELEMENTOS REMOVIDOS (OPACITY: 0 PERMANENTE) */
 
 /* ============================================================================
    2️⃣ BOTÓN VAPI CHAT - ELEMENTO CENTRAL PRINCIPAL
@@ -756,21 +737,7 @@ body,
   }
 }
 
-/* 💎 ANIMACIÓN DE PROFUNDIDAD DE PARTÍCULAS */
-@keyframes particle-depth-shift {
-  0% {
-    filter: blur(0px) brightness(1);
-    transform: scale(1);
-  }
-  50% {
-    filter: blur(1px) brightness(1.2);
-    transform: scale(1.05);
-  }
-  100% {
-    filter: blur(0px) brightness(1);
-    transform: scale(1);
-  }
-}
+/* 💎 ANIMACIÓN DE PROFUNDIDAD DE PARTÍCULAS - REMOVIDA (NO SE USA) */
 
 /* � ANIMACIÓN PREMIUM DE ESCANEO LÁSER INTELIMARK */
 
@@ -803,35 +770,8 @@ body,
 
 /* --- FIN OPTIMIZACIÓN --- */
 
-/* ✅ CÓDIGO OPTIMIZADO - MESSAGE-BOX Y TOOLTIP BÁSICO ELIMINADOS (NO UTILIZADOS) */
-
 /* 🌀 ANIMACIONES DIGITALES */
-@keyframes digitalGlitch {
-  0% {
-    transform: translateX(0);
-    filter: hue-rotate(0deg);
-  }
-  20% {
-    transform: translateX(-1px);
-    filter: hue-rotate(90deg);
-  }
-  40% {
-    transform: translateX(1px);
-    filter: hue-rotate(180deg);
-  }
-  60% {
-    transform: translateX(-0.5px);
-    filter: hue-rotate(270deg);
-  }
-  80% {
-    transform: translateX(0.5px);
-    filter: hue-rotate(360deg);
-  }
-  100% {
-    transform: translateX(0);
-    filter: hue-rotate(0deg);
-  }
-}
+/* digitalGlitch - REMOVIDA (NO SE USA EN EL CÓDIGO) */
 
 /* ANIMACIONES CINEMATOGRÁFICAS FUTURISTAS PARA ANILLO METÁLICO */
 
@@ -1416,13 +1356,7 @@ body,
   pointer-events: auto;
 }
 
-/* 💨 ESTADO OCULTO OPTIMIZADO */
-.cta-button-container.hidden {
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(5px);
-  pointer-events: none;
-}
+/* 💨 ESTADO OCULTO - REMOVIDO (VISIBILITY: HIDDEN PERMANENTE) */
 
 /* 🎯 WRAPPER DEL BOTÓN OPTIMIZADO */
 .cta-button-wrapper {
@@ -1794,11 +1728,9 @@ body,
   pointer-events: auto !important; /* 🎯 FORZAR INTERACCIÓN COMPLETA DEL BOTÓN */
   z-index: 200 !important; /* 🎯 Z-INDEX UNIFICADO */
   overflow: hidden;
-  /* POSICIONAMIENTO REMOVIDO - SE MANEJA AL FINAL DEL ARCHIVO */
   width: 190px; /* Tamaño base inicial */
   height: 54px; /* 🎯 ALTURA EXACTA DEL INPUT (16px padding + contenido + 16px) */
   display: block; /* 🎯 ASEGURAR DISPLAY BLOCK PARA CENTRADO */
-  /* TRANSFORM REMOVIDO - SE MANEJA AL FINAL DEL ARCHIVO */
 
   /* 🌟 EFECTOS BASE */
   backdrop-filter: blur(10px);
@@ -1869,11 +1801,9 @@ body,
   pointer-events: auto !important; /* 🎯 FORZAR INTERACCIÓN COMPLETA DEL BOTÓN */
   z-index: 200 !important;
   overflow: hidden;
-  /* POSICIONAMIENTO REMOVIDO - SE MANEJA AL FINAL DEL ARCHIVO */
   width: 190px; /* Tamaño base inicial */
   height: 54px; /* 🎯 ALTURA EXACTA DEL INPUT (16px padding + contenido + 16px) */
   display: block; /* 🎯 ASEGURAR DISPLAY BLOCK PARA CENTRADO */
-  /* TRANSFORM REMOVIDO - SE MANEJA AL FINAL DEL ARCHIVO */
 
   /* 🌟 EFECTOS BASE */
   backdrop-filter: blur(10px);
@@ -1955,12 +1885,6 @@ body,
   pointer-events: none;
   /* transition: opacity 0.6s ease; - REMOVIDA (elemento permanece invisible) */
 }
-
-/* 🌐 CAPAS HOLOGRÁFICAS 3D - REMOVIDAS (IMPERCEPTIBLES) */
-
-/* HOLO LAYERS - REMOVIDAS (IMPERCEPTIBLES) */
-
-/* 🚫 OCULTAR COMPLETAMENTE ELEMENTOS ANTIGUOS DE ENERGÍA Y NEURALES */
 
 /* 🏹 TRIÁNGULO GEOMÉTRICO COMPLEJO CON LÍNEAS MÚLTIPLES Y TEXTURAS HD */
 
@@ -2649,8 +2573,6 @@ body,
   box-shadow: 0 0 8px var(--color-orange-alpha-60),
     /* 🎯 RESPLANDOR NARANJA EN LUGAR DE BLANCO */ 0 0 12px rgba(0, 0, 0, 0.7); /* 🎯 RESPLANDOR NEGRO */
 }
-
-/* .ai-matrix-button:hover .holo-text eliminado - elemento blanco que aparecía en el centro */
 
 .ai-matrix-button:hover .triangle-lines-set1::after {
   width: 10px;
@@ -3470,7 +3392,7 @@ body,
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Líneas de velocidad ultra delgadas - ESTADO INACTIVO */
+/* Líneas de velocidad ultra delgadas */
 .speed-lines-group {
   transform: translateZ(-3px);
   opacity: 0.15;
@@ -3497,7 +3419,7 @@ body,
   transform: translateY(0.5px) scaleX(1);
 }
 
-/* Flecha secundaria (outline) - ESTADO INACTIVO */
+/* Flecha secundaria (outline) */
 .secondary-arrow-group {
   transform: translateZ(1px);
   opacity: 0.2;
@@ -3507,7 +3429,7 @@ body,
   filter: drop-shadow(0 0.5px 2px rgba(0, 0, 0, 0.15));
 }
 
-/* Resplandor principal - OCULTO en estado inactivo */
+/* Resplandor principal */
 .main-glow-group {
   transform: translateZ(2px);
 }
@@ -3516,7 +3438,7 @@ body,
   transition: all 0.5s ease;
 }
 
-/* Flecha principal con detalles premium - ESTADO INACTIVO */
+/* Flecha principal con detalles premium */
 .primary-arrow-group {
   transform: translateZ(10px);
 }
@@ -3526,7 +3448,7 @@ body,
   transform: perspective(100px) rotateX(5deg);
 }
 
-/* Highlights internos - OCULTOS en estado inactivo */
+/* Highlights internos */
 .inner-highlight-1,
 .inner-highlight-2,
 .inner-highlight-3 {
@@ -3534,7 +3456,7 @@ body,
   transform-origin: center;
 }
 
-/* Micro luces - OCULTAS en estado inactivo */
+/* Micro luces */
 .micro-light-1,
 .micro-light-2,
 .micro-light-3 {
@@ -3542,13 +3464,13 @@ body,
   transform-origin: center;
 }
 
-/* Línea de energía - OCULTA en estado inactivo */
+/* Línea de energía */
 .energy-line {
   transition: all 0.3s ease;
   transform-origin: left center;
 }
 
-/* Resplandor exterior - OCULTO en estado inactivo */
+/* Resplandor exterior */
 .neon-glow {
   width: 45px;
   height: 45px;
@@ -3845,11 +3767,9 @@ body,
   0%,
   100% {
     opacity: 0;
-    /* 🔧 FIX: ELIMINADO transform: scale(1) - causaba loops infinitos en IntersectionObserver */
   }
   50% {
     opacity: 0.3;
-    /* 🔧 FIX: ELIMINADO transform: scale(1.01) - causaba cambios de layout */
   }
 }
 
