@@ -955,12 +955,15 @@ const HomePage: FC<HomePageProps> = ({
   return (
     <div ref={mainRef} className="homepage-container">
       {/* Canvas optimizado para la estela del cursor */}
-      <canvas ref={trailCanvasRef} className="cursor-trail-canvas" />
+      <canvas
+        ref={trailCanvasRef}
+        className="cursor-trail-canvas full-viewport-fixed gpu-accelerated"
+      />
 
       <div
         ref={canvasRef}
-        className={`canvas-container ${
-          isTransitioning ? "transitioning" : ""
+        className={`canvas-container full-viewport-fixed gpu-accelerated ${
+          isTransitioning ? "transitioning gpu-accelerated-transition" : ""
         } ${isDigitalGlitch ? "digital-glitch" : ""}`}
       >
         <Canvas
@@ -1002,7 +1005,10 @@ const HomePage: FC<HomePageProps> = ({
       </div>
 
       {/* Div que genera la barra de scroll */}
-      <div className="scroll-content" ref={scrollRef}>
+      <div
+        className="scroll-content responsive-scroll-height gpu-accelerated-scroll"
+        ref={scrollRef}
+      >
         {/* Contenido de la página - aquí puedes agregar tus elementos */}
       </div>
 
