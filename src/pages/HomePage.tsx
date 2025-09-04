@@ -34,6 +34,10 @@ const AUDIO_CONFIG = {
 const SCROLL_CONFIG = {
   PORTAL_TRIGGER_PERCENTAGE: 70,
   GLITCH_TRIGGER_PERCENTAGE: 68,
+  // Versión embebida usa valores diferentes para glitch
+  EMBEDDED_GLITCH_START: 60,
+  EMBEDDED_GLITCH_END: 65,
+  EMBEDDED_GLITCH_THRESHOLD: 65,
   GLITCH_DURATION: 600,
   SETUP_RETRY_DELAY: 300,
   MOUSE_IDLE_TIMEOUT: 300,
@@ -53,6 +57,7 @@ const ANIMATION_CONFIG = {
   TEXT_LINE3_Z: 35,
   TEXT2_LINE1_Z: 20,
   TEXT2_LINE2_Z: 15,
+  NAVIGATION_DELAY: 2000,
 } as const;
 
 const TRAIL_CONFIG = {
@@ -63,6 +68,25 @@ const TRAIL_CONFIG = {
   MIN_OPACITY: 0.05,
 } as const;
 
+const UI_CONFIG = {
+  SCROLL_HEIGHT: "200vh",
+  CSS_FILTER_TRANSITION: "brightness(400%) contrast(300%) blur(2px)",
+  SCENE_READY_MIN_CHILDREN: 4,
+  MAX_SETUP_ATTEMPTS: 10,
+} as const;
+
+const EASING_CONFIG = {
+  PORTAL_MAIN: "power3.out",
+  PORTAL_CAMERA_INITIAL: "power2.in",
+  PORTAL_SCALE_INITIAL: "power2.in",
+  PORTAL_CAMERA_TUNNEL: "power3.in",
+  PORTAL_ROTATION: "power2.in",
+  PORTAL_SCALE_FINAL: "power4.in",
+  PORTAL_FILTER: "power2.in",
+  PORTAL_FADEOUT: "power3.out",
+  SCROLL_ANIMATION: "none",
+} as const;
+
 const ROUTES = {
   REBECCA: "/rebecca",
 } as const;
@@ -70,7 +94,7 @@ const ROUTES = {
 gsap.registerPlugin(ScrollTrigger);
 
 const LandscapeScene: FC = memo(() => {
-  const materialRef = useRef<THREE.ShaderMaterial>(null!);
+  const materialRef = useRef<THREE.ShaderMaterial | null>(null);
   const texture = useTexture("https://i.imgur.com/kv7xqKt.png");
 
   // Optimizar textura una sola vez
@@ -195,11 +219,11 @@ const HomePage: FC<HomePageProps> = ({
   isEmbedded = false,
   maxScrollPercentage = 100,
 }) => {
-  const cameraRef = useRef<THREE.PerspectiveCamera>(null!);
-  const sceneRef = useRef<THREE.Group>(null!);
-  const mainRef = useRef<HTMLDivElement>(null!);
-  const scrollRef = useRef<HTMLDivElement>(null!);
-  const canvasRef = useRef<HTMLDivElement>(null!);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const sceneRef = useRef<THREE.Group | null>(null);
+  const mainRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
   const [scrollPercentage, setScrollPercentage] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isDigitalGlitch, setIsDigitalGlitch] = useState(false);
@@ -268,21 +292,15 @@ const HomePage: FC<HomePageProps> = ({
 
     const detectAndFixScrollIssues = () => {
       const scrollElement = scrollRef.current;
-      if (scrollElement) {
-        const hasHeight = scrollElement.offsetHeight > 0;
+      if (!scrollElement) return;
 
-        if (!hasHeight) {
-          console.warn("Fixing scroll element height issue");
-          scrollElement.style.minHeight = "200vh";
-        }
+      const hasValidHeight = scrollElement.offsetHeight > 0;
+      const hasValidScrollHeight =
+        scrollElement.scrollHeight >= scrollElement.clientHeight;
 
-        if (
-          hasHeight &&
-          scrollElement.scrollHeight < scrollElement.clientHeight
-        ) {
-          console.warn("Fixing scroll content height issue");
-          scrollElement.style.minHeight = "200vh";
-        }
+      if (!hasValidHeight || !hasValidScrollHeight) {
+        console.warn("Fixing scroll element height issues");
+        scrollElement.style.minHeight = UI_CONFIG.SCROLL_HEIGHT;
       }
     };
 
@@ -439,7 +457,7 @@ const HomePage: FC<HomePageProps> = ({
           }, AUDIO_CONFIG.TRANSITION_DURATION);
         } catch (error) {
           if (import.meta.env.DEV) {
-            console.log("Transition audio skipped");
+            console.warn("Transition audio skipped:", error);
           }
         }
       };
@@ -451,12 +469,12 @@ const HomePage: FC<HomePageProps> = ({
     camera.lookAt(0, 0, 0);
 
     const portalTimeline = gsap.timeline({
-      ease: "power3.out",
+      ease: EASING_CONFIG.PORTAL_MAIN,
     });
 
     setTimeout(() => {
       navigate(ROUTES.REBECCA);
-    }, 2000);
+    }, ANIMATION_CONFIG.NAVIGATION_DELAY);
 
     portalTimeline
       .to(
@@ -464,7 +482,7 @@ const HomePage: FC<HomePageProps> = ({
         {
           z: -80,
           duration: 0.3,
-          ease: "power2.in",
+          ease: EASING_CONFIG.PORTAL_CAMERA_INITIAL,
         },
         0
       )
@@ -475,7 +493,7 @@ const HomePage: FC<HomePageProps> = ({
           y: 0.1,
           z: 0.1,
           duration: 0.6,
-          ease: "power2.in",
+          ease: EASING_CONFIG.PORTAL_SCALE_INITIAL,
         },
         0.2
       )
@@ -484,7 +502,7 @@ const HomePage: FC<HomePageProps> = ({
         {
           z: ANIMATION_CONFIG.CAMERA_TUNNEL_Z,
           duration: 0.7,
-          ease: "power3.in",
+          ease: EASING_CONFIG.PORTAL_CAMERA_TUNNEL,
         },
         0.4
       )
@@ -494,7 +512,7 @@ const HomePage: FC<HomePageProps> = ({
           z: Math.PI * 2,
           x: Math.PI * 0.3,
           duration: 1.4,
-          ease: "power2.in",
+          ease: EASING_CONFIG.PORTAL_ROTATION,
         },
         0.1
       )
@@ -505,16 +523,16 @@ const HomePage: FC<HomePageProps> = ({
           y: 0.02,
           z: 0.02,
           duration: 0.5,
-          ease: "power4.in",
+          ease: EASING_CONFIG.PORTAL_SCALE_FINAL,
         },
         0.8
       )
       .to(
         canvas,
         {
-          filter: "brightness(400%) contrast(300%) blur(2px)",
+          filter: UI_CONFIG.CSS_FILTER_TRANSITION,
           duration: 0.3,
-          ease: "power2.in",
+          ease: EASING_CONFIG.PORTAL_FILTER,
         },
         1.5
       )
@@ -523,7 +541,7 @@ const HomePage: FC<HomePageProps> = ({
         {
           opacity: 0,
           duration: 0.3,
-          ease: "power3.out",
+          ease: EASING_CONFIG.PORTAL_FADEOUT,
         },
         1.7
       );
@@ -696,32 +714,39 @@ const HomePage: FC<HomePageProps> = ({
   useLayoutEffect(() => {
     const isReady = () => {
       return !!(
-        sceneRef.current?.children.length >= 4 &&
+        sceneRef.current?.children.length &&
+        sceneRef.current.children.length >=
+          UI_CONFIG.SCENE_READY_MIN_CHILDREN &&
         cameraRef.current?.position &&
-        scrollRef.current?.offsetHeight > 0
+        scrollRef.current?.offsetHeight &&
+        scrollRef.current.offsetHeight > 0
       );
     };
 
     const setupScrollTrigger = (attempt = 1) => {
       if (!isReady()) {
-        if (attempt < 10) {
+        if (attempt < UI_CONFIG.MAX_SETUP_ATTEMPTS) {
           setTimeout(
             () => setupScrollTrigger(attempt + 1),
             SCROLL_CONFIG.SETUP_RETRY_DELAY
           );
         } else {
-          console.warn("ScrollTrigger setup failed after 10 attempts");
+          console.warn(
+            `ScrollTrigger setup failed after ${UI_CONFIG.MAX_SETUP_ATTEMPTS} attempts`
+          );
         }
         return;
       }
 
-      const logoMesh = sceneRef.current.children[1] as THREE.Mesh;
-      const textPhrase1 = sceneRef.current.children[2] as THREE.Group;
-      const textPhrase2 = sceneRef.current.children[3] as THREE.Group;
+      // Safe access after isReady check
+      const scene = sceneRef.current!;
+      const scrollElement = scrollRef.current!;
+
+      const logoMesh = scene.children[1] as THREE.Mesh;
+      const textPhrase1 = scene.children[2] as THREE.Group;
+      const textPhrase2 = scene.children[3] as THREE.Group;
 
       ScrollTrigger.killAll();
-
-      const scrollElement = scrollRef.current;
 
       const timeline = gsap.timeline({
         scrollTrigger: {
@@ -798,10 +823,10 @@ const HomePage: FC<HomePageProps> = ({
             const limitedProgress = Math.min(progress, maxScrollPercentage);
 
             if (
-              limitedProgress >= 60 &&
-              limitedProgress < 65 &&
+              limitedProgress >= SCROLL_CONFIG.EMBEDDED_GLITCH_START &&
+              limitedProgress < SCROLL_CONFIG.EMBEDDED_GLITCH_END &&
               !glitchTriggeredRef.current &&
-              maxScrollPercentage > 65
+              maxScrollPercentage > SCROLL_CONFIG.EMBEDDED_GLITCH_THRESHOLD
             ) {
               glitchTriggeredRef.current = true;
               setIsDigitalGlitch(true);
@@ -816,11 +841,11 @@ const HomePage: FC<HomePageProps> = ({
 
       // MANTENER todas las animaciones exactamente iguales
       timeline.to(
-        cameraRef.current.position,
+        cameraRef.current!.position,
         {
           y: 2,
           z: ANIMATION_CONFIG.CAMERA_TARGET_Z,
-          ease: "none",
+          ease: EASING_CONFIG.SCROLL_ANIMATION,
         },
         0
       );
@@ -829,7 +854,10 @@ const HomePage: FC<HomePageProps> = ({
       if (logoMesh?.position) {
         timeline.to(
           logoMesh.position,
-          { z: ANIMATION_CONFIG.LOGO_TARGET_Z, ease: "none" },
+          {
+            z: ANIMATION_CONFIG.LOGO_TARGET_Z,
+            ease: EASING_CONFIG.SCROLL_ANIMATION,
+          },
           0
         );
       }
@@ -839,19 +867,28 @@ const HomePage: FC<HomePageProps> = ({
         if (line1?.position)
           timeline.to(
             line1.position,
-            { z: ANIMATION_CONFIG.TEXT_LINE1_Z, ease: "none" },
+            {
+              z: ANIMATION_CONFIG.TEXT_LINE1_Z,
+              ease: EASING_CONFIG.SCROLL_ANIMATION,
+            },
             0
           );
         if (line2?.position)
           timeline.to(
             line2.position,
-            { z: ANIMATION_CONFIG.TEXT_LINE2_Z, ease: "none" },
+            {
+              z: ANIMATION_CONFIG.TEXT_LINE2_Z,
+              ease: EASING_CONFIG.SCROLL_ANIMATION,
+            },
             0
           );
         if (line3?.position)
           timeline.to(
             line3.position,
-            { z: ANIMATION_CONFIG.TEXT_LINE3_Z, ease: "none" },
+            {
+              z: ANIMATION_CONFIG.TEXT_LINE3_Z,
+              ease: EASING_CONFIG.SCROLL_ANIMATION,
+            },
             0
           );
       }
@@ -861,13 +898,19 @@ const HomePage: FC<HomePageProps> = ({
         if (line1?.position)
           timeline.to(
             line1.position,
-            { z: ANIMATION_CONFIG.TEXT2_LINE1_Z, ease: "none" },
+            {
+              z: ANIMATION_CONFIG.TEXT2_LINE1_Z,
+              ease: EASING_CONFIG.SCROLL_ANIMATION,
+            },
             0
           );
         if (line2?.position)
           timeline.to(
             line2.position,
-            { z: ANIMATION_CONFIG.TEXT2_LINE2_Z, ease: "none" },
+            {
+              z: ANIMATION_CONFIG.TEXT2_LINE2_Z,
+              ease: EASING_CONFIG.SCROLL_ANIMATION,
+            },
             0
           );
       }
@@ -896,8 +939,10 @@ const HomePage: FC<HomePageProps> = ({
 
     return () => {
       ScrollTrigger.killAll();
+      // Reset estados al limpiar
       portalTriggeredRef.current = false;
       glitchTriggeredRef.current = false;
+      setIsTransitioning(false);
     };
   }, [
     triggerPortalTransition,
