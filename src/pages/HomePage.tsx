@@ -1,7 +1,3 @@
-// 🔧 TEMPORAL: Import comentado para testing
-// import { useTitleAnimation } from "../hooks/useTitleAnimation";
-// 🔧 TEMPORAL: Import comentado para testing
-// import { useFaviconAnimation } from "../hooks/useFaviconAnimation";
 // Archivo: src/pages/HomePage.tsx (Versión Final y Definitiva)
 
 import {
@@ -24,10 +20,9 @@ import { useNavigate } from "react-router-dom";
 import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
 import AudioVisualizer from "../components/AudioVisualizer";
-// Eliminadas animaciones de favicon y título
 import "./HomePage.css";
 
-// 🎯 CONSTANTES: Valores reutilizables para mejor mantenibilidad
+// Configuración de audio
 const AUDIO_CONFIG = {
   AMBIENT_VOLUME: 0.15,
   TRANSITION_VOLUME: 0.4,
@@ -68,10 +63,8 @@ const ROUTES = {
   REBECCA: "/rebecca",
 } as const;
 
-// ✅ Registro explícito de ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
-// --- Componente del Paisaje 3D Optimizado ---
 const LandscapeScene: FC = memo(() => {
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
   const texture = useTexture("https://i.imgur.com/kv7xqKt.png");
@@ -95,7 +88,6 @@ const LandscapeScene: FC = memo(() => {
 
   return (
     <mesh rotation-x={-Math.PI / 2} position-y={-5}>
-      {/* Reduced segments for better performance (30,30 instead of 50,50) */}
       <planeGeometry args={[100, 100, 30, 30]} />
       <shaderMaterial
         ref={materialRef}
@@ -126,8 +118,6 @@ const LandscapeScene: FC = memo(() => {
 
 LandscapeScene.displayName = "LandscapeScene";
 
-// --- Componentes de Texto ---
-
 const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
   ({ scrollPercentage }) => {
     // Función para calcular opacidad basada en rango de scroll
@@ -140,18 +130,15 @@ const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
       [scrollPercentage]
     );
 
-    // OPTIMIZACIÓN: Memoizar cálculos de opacidad
     const opacidades = useMemo(() => {
-      // OPTIMIZACIÓN: Después del 70% mantener visible pero sin cálculos complejos
-      const line1Opacity = scrollPercentage > 70 ? 1 : calculateOpacity(45, 55); // Línea 1: 45%-55%
-      const line2Opacity = scrollPercentage > 70 ? 1 : calculateOpacity(55, 60); // Línea 2: 55%-60%
+      const line1Opacity = scrollPercentage > 70 ? 1 : calculateOpacity(45, 55);
+      const line2Opacity = scrollPercentage > 70 ? 1 : calculateOpacity(55, 60);
 
       return { line1Opacity, line2Opacity };
     }, [scrollPercentage, calculateOpacity]);
 
     return (
       <group>
-        {/* Línea 1 - Fade-in del 45% al 55% - MOVIDA 1 UNIDAD HACIA ARRIBA */}
         <Text
           position={[0, 5, -140]}
           fontSize={1.728}
@@ -163,7 +150,6 @@ const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
         >
           NO ES UNA IA GENÉRICA
         </Text>
-        {/* Línea 2 - Fade-in del 55% al 60% */}
         <Text
           position={[0, 0, -143]}
           fontSize={1.728}
@@ -182,14 +168,12 @@ const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
 
 TextPhrase2.displayName = "TextPhrase2";
 
-// --- Tipos para props ---
 interface HomePageProps {
-  scrollContainer?: string; // ID del contenedor de scroll personalizado
-  isEmbedded?: boolean; // Indica si está embebido en otro componente
-  maxScrollPercentage?: number; // Máximo porcentaje de scroll permitido (para evitar transición)
+  scrollContainer?: string;
+  isEmbedded?: boolean;
+  maxScrollPercentage?: number;
 }
 
-// --- Componente Principal de la Página ---
 const HomePage: FC<HomePageProps> = ({
   scrollContainer,
   isEmbedded = false,
@@ -203,74 +187,45 @@ const HomePage: FC<HomePageProps> = ({
   const [scrollPercentage, setScrollPercentage] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isDigitalGlitch, setIsDigitalGlitch] = useState(false);
-  const portalTriggeredRef = useRef(false); // Evitar múltiples triggers
-  const glitchTriggeredRef = useRef(false); // Evitar múltiples triggers del glitch
+  const portalTriggeredRef = useRef(false);
+  const glitchTriggeredRef = useRef(false);
 
-  // 🎵 SONIDO AMBIENTE
   const ambientAudioRef = useRef<HTMLAudioElement | null>(null);
   const [hasStartedAmbientSound, setHasStartedAmbientSound] = useState(false);
-  const [areSoundsEnabled, setAreSoundsEnabled] = useState(false); // Control global de sonidos
-  const hasStartedAmbientSoundRef = useRef(false); // ✅ Ref para evitar re-renders del ScrollTrigger
-  const areSoundsEnabledRef = useRef(false); // ✅ Ref para ScrollTrigger
+  const [areSoundsEnabled, setAreSoundsEnabled] = useState(false);
 
-  // ✅ Sincronizar ref con estado
-  useEffect(() => {
-    hasStartedAmbientSoundRef.current = hasStartedAmbientSound;
-  }, [hasStartedAmbientSound]);
-
-  // ✅ Sincronizar ref del control global de sonidos
-  useEffect(() => {
-    areSoundsEnabledRef.current = areSoundsEnabled;
-  }, [areSoundsEnabled]);
-
-  // 🎵 SONIDO DE TRANSICIÓN
   const transitionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const navigate = useNavigate();
 
-  // 🎯 CONFIGURACIÓN DESKTOP ESTÁTICA
   const responsiveConfig = useMemo(() => {
     return {
-      // WebGL settings para desktop
       webgl: {
         antialias: true,
         precision: "highp" as const,
         powerPreference: "high-performance" as const,
         pixelRatio: Math.min(window.devicePixelRatio, 2),
       },
-      // Configuración de animaciones para desktop
       animations: {
         duration: 1.2,
         fps: 60,
-        scrollThrottleInterval: 1, // Sin throttling en desktop
+        scrollThrottleInterval: 1,
       },
-      // Configuración del mouse trail para desktop
       mouseTrail: {
         maxPoints: 35,
-        updateInterval: 16, // 60fps
+        updateInterval: 16,
         particleSize: 12,
       },
     };
   }, []);
 
-  // 🎨 ANIMACIONES DE FAVICON Y TÍTULO
-
-  // 🧹 LIMPIEZA DE WEBGL OPTIMIZADA Y FIX DE CURSOR
   useEffect(() => {
-    // ✅ DEBUG: Verificación inicial consolidada (optimizada para evitar spam en desarrollo)
-    if (import.meta.env.DEV) {
-      console.log("🏁 HomePage Desktop Mode - Sistema responsivo eliminado");
-    }
-
     return () => {
-      // Limpiar cache de Three.js y geometrías al desmontar el componente
       try {
-        // Limpiar cache de Three.js
         if (THREE.Cache) {
           THREE.Cache.clear();
         }
 
-        // Limpiar cualquier geometría o material en memoria de forma más eficiente
         if (sceneRef.current) {
           sceneRef.current.traverse((child: THREE.Object3D) => {
             if (child instanceof THREE.Mesh) {
@@ -286,12 +241,10 @@ const HomePage: FC<HomePageProps> = ({
           });
         }
 
-        // Forzar garbage collection si está disponible
         if ((window as any).gc) {
           (window as any).gc();
         }
       } catch (error) {
-        // Ignorar errores de limpieza
         console.debug("Cleanup WebGL context:", error);
       }
     };
@@ -371,23 +324,20 @@ const HomePage: FC<HomePageProps> = ({
         return audio;
       } catch (error) {
         console.error(`Error creating audio element for ${config.src}:`, error);
-        // Retornar un elemento audio dummy en caso de error
         return new Audio();
       }
     },
     []
   );
 
-  // � INICIALIZACIÓN DEL SONIDO AMBIENTE (usando helper)
   useEffect(() => {
-    // Crear elemento de audio usando helper consolidado con manejo de errores
     const audio = createAudioElement({
       src: AUDIO_CONFIG.AMBIENT_PATH,
       volume: AUDIO_CONFIG.AMBIENT_VOLUME,
-      loop: true, // Con loop - reproducir en bucle continuo
+      loop: true,
       preload: "auto",
       onError: (error) => {
-        console.warn("⚠️ Error cargando audio ambiente:", error.message);
+        console.warn("Error cargando audio ambiente:", error.message);
       },
     });
 
@@ -401,15 +351,13 @@ const HomePage: FC<HomePageProps> = ({
     };
   }, []);
 
-  // 🎵 INICIALIZACIÓN DEL SONIDO DE TRANSICIÓN (usando helper)
   useEffect(() => {
-    // Crear elemento de audio para transición usando helper consolidado con manejo de errores
     const transitionAudio = createAudioElement({
       src: AUDIO_CONFIG.TRANSITION_PATH,
       volume: AUDIO_CONFIG.TRANSITION_VOLUME,
       preload: "auto",
       onError: (error) => {
-        console.warn("⚠️ Error cargando audio de transición:", error.message);
+        console.warn("Error cargando audio de transición:", error.message);
       },
     });
 
@@ -417,101 +365,47 @@ const HomePage: FC<HomePageProps> = ({
 
     return () => {
       if (transitionAudioRef.current) {
-        // NO pausar el audio de transición al cambiar de página
-        // Permitir que continúe reproduciéndose durante la transición
-        // Solo limpiar la referencia, pero no pausar el audio
         transitionAudioRef.current = null;
       }
     };
   }, []);
 
-  // 🎵 ACTIVAR SONIDO AMBIENTE SOLO CON AudioVisualizer (No automático)
-  /* DESHABILITADO: Activación automática en primera interacción
-  useEffect(() => {
-    if (hasStartedAmbientSound || !ambientAudioRef.current) return;
-
-    const startAmbientSound = async () => {
-      try {
-        await ambientAudioRef.current?.play();
-        setHasStartedAmbientSound(true);
-      } catch (error) {
-        console.warn("⚠️ Audio ambiente autoplay blocked:", error);
-      }
-    };
-
-    const handleUserInteraction = () => {
-      if (!hasStartedAmbientSound) {
-        startAmbientSound();
-        window.removeEventListener("mousedown", handleUserInteraction);
-        window.removeEventListener("keydown", handleUserInteraction);
-        window.removeEventListener("touchstart", handleUserInteraction);
-      }
-    };
-
-    window.addEventListener("mousedown", handleUserInteraction);
-    window.addEventListener("keydown", handleUserInteraction);
-    window.addEventListener("touchstart", handleUserInteraction);
-
-    return () => {
-      window.removeEventListener("mousedown", handleUserInteraction);
-      window.removeEventListener("keydown", handleUserInteraction);
-      window.removeEventListener("touchstart", handleUserInteraction);
-    };
-  }, [hasStartedAmbientSound]);
-  */
-
-  // 🎵 PAUSAR TODOS LOS AUDIOS AL CAMBIAR DE PÁGINA
   useEffect(() => {
     return () => {
-      // Pausar audio ambiente al desmontar el componente (cambio de página)
       if (ambientAudioRef.current && hasStartedAmbientSound) {
         ambientAudioRef.current.pause();
-        console.log("HomePage - Audio ambiente pausado al cambiar de página");
       }
 
-      // Pausar audio de transición al desmontar el componente
       if (transitionAudioRef.current) {
         transitionAudioRef.current.pause();
-        console.log(
-          "HomePage - Audio de transición pausado al cambiar de página"
-        );
       }
     };
   }, [hasStartedAmbientSound]);
 
-  // 🎵 MANEJAR TOGGLE DE AUDIO DESDE AUDIO VISUALIZER
   const handleAudioVisualizerToggle = useCallback(async (isActive: boolean) => {
-    console.log("HomePage - AudioVisualizer toggle:", isActive);
-
     try {
       if (isActive) {
-        // ✅ ACTIVAR TODOS LOS SONIDOS
         setAreSoundsEnabled(true);
         if (ambientAudioRef.current) {
           await ambientAudioRef.current.play();
           setHasStartedAmbientSound(true);
-          console.log("HomePage - Audio ambiente iniciado");
         }
       } else {
-        // ❌ DESACTIVAR TODOS LOS SONIDOS
         setAreSoundsEnabled(false);
 
-        // Pausar audio ambiente
         if (ambientAudioRef.current) {
           ambientAudioRef.current.pause();
-          console.log("HomePage - Audio ambiente pausado");
         }
 
-        // Pausar audio de transición si está reproduciéndose
         if (transitionAudioRef.current) {
           transitionAudioRef.current.pause();
-          console.log("HomePage - Audio de transición pausado");
         }
       }
     } catch (error) {
-      console.warn("HomePage - Error al manejar audio:", error);
+      console.warn("Error al manejar audio:", error);
     }
-  }, []); // �🌟 Estados y referencias para la estela del cursor ULTRA OPTIMIZADA
+  }, []);
+
   const trailPointsRef = useRef<{ x: number; y: number; opacity: number }[]>(
     []
   );
@@ -521,7 +415,6 @@ const HomePage: FC<HomePageProps> = ({
   const isMouseActiveRef = useRef<boolean>(false);
   const mouseStoppedTimeoutRef = useRef<number | null>(null);
 
-  // 🌀 FUNCIÓN DE TRANSICIÓN PORTAL - Efecto túnel centrado y visible
   const triggerPortalTransition = useCallback(() => {
     const canvas = canvasRef.current;
     const scene = sceneRef.current;
@@ -529,38 +422,27 @@ const HomePage: FC<HomePageProps> = ({
 
     if (!canvas || !scene || !camera) return;
 
-    // 🎵 REPRODUCIR SONIDO DE TRANSICIÓN (solo si los sonidos están habilitados)
     if (
       transitionAudioRef.current &&
-      hasStartedAmbientSoundRef.current &&
-      areSoundsEnabledRef.current
+      hasStartedAmbientSound &&
+      areSoundsEnabled
     ) {
-      transitionAudioRef.current.currentTime = 0; // Reiniciar desde el principio
+      transitionAudioRef.current.currentTime = 0;
 
-      // Intentar reproducir y configurar auto-stop extendido
       const playTransitionSound = async () => {
         try {
-          // Verificar nuevamente que los sonidos estén habilitados antes de reproducir
-          if (areSoundsEnabledRef.current) {
+          if (areSoundsEnabled) {
             await transitionAudioRef.current?.play();
-            console.log("HomePage - Audio de transición iniciado");
 
-            // Auto-stop del audio después de su duración completa
             setTimeout(() => {
               if (transitionAudioRef.current) {
                 transitionAudioRef.current.pause();
-                console.log(
-                  "HomePage - Audio de transición terminado automáticamente"
-                );
               }
             }, AUDIO_CONFIG.TRANSITION_DURATION);
           }
         } catch (error) {
-          // ✅ SILENCIOSO: El usuario puede no haber interactuado aún, esto es normal
           if (import.meta.env.DEV) {
-            console.log(
-              "ℹ️ Transition audio skipped (no user interaction yet or sounds disabled)"
-            );
+            console.log("Transition audio skipped");
           }
         }
       };
@@ -568,106 +450,88 @@ const HomePage: FC<HomePageProps> = ({
       playTransitionSound();
     }
 
-    // Asegurar que la escena esté centrada antes de la animación
     scene.position.set(0, 0, 0);
     camera.lookAt(0, 0, 0);
 
-    // Crear timeline específico para el efecto portal
     const portalTimeline = gsap.timeline({
       ease: "power3.out",
     });
 
-    // ⚡ NAVEGACIÓN OPTIMIZADA: Activar Rebecca después del efecto completo de 2 segundos
     setTimeout(() => {
       navigate(ROUTES.REBECCA);
-    }, 2000); // ⚡ Navegación exactamente a los 2s
+    }, 2000);
 
-    // 🎯 ANIMACIÓN DE ESCENA 3D - Efecto "túnel" comprimido a 2 segundos
     portalTimeline
-      // 1. Primer impulso: zoom in rápido para iniciar el efecto
       .to(
         camera.position,
         {
           z: -80,
-          duration: 0.3, // Comprimido de 0.6 a 0.3
+          duration: 0.3,
           ease: "power2.in",
         },
         0
       )
-
-      // 2. Escalar gradualmente manteniendo visibilidad en el centro
       .to(
         scene.scale,
         {
           x: 0.1,
           y: 0.1,
           z: 0.1,
-          duration: 0.6, // Comprimido de 1.0 a 0.6
+          duration: 0.6,
           ease: "power2.in",
         },
         0.2
-      ) // Ajustado timing
-
-      // 3. Acelerar cámara hacia el "túnel" de forma controlada
+      )
       .to(
         camera.position,
         {
           z: ANIMATION_CONFIG.CAMERA_TUNNEL_Z,
-          duration: 0.7, // Comprimido de 1.2 a 0.7
+          duration: 0.7,
           ease: "power3.in",
         },
         0.4
-      ) // Ajustado timing
-
-      // 4. Rotación de vórtex intensa y rápida
+      )
       .to(
         scene.rotation,
         {
           z: Math.PI * 2,
           x: Math.PI * 0.3,
-          duration: 1.4, // Comprimido de 2.5 a 1.4 pero manteniendo giro visible
+          duration: 1.4,
           ease: "power2.in",
         },
         0.1
-      ) // Inicio más temprano
-
-      // 5. Efecto de "zoom hacia el infinito" para simular túnel
+      )
       .to(
         scene.scale,
         {
           x: 0.02,
           y: 0.02,
           z: 0.02,
-          duration: 0.5, // Comprimido de 0.8 a 0.5
+          duration: 0.5,
           ease: "power4.in",
         },
         0.8
-      ) // Ajustado timing
-
-      // 6. Flash blanco intenso para transición
+      )
       .to(
         canvas,
         {
           filter: "brightness(400%) contrast(300%) blur(2px)",
-          duration: 0.3, // Comprimido para sincronizar
+          duration: 0.3,
           ease: "power2.in",
         },
         1.5
-      ) // Sincronizado para terminar en 2s
-
-      // 7. Fade out rápido pero elegante
+      )
       .to(
         canvas,
         {
           opacity: 0,
-          duration: 0.3, // Comprimido para completar en 2s
+          duration: 0.3,
           ease: "power3.out",
         },
         1.7
-      ); // Timing final ajustado a 2s
-  }, [navigate]); // ✅ CORREGIDO: Removido hasStartedAmbientSound para evitar re-renders
+      );
+  }, [navigate]);
 
-  // 🌟 EFECTO DE ESTELA DEL CURSOR CORREGIDO
   const renderTrail = useCallback(() => {
     const canvas = trailCanvasRef.current;
     if (!canvas) return;
@@ -675,22 +539,18 @@ const HomePage: FC<HomePageProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // 1. Limpiar canvas con fade-out suave en lugar de clearRect completo
     ctx.globalCompositeOperation = "destination-out";
-    ctx.fillStyle = "rgba(0, 0, 0, 0.2)"; // Fade-out más gradual
+    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 2. Dibujar estela si hay puntos suficientes
     if (trailPointsRef.current.length > 1) {
-      ctx.globalCompositeOperation = "lighter"; // Modo aditivo para brillo
+      ctx.globalCompositeOperation = "lighter";
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
-      // Usar todos los puntos disponibles (máximo 8)
       const activePoints = trailPointsRef.current;
 
       if (activePoints.length > 1) {
-        // Crear gradiente para toda la línea
         const firstPoint = activePoints[0];
         const lastPoint = activePoints[activePoints.length - 1];
 
@@ -701,9 +561,9 @@ const HomePage: FC<HomePageProps> = ({
           lastPoint.y
         );
 
-        gradient.addColorStop(0, `rgba(${TRAIL_CONFIG.COLOR_RGB}, 0.1)`); // Inicio muy transparente
-        gradient.addColorStop(0.5, `rgba(${TRAIL_CONFIG.COLOR_RGB}, 0.4)`); // Medio visible
-        gradient.addColorStop(1, `rgba(${TRAIL_CONFIG.COLOR_RGB}, 0.8)`); // Final más opaco
+        gradient.addColorStop(0, `rgba(${TRAIL_CONFIG.COLOR_RGB}, 0.1)`);
+        gradient.addColorStop(0.5, `rgba(${TRAIL_CONFIG.COLOR_RGB}, 0.4)`);
+        gradient.addColorStop(1, `rgba(${TRAIL_CONFIG.COLOR_RGB}, 0.8)`);
 
         ctx.strokeStyle = gradient;
         ctx.lineWidth = TRAIL_CONFIG.LINE_WIDTH;
@@ -718,7 +578,6 @@ const HomePage: FC<HomePageProps> = ({
 
         ctx.stroke();
 
-        // Efecto de brillo
         ctx.shadowBlur = TRAIL_CONFIG.SHADOW_BLUR;
         ctx.shadowColor = `rgba(${TRAIL_CONFIG.COLOR_RGB}, 0.6)`;
         ctx.stroke();
@@ -726,15 +585,13 @@ const HomePage: FC<HomePageProps> = ({
       }
     }
 
-    // 3. Reducir opacidad de puntos existentes de forma más conservadora
     trailPointsRef.current = trailPointsRef.current
       .map((point) => ({
         ...point,
-        opacity: point.opacity * TRAIL_CONFIG.OPACITY_DECAY, // Reducción más gradual
+        opacity: point.opacity * TRAIL_CONFIG.OPACITY_DECAY,
       }))
-      .filter((point) => point.opacity > TRAIL_CONFIG.MIN_OPACITY); // Umbral más alto
+      .filter((point) => point.opacity > TRAIL_CONFIG.MIN_OPACITY);
 
-    // 4. Continuar animación si hay puntos o mouse activo
     if (trailPointsRef.current.length > 0 || isMouseActiveRef.current) {
       animationFrameRef.current = requestAnimationFrame(renderTrail);
     } else {
@@ -753,33 +610,25 @@ const HomePage: FC<HomePageProps> = ({
 
       isMouseActiveRef.current = true;
 
-      // Limpiar timeout anterior si el mouse se mueve
       if (mouseStoppedTimeoutRef.current) {
         clearTimeout(mouseStoppedTimeoutRef.current);
       }
 
-      // Debug temporal - verificar que se capturan eventos
-      // console.log('Mouse move:', e.clientX, e.clientY, 'Points:', trailPointsRef.current.length);
-
-      // Agregar nuevo punto con opacidad completa
       trailPointsRef.current.push({
         x: e.clientX,
         y: e.clientY,
         opacity: 1,
       });
 
-      // 🎯 RESPONSIVE: Limitar puntos según configuración del dispositivo
       const maxPoints = responsiveConfig.mouseTrail.maxPoints;
       if (trailPointsRef.current.length > maxPoints) {
         trailPointsRef.current.shift();
       }
 
-      // Iniciar rendering si no está activo
       if (animationFrameRef.current === 0) {
         animationFrameRef.current = requestAnimationFrame(renderTrail);
       }
 
-      // Configurar timeout para cuando el mouse se detiene
       mouseStoppedTimeoutRef.current = setTimeout(() => {
         isMouseActiveRef.current = false;
       }, SCROLL_CONFIG.MOUSE_IDLE_TIMEOUT);
@@ -794,38 +643,27 @@ const HomePage: FC<HomePageProps> = ({
   const handleMouseLeave = useCallback(() => {
     isMouseActiveRef.current = false;
 
-    // ✅ SIMPLIFICADO: Cleanup consolidado
     if (mouseStoppedTimeoutRef.current) {
       clearTimeout(mouseStoppedTimeoutRef.current);
       mouseStoppedTimeoutRef.current = null;
     }
 
-    // Limpiar trail INMEDIATAMENTE
     trailPointsRef.current = [];
 
-    // Limpiar canvas y cancelar animaciones
     const canvas = trailCanvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext("2d");
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Cancelar cualquier animación pendiente
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = 0;
     }
   }, []);
 
-  // 🎯 NUEVO: Hook para coordinar inicialización de Canvas con ScrollTrigger
   const [isCanvasReady, setIsCanvasReady] = useState(false);
   const setupScrollTriggerRef = useRef<(() => void) | null>(null);
-
-  // ...existing code...
-  // 🔧 TEMPORAL: Favicon desactivado para testing
-  // useFaviconAnimation();
-  // 🔧 TEMPORAL: Título animado desactivado para testing
-  // useTitleAnimation();
 
   // ✅ COORDINACIÓN MEJORADA: Sincronizar Canvas ready con ScrollTrigger setup
   useEffect(() => {
@@ -834,14 +672,12 @@ const HomePage: FC<HomePageProps> = ({
     }
   }, [isCanvasReady]);
 
-  // Configurar canvas y eventos del mouse
   useLayoutEffect(() => {
     const canvas = trailCanvasRef.current;
     const container = mainRef.current;
 
     if (!canvas || !container) return;
 
-    // Configurar canvas
     const updateCanvasSize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -850,7 +686,6 @@ const HomePage: FC<HomePageProps> = ({
     updateCanvasSize();
     window.addEventListener("resize", updateCanvasSize);
 
-    // Eventos del mouse
     container.addEventListener("mousemove", handleMouseMove);
     container.addEventListener("mouseleave", handleMouseLeave);
 
@@ -858,8 +693,6 @@ const HomePage: FC<HomePageProps> = ({
       window.removeEventListener("resize", updateCanvasSize);
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
-
-      // ✅ SIMPLIFICADO: Cleanup consolidado
       mouseStoppedTimeoutRef.current &&
         clearTimeout(mouseStoppedTimeoutRef.current);
       animationFrameRef.current &&
@@ -869,7 +702,6 @@ const HomePage: FC<HomePageProps> = ({
   }, [handleMouseMove, handleMouseLeave]);
 
   useLayoutEffect(() => {
-    // ✅ VERIFICACIÓN SIMPLIFICADA: Verificar elementos esenciales para ScrollTrigger
     const isReady = () => {
       return !!(
         sceneRef.current?.children.length >= 4 &&
@@ -886,7 +718,7 @@ const HomePage: FC<HomePageProps> = ({
             SCROLL_CONFIG.SETUP_RETRY_DELAY
           );
         } else {
-          console.warn("⚠️ ScrollTrigger setup failed after 10 attempts");
+          console.warn("ScrollTrigger setup failed after 10 attempts");
         }
         return;
       }
@@ -895,12 +727,10 @@ const HomePage: FC<HomePageProps> = ({
       const textPhrase1 = sceneRef.current.children[2] as THREE.Group;
       const textPhrase2 = sceneRef.current.children[3] as THREE.Group;
 
-      // ✅ LIMPIEZA SEGURA: Eliminar triggers existentes antes de crear nuevos
       ScrollTrigger.killAll();
 
       const scrollElement = scrollRef.current;
 
-      // 🎯 TIMELINE PRINCIPAL - Solo maneja scroll hasta 70% (o máximo permitido en embebido)
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: scrollElement,
@@ -913,12 +743,10 @@ const HomePage: FC<HomePageProps> = ({
           onUpdate: (self) => {
             const progress = Math.round(self.progress * 100);
 
-            // 🎯 LIMITAR PROGRESS EN VERSIÓN EMBEBIDA
             const effectiveProgress = isEmbedded
               ? Math.min(progress, maxScrollPercentage)
               : progress;
 
-            // 🚀 THROTTLING RESPONSIVO: Intervalos adaptativos según dispositivo
             const throttleInterval =
               responsiveConfig.animations.scrollThrottleInterval;
             if (
@@ -930,7 +758,6 @@ const HomePage: FC<HomePageProps> = ({
         },
       });
 
-      // 🌀 SCROLL TRIGGER SEPARADO PARA PORTAL - Solo activo en 70%+ Y NO EMBEBIDO
       if (!isEmbedded) {
         ScrollTrigger.create({
           trigger: scrollElement,
