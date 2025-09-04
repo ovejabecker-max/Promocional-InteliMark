@@ -24,6 +24,20 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 🔧 ELIMINAR TODOS LOS CURSORES NATIVOS GLOBALMENTE */
+* {
+  cursor: none !important;
+}
+
+/* 🔧 ASEGURAR QUE INPUTS Y TEXTAREA TAMBIÉN USEN CURSOR PERSONALIZADO */
+input,
+textarea,
+select,
+button,
+a {
+  cursor: none !important;
+}
+
 a {
   font-weight: 500;
   color: #64ffda;

@@ -1,91 +1,108 @@
 import { useEffect, useRef } from "react";
 
+// Constantes de configuración optimizadas
+const STATIC_PART = "InteliMark || ";
+const SEPARATOR = "   ";
+const VISIBLE_WIDTH = 35;
+const UPDATE_INTERVAL = 250; // Reducido para animación más fluida
+const TARGET_FPS = 60; // Aumentado para mejor suavidad
+const FRAME_INTERVAL = 1000 / TARGET_FPS;
+const DEFAULT_TITLE = "InteliMark";
+
+/** Configuración para la animación del título */
 interface TitleAnimationConfig {
-  staticPart?: string;
+  /** Partes del texto que se desplazarán. Por defecto incluye mensaje de construcción y "Vuelve pronto." */
   scrollingParts?: string[];
-  separator?: string;
-  visibleWidth?: number;
-  updateInterval?: number;
 }
 
 export const useTitleAnimation = (config: TitleAnimationConfig = {}) => {
   const {
-    staticPart = "InteliMark || ",
-    scrollingParts = [
-      "Sitio en construcción... |",
-      "Promocional página DEMO |",
-    ],
-    separator = "   ",
-    visibleWidth = 35,
-    updateInterval = 300,
+    scrollingParts = ["Sitio en construcción... |", "Vuelve pronto. |"],
   } = config;
 
-  const titleFramesRef = useRef<string[]>([]);
-  const currentFrameIndexRef = useRef<number>(0);
   const animationFrameRef = useRef<number>(0);
   const isActiveRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Configurar frames de título
-    const setupTitleAnimation = () => {
-      const scrollContent = scrollingParts.join(separator) + separator;
-      titleFramesRef.current = [];
-      for (let i = 0; i < scrollContent.length; i++) {
-        const rotatedString =
-          scrollContent.substring(i) + scrollContent.substring(0, i);
-        const frameText = staticPart + rotatedString.substring(0, visibleWidth);
-        titleFramesRef.current.push(frameText);
-      }
-    };
+    // Establecer título inicial inmediatamente
+    document.title = STATIC_PART.slice(0, -3); // "InteliMark"
+
+    // Generar frames de animación optimizado
+    const scrollContent = scrollingParts.join(SEPARATOR) + SEPARATOR;
+    const contentLength = scrollContent.length;
+    const titleFrames: string[] = [];
+
+    // Pre-calcular el prefijo una vez
+    const prefix = STATIC_PART;
+
+    // Algoritmo optimizado de rotación con menos operaciones de string
+    for (let i = 0; i < contentLength; i++) {
+      const rotated =
+        scrollContent.substring(i) + scrollContent.substring(0, i);
+      titleFrames.push(prefix + rotated.substring(0, VISIBLE_WIDTH));
+    }
 
     let lastUpdate = 0;
+    let lastFrameTime = 0;
+    let currentIndex = 0;
+    const totalFrames = titleFrames.length;
+
     const titleAnimationLoop = (timestamp: number) => {
-      if (document.hidden) return;
-      if (timestamp - lastUpdate > updateInterval) {
+      // Throttling de performance optimizado
+      if (timestamp - lastFrameTime < FRAME_INTERVAL) {
+        if (isActiveRef.current) {
+          animationFrameRef.current = requestAnimationFrame(titleAnimationLoop);
+        }
+        return;
+      }
+
+      if (timestamp - lastUpdate > UPDATE_INTERVAL) {
         lastUpdate = timestamp;
-        const currentFrame =
-          titleFramesRef.current[currentFrameIndexRef.current];
-        if (currentFrame) {
+        lastFrameTime = timestamp;
+
+        const currentFrame = titleFrames[currentIndex];
+        if (currentFrame && document.title !== currentFrame) {
           document.title = currentFrame;
         }
-        currentFrameIndexRef.current =
-          (currentFrameIndexRef.current + 1) % titleFramesRef.current.length;
+        currentIndex = (currentIndex + 1) % totalFrames;
       }
+
       if (isActiveRef.current) {
         animationFrameRef.current = requestAnimationFrame(titleAnimationLoop);
       }
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden) {
+      const isHidden = document.hidden;
+
+      if (isHidden) {
         isActiveRef.current = false;
-        if (animationFrameRef.current)
+        if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = 0;
+        }
       } else {
         isActiveRef.current = true;
         animationFrameRef.current = requestAnimationFrame(titleAnimationLoop);
       }
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    setupTitleAnimation();
+    // Inicialización optimizada
+    document.addEventListener("visibilitychange", handleVisibilityChange, {
+      passive: true,
+    });
     isActiveRef.current = true;
     animationFrameRef.current = requestAnimationFrame(titleAnimationLoop);
 
-    // Cleanup
+    // Cleanup optimizado
     return () => {
       isActiveRef.current = false;
-      if (animationFrameRef.current)
+      if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = 0;
+      }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      document.title = "InteliMark";
+      document.title = DEFAULT_TITLE;
     };
-  }, [staticPart, scrollingParts, separator, visibleWidth, updateInterval]);
-
-  return {
-    isActive: isActiveRef.current,
-    currentFrame:
-      titleFramesRef.current[currentFrameIndexRef.current] || "InteliMark",
-  };
+  }, [scrollingParts]); // Solo scrollingParts puede cambiar
 };
-// Archivo limpiado: hook de animación de título eliminado para evitar residuos y problemas de red.

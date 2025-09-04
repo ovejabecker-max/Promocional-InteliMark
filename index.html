@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- SEO Meta Tags -->
-    <!-- 🔧 TEMPORAL: Título simplificado para testing -->
-    <title>TEST - Sin Animaciones</title>
+    <title>InteliMark</title>
     <meta
       name="description"
       content="InteliMark es una inteligencia artificial avanzada entrenada para la precision. Descubre el futuro de la tecnologia con Rebecca, nuestra IA especializada."
@@ -57,42 +56,37 @@
     <script type="module" src="/src/main.tsx"></script>
 
     <script>
+      // 🦶 SCRIPT DE NEWSLETTER INTEGRADO CON CONTROLADOR UNIFICADO DEL FOOTER
       // Esperamos a que el DOM esté completamente cargado y React haya renderizado
       function initBoletinFunctionality() {
-        // 🔧 VERIFICACIÓN MEJORADA: Solo proceder si el footer realmente existe Y está visible
-        const footer = document.querySelector("footer");
+        // 🔧 VERIFICACIÓN MEJORADA: Solo proceder si el footer realmente existe Y está coordinado
+        const footer = document.querySelector("footer[data-footer-active]");
 
         if (!footer) {
-          // Footer no existe aún, reintentar en 2 segundos
+          // Footer no existe aún o no está coordinado, reintentar en 2 segundos
           setTimeout(initBoletinFunctionality, 2000);
           return;
         }
 
-        // 🔧 NUEVA VERIFICACIÓN: Usar IntersectionObserver para verificar visibilidad real
-        const observer = new IntersectionObserver(
-          (entries) => {
-            const footerEntry = entries[0];
-            if (footerEntry.isIntersecting) {
-              // Footer está visible, proceder con inicialización
-              observer.disconnect(); // Desconectar observer
-              initActualBoletinFunctionality();
-            }
-          },
-          {
-            threshold: 0.1, // Footer debe ser al menos 10% visible
+        // 🔧 VERIFICACIÓN: Esperar a que el controlador unificado active el footer
+        const checkFooterCoordination = () => {
+          const newsletterSection = document.querySelector(
+            '[data-footer-component="newsletter"]'
+          );
+          if (
+            !newsletterSection ||
+            newsletterSection.getAttribute("data-component-active") !== "true"
+          ) {
+            // Footer aún no está coordinado, reintentar
+            setTimeout(checkFooterCoordination, 500);
+            return;
           }
-        );
 
-        observer.observe(footer);
-
-        // También verificar si el footer ya está visible desde el inicio
-        const rect = footer.getBoundingClientRect();
-        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-
-        if (isVisible) {
-          observer.disconnect();
+          // Footer está coordinado, proceder con inicialización
           initActualBoletinFunctionality();
-        }
+        };
+
+        checkFooterCoordination();
       }
 
       function initActualBoletinFunctionality() {
@@ -106,6 +100,11 @@
           setTimeout(initActualBoletinFunctionality, 1000);
           return;
         }
+
+        // 🎯 MARCAR COMO COORDINADO CON EL SISTEMA UNIFICADO
+        emailInput.setAttribute("data-footer-coordinated", "true");
+        submitButton.setAttribute("data-footer-coordinated", "true");
+        formMessage.setAttribute("data-footer-coordinated", "true");
 
         // La URL del script de Google
         const googleScriptURL =
@@ -176,7 +175,13 @@
             });
         });
 
-        console.log("✅ Funcionalidad del boletín inicializada correctamente");
+        // 🎯 NOTIFICAR AL SISTEMA UNIFICADO (sin log individual)
+        // El controlador unificado ya maneja el logging general del footer
+        emailInput.dispatchEvent(
+          new CustomEvent("newsletter-ready", {
+            detail: { coordinated: true },
+          })
+        );
       }
 
       // Iniciamos la funcionalidad cuando el DOM esté listo
