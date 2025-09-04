@@ -1883,7 +1883,6 @@ body,
 /* 🎯 ASEGURAR QUE TODOS LOS ELEMENTOS INTERNOS NO BLOQUEEN EVENTOS */
 .ai-matrix-button *,
 .ai-matrix-button .data-matrix,
-.ai-matrix-button .hologram-layers,
 .ai-matrix-button .arrow-geometric,
 .ai-matrix-button .depth-scanner {
   pointer-events: none !important;
@@ -1922,8 +1921,7 @@ body,
 .ai-matrix-button .text-glitch::after,
 .ai-matrix-button .arrow-tip,
 .ai-matrix-button .arrow-line,
-.ai-matrix-button .arrow-accent,
-.ai-matrix-button .holo-layer {
+.ai-matrix-button .arrow-accent {
   pointer-events: none !important;
 }
 
@@ -1958,46 +1956,9 @@ body,
   transition: opacity 0.6s ease;
 }
 
-/* 🌐 CAPAS HOLOGRÁFICAS 3D */
-.hologram-layers {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.8s ease;
-}
+/* 🌐 CAPAS HOLOGRÁFICAS 3D - REMOVIDAS (IMPERCEPTIBLES) */
 
-.holo-layer {
-  position: absolute;
-  border: 1px solid rgba(218, 128, 35, 0.2);
-  border-radius: 8px;
-  animation: holoFloat 6s ease-in-out infinite;
-}
-
-.holo-layer.layer1 {
-  top: 5px;
-  left: 5px;
-  right: 5px;
-  bottom: 5px;
-  animation-delay: 0s;
-}
-.holo-layer.layer2 {
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
-  animation-delay: 2s;
-}
-.holo-layer.layer3 {
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-  animation-delay: 4s;
-}
+/* HOLO LAYERS - REMOVIDAS (IMPERCEPTIBLES) */
 
 /* 🚫 OCULTAR COMPLETAMENTE ELEMENTOS ANTIGUOS DE ENERGÍA Y NEURALES */
 
@@ -2660,10 +2621,6 @@ body,
   opacity: 1;
 }
 
-.ai-matrix-button:hover .hologram-layers {
-  opacity: 1;
-}
-
 /* 🚀 EFECTOS 3D EN HOVER - TRIÁNGULO SOBRESALE CON EXTRUSIÓN */
 .ai-matrix-button:hover .triangle-container {
   transform: translateY(-50%) translateZ(12px) scale(1.2);
@@ -2827,21 +2784,7 @@ body,
 }
 
 /* 🎬 ANIMACIONES CINEMATOGRÁFICAS */
-@keyframes holoFloat {
-  0%,
-  100% {
-    transform: translateZ(0px) rotateX(0deg);
-    opacity: 0.2;
-  }
-  33% {
-    transform: translateZ(5px) rotateX(2deg);
-    opacity: 0.6;
-  }
-  66% {
-    transform: translateZ(-3px) rotateX(-1deg);
-    opacity: 0.4;
-  }
-}
+/* holoFloat removida - era solo para hologram layers imperceptibles */
 
 @keyframes glitchShift1 {
   0% {
