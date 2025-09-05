@@ -30,121 +30,9 @@ const Rebecca = memo(() => {
   const [isHovering, setIsHovering] = useState(false); // Hover general
 
   // 🎯 REFERENCIAS CONSOLIDADAS PARA EL CTA
-  const magneticRefs = useRef<(HTMLSpanElement | null)[]>([]); // Referencias magnéticas del subtítulo
-  const titleMagneticRefs = useRef<(HTMLSpanElement | null)[]>([]); // Referencias magnéticas del título
+  const containerRef = useRef<HTMLDivElement>(null); // Referencia principal del contenedor
+  const tooltipRef = useRef<HTMLDivElement>(null); // Referencia del tooltip
   const ctaSectionRef = useRef<HTMLElement>(null); // Referencia principal de la sección CTA
-
-  // 🎯 Efecto magnético para textos del CTA (título y subtítulo)
-  useEffect(() => {
-    let rafId: number | null = null;
-    let isProcessing = false;
-
-    // Handler único para todos los efectos magnéticos
-    const handleUnifiedMouseMove = (e: MouseEvent) => {
-      // 🚀 Throttling unificado con requestAnimationFrame
-      if (isProcessing) return;
-
-      isProcessing = true;
-      rafId = requestAnimationFrame(() => {
-        try {
-          // 🎯 Procesar elementos del subtítulo (efectos magnéticos)
-          magneticRefs.current.forEach((textElement) => {
-            if (
-              !textElement ||
-              !textElement.classList.contains("typewriter-complete")
-            )
-              return;
-
-            applyMagneticEffect(e, textElement);
-          });
-
-          // 🎯 Procesar elementos del título (efectos magnéticos)
-          titleMagneticRefs.current.forEach((titleElement) => {
-            if (!titleElement) return;
-            applyMagneticEffect(e, titleElement, true);
-          });
-        } catch (error) {
-          // Silent error handling
-        } finally {
-          isProcessing = false;
-        }
-      });
-    };
-
-    // 🌟 Función para aplicar el efecto magnético
-    const applyMagneticEffect = (
-      e: MouseEvent,
-      element: HTMLSpanElement,
-      isTitle = false
-    ) => {
-      const rect = element.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      // Calcular distancia del mouse al centro del texto
-      const distance = Math.sqrt(
-        Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
-      );
-
-      // Zona de influencia más grande para el título
-      const maxDistance = isTitle ? 400 : 300;
-      const normalizedDistance = Math.max(
-        0,
-        Math.min(1, distance / maxDistance)
-      );
-      const intensity = 1 - normalizedDistance;
-
-      // Posición relativa del mouse dentro del elemento
-      const relativeX = ((e.clientX - rect.left) / rect.width) * 100;
-      const relativeY = ((e.clientY - rect.top) / rect.height) * 100;
-
-      // Aplicar variables CSS para el efecto
-      element.style.setProperty(
-        "--mouse-x",
-        `${Math.max(0, Math.min(100, relativeX))}%`
-      );
-      element.style.setProperty(
-        "--mouse-y",
-        `${Math.max(0, Math.min(100, relativeY))}%`
-      );
-      element.style.setProperty("--distance", normalizedDistance.toString());
-      element.style.setProperty("--intensity", intensity.toString());
-
-      // Activar clase magnética si está muy cerca
-      const threshold = isTitle ? 0.6 : 0.7; // Umbral más bajo para el título
-      if (intensity > threshold) {
-        element.classList.add("magnetic-active");
-      } else {
-        element.classList.remove("magnetic-active");
-      }
-    };
-
-    // Detectar cuando las animaciones typewriter terminan
-    const checkTypewriterComplete = () => {
-      magneticRefs.current.forEach((textElement, index) => {
-        if (!textElement) return;
-
-        // Tiempo estimado cuando cada línea termina
-        const completionTimes = [6500, 11000]; // 3s delay + 3.5s typing, 7s delay + 4s typing
-        const lineIndex = index;
-
-        setTimeout(() => {
-          textElement.classList.add("typewriter-complete");
-        }, completionTimes[lineIndex]);
-      });
-    };
-
-    // Agregar listener al documento y ejecutar detección
-    document.addEventListener("mousemove", handleUnifiedMouseMove);
-    checkTypewriterComplete();
-
-    return () => {
-      document.removeEventListener("mousemove", handleUnifiedMouseMove);
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-      }
-    };
-  }, []);
 
   // CONTROLADOR DE SCROLL CTA
   useEffect(() => {
@@ -286,8 +174,6 @@ const Rebecca = memo(() => {
       clearTimeout(resizeTimeout);
     };
   }, []);
-  const containerRef = useRef<HTMLDivElement>(null!);
-  const tooltipRef = useRef<HTMLDivElement>(null!);
 
   // 🎯 ESTADO PARA MODAL DE CRÉDITOS
   const [showCreditsModal, setShowCreditsModal] = useState(false);
@@ -421,8 +307,6 @@ const Rebecca = memo(() => {
               }}
             >
               <span
-                ref={(el) => (titleMagneticRefs.current[0] = el)}
-                className="magnetic-text"
                 style={{
                   display: "inline-block",
                   transform: `translateX(${
@@ -451,8 +335,6 @@ const Rebecca = memo(() => {
                 TRABAJEMOS
               </span>
               <span
-                ref={(el) => (titleMagneticRefs.current[1] = el)}
-                className="magnetic-text"
                 style={{
                   display: "inline-block",
                   transform: `translateX(${
@@ -487,14 +369,12 @@ const Rebecca = memo(() => {
             <div className="cta-subtitle-space">
               <p className="cta-subtitle">
                 <span
-                  ref={(el) => (magneticRefs.current[0] = el)}
                   className="subtitle-line-1 typewriter-line"
                   data-text="COMENZÓ UN NUEVO CAMBIO MUNDIAL, LA ERA TECNOLÓGICA."
                 >
                   COMENZÓ UN NUEVO CAMBIO MUNDIAL, LA ERA TECNOLÓGICA.
                 </span>
                 <span
-                  ref={(el) => (magneticRefs.current[1] = el)}
                   className="subtitle-line-2 typewriter-line"
                   data-text="AVANZA MUY RÁPIDO Y NO ESPERARÁ A NADIE. NO TE QUEDES ATRÁS."
                 >

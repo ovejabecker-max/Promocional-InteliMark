@@ -1167,27 +1167,13 @@ body,
 ║                    🎭 EFECTOS DE HOVER CONSOLIDADOS                         ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║ ✅ TÍTULOS: Efecto magnético con scale + glow + transform                   ║
-║ ✅ SUBTÍTULOS: Pulse magnético + glow suave después de typewriter           ║
+║ ✅ SUBTÍTULOS: Efectos visuales después de typewriter                       ║
 ║ ✅ BOTÓN: Transform + shadow + escala al hover                              ║
 ║ ✅ TEXTO WHATSAPP: Visibilidad controlada + intensified glow en hover       ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 */
 
-/* 🎯 1. EFECTOS MAGNÉTICOS PARA TÍTULOS ("TRABAJEMOS" y "JUNTOS") */
-.magnetic-text {
-  position: relative;
-  cursor: default;
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  will-change: transform, text-shadow, filter;
-}
-
-.magnetic-text.magnetic-active {
-  transform: scale(1.05) translateY(-2px) !important;
-  text-shadow: 0 0 15px rgba(255, 140, 0, 0.6);
-  filter: brightness(1.2) contrast(1.1);
-}
-
-/* 🎯 2. EFECTOS PARA SUBTÍTULOS DESPUÉS DE TYPEWRITER */
+/* 🎯 EFECTOS PARA SUBTÍTULOS DESPUÉS DE TYPEWRITER */
 .cta-subtitle .subtitle-line-1.typewriter-complete,
 .cta-subtitle .subtitle-line-2.typewriter-complete {
   border-right: none; /* Remover cursor typewriter */
@@ -1197,23 +1183,7 @@ body,
   transition: all 0.3s ease;
 }
 
-/* 🎯 3. EFECTOS MAGNÉTICOS INTENSOS PARA SUBTÍTULOS */
-.cta-subtitle .subtitle-line-1.magnetic-active,
-.cta-subtitle .subtitle-line-2.magnetic-active {
-  animation: magneticPulse 1.5s ease-in-out infinite;
-}
-
-@keyframes magneticPulse {
-  0%,
-  100% {
-    transform: scale(1) translateY(0px);
-  }
-  50% {
-    transform: scale(1.02) translateY(-1px);
-  }
-}
-
-/* 🎯 4. EFECTOS DE HOVER PARA BOTÓN WHATSAPP */
+/* 🎯 EFECTOS DE HOVER PARA BOTÓN WHATSAPP */
 .cta-button-wrapper.hover-active {
   opacity: 1;
   transform: translateY(-2px) scale(1.02);
