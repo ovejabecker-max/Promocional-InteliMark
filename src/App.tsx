@@ -8,8 +8,7 @@ import { useEffect, lazy, Suspense } from "react";
 // 🚀 LAZY LOADING: HomePage solo se carga cuando es necesario
 const HomePage = lazy(() => import("./pages/HomePage"));
 import Rebecca from "./pages/Rebecca";
-import { useTitleAnimation } from "./hooks/useTitleAnimation";
-import { useFaviconAnimation } from "./hooks/useFaviconAnimation";
+import { useUnifiedBrowserAnimations } from "./hooks/useUnifiedBrowserAnimations";
 import "./App.css";
 
 // ✅ COMPONENTE PARA RESTAURAR SCROLL EN NAVEGACIÓN
@@ -42,9 +41,8 @@ function ScrollToTop() {
 }
 
 function App() {
-  // 🎯 EFECTOS DE PESTAÑA GLOBALES - Activos en todo el sitio
-  useFaviconAnimation();
-  useTitleAnimation();
+  // 🎯 EFECTOS UNIFICADOS DE PESTAÑA - Título + Favicon en un solo bucle optimizado
+  useUnifiedBrowserAnimations();
 
   return (
     <Router

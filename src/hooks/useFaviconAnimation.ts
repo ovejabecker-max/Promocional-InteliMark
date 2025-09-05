@@ -1,5 +1,9 @@
 import { useEffect, useRef } from "react";
 
+// ⚠️ DEPRECADO: Este hook ha sido reemplazado por useUnifiedBrowserAnimations
+// para mejor performance y consolidación de requestAnimationFrame loops.
+// Se mantiene por compatibilidad pero se recomienda migrar.
+
 interface FaviconAnimationConfig {
   faviconSize?: number;
   rotationAnimationDuration?: number;
@@ -14,6 +18,11 @@ export const useFaviconAnimation = (config: FaviconAnimationConfig = {}) => {
   const isActiveRef = useRef<boolean>(false);
 
   useEffect(() => {
+    // ⚠️ ADVERTENCIA DE DEPRECACIÓN
+    console.warn(
+      "useFaviconAnimation está deprecado. Use useUnifiedBrowserAnimations para mejor performance."
+    );
+
     // Prevenir múltiples instancias
     if (globalIsActive) {
       return;

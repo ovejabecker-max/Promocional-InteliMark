@@ -1,11 +1,15 @@
 import { useEffect, useRef } from "react";
 
+// ⚠️ DEPRECADO: Este hook ha sido reemplazado por useUnifiedBrowserAnimations
+// para mejor performance y consolidación de requestAnimationFrame loops.
+// Se mantiene por compatibilidad pero se recomienda migrar.
+
 // Constantes de configuración optimizadas
 const STATIC_PART = "InteliMark || ";
 const SEPARATOR = "   ";
 const VISIBLE_WIDTH = 35;
-const UPDATE_INTERVAL = 250; // Reducido para animación más fluida
-const TARGET_FPS = 60; // Aumentado para mejor suavidad
+const UPDATE_INTERVAL = 400; // Optimizado: Reducido de 250ms a 400ms
+const TARGET_FPS = 30; // Optimizado: Reducido de 60fps a 30fps
 const FRAME_INTERVAL = 1000 / TARGET_FPS;
 const DEFAULT_TITLE = "InteliMark";
 
@@ -24,6 +28,11 @@ export const useTitleAnimation = (config: TitleAnimationConfig = {}) => {
   const isActiveRef = useRef<boolean>(false);
 
   useEffect(() => {
+    // ⚠️ ADVERTENCIA DE DEPRECACIÓN
+    console.warn(
+      "useTitleAnimation está deprecado. Use useUnifiedBrowserAnimations para mejor performance."
+    );
+
     // Establecer título inicial inmediatamente
     document.title = STATIC_PART.slice(0, -3); // "InteliMark"
 
