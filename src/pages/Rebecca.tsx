@@ -21,7 +21,7 @@ const Rebecca = memo(() => {
   const [isCtaTextVisible, setIsCtaTextVisible] = useState(false); // Control de texto
   const [isClickProcessing, setIsClickProcessing] = useState(false); // Control click CTA
 
-  // 🔧 Banderas para prevenir múltiples activaciones
+  // Banderas para prevenir múltiples activaciones
   const [typewriterTriggered, setTypewriterTriggered] = useState(false);
   const [buttonTriggered, setButtonTriggered] = useState(false);
   const [resetTriggered, setResetTriggered] = useState(false);
@@ -42,7 +42,7 @@ const Rebecca = memo(() => {
     let rafId: number | null = null;
     let isProcessing = false;
 
-    // 🔧 UNIFICADO: Un solo handler de mouse para todos los efectos magnéticos
+    // Handler único para todos los efectos magnéticos
     const handleUnifiedMouseMove = (e: MouseEvent) => {
       // 🚀 Throttling unificado con requestAnimationFrame
       if (isProcessing) return;
@@ -149,7 +149,7 @@ const Rebecca = memo(() => {
     };
   }, []);
 
-  // 🎯 CONTROLADOR UNIFICADO DE SCROLL CTA - REORGANIZADO
+  // CONTROLADOR DE SCROLL CTA
   useEffect(() => {
     /* 
     📊 UMBRALES DE ACTIVACIÓN CTA:
@@ -164,7 +164,7 @@ const Rebecca = memo(() => {
     const handleTypewriterControl = (ratio: number, isActive: boolean) => {
       if (ratio >= 0.9 && !isActive && !typewriterTriggered) {
         setIsTypewriterActive(true);
-        setTypewriterTriggered(true); // 🔧 Prevenir múltiples activaciones
+        setTypewriterTriggered(true); // Prevenir múltiples activaciones
 
         const line1 = document.querySelector(
           ".subtitle-line-1.typewriter-line"
@@ -187,12 +187,12 @@ const Rebecca = memo(() => {
     const handleButtonControl = (ratio: number) => {
       if (ratio >= 0.95 && !buttonTriggered) {
         setIsCtaButtonVisible(true);
-        setButtonTriggered(true); // 🔧 Prevenir múltiples activaciones
+        setButtonTriggered(true); // Prevenir múltiples activaciones
         setTimeout(() => setIsCtaTextVisible(true), 600);
       } else if (ratio < 0.3 && buttonTriggered) {
         setIsCtaButtonVisible(false);
         setIsCtaTextVisible(false);
-        setButtonTriggered(false); // 🔧 Reset para permitir reactivación
+        setButtonTriggered(false); // Reset para permitir reactivación
       }
     };
 
@@ -200,8 +200,8 @@ const Rebecca = memo(() => {
     const handleResetEffects = (ratio: number, isActive: boolean) => {
       if (ratio < 0.1 && isActive && !resetTriggered) {
         setIsTypewriterActive(false);
-        setTypewriterTriggered(false); // 🔧 Reset banderas
-        setResetTriggered(true); // 🔧 Prevenir múltiples resets
+        setTypewriterTriggered(false); // Reset banderas
+        setResetTriggered(true); // Prevenir múltiples resets
 
         const line1 = document.querySelector(
           ".subtitle-line-1.typewriter-line"
@@ -213,7 +213,7 @@ const Rebecca = memo(() => {
         if (line1) line1.classList.remove("typewriter-active");
         if (line2) line2.classList.remove("typewriter-active");
       } else if (ratio > 0.2) {
-        setResetTriggered(false); // 🔧 Permitir nuevo reset cuando scroll sube
+        setResetTriggered(false); // Permitir nuevo reset cuando scroll sube
       }
     };
 
@@ -259,7 +259,7 @@ const Rebecca = memo(() => {
     typewriterTriggered,
     buttonTriggered,
     resetTriggered,
-  ]); // 🔧 Dependencias actualizadas
+  ]); // Dependencias actualizadas
 
   // 🎯 Listener para redimensionamiento de ventana para mejorar responsividad
   useEffect(() => {
@@ -303,12 +303,11 @@ const Rebecca = memo(() => {
 
   // Estados para instrucción "Clic para cerrar"
   const [showCloseInstruction, setShowCloseInstruction] = useState(false);
-  // 🔧 ELIMINADO: mousePosition no utilizado
 
   // 🎯 ESTADO PARA MODAL DE CRÉDITOS
   const [showCreditsModal, setShowCreditsModal] = useState(false);
 
-  // 🔧 SISTEMA DE CURSOR CAD SIMPLIFICADO
+  // SISTEMA DE CURSOR CAD SIMPLIFICADO
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -323,14 +322,14 @@ const Rebecca = memo(() => {
       container.appendChild(cursorCross);
     }
 
-    // 🔧 HANDLER UNIFICADO: Solo actualizar posición del cursor
+    // Handler unificado: Solo actualizar posición del cursor
     const handleCursorMove = (e: MouseEvent) => {
       if (showHomePage) {
         cursorCross.style.display = "none";
         return;
       }
 
-      // 🔧 DETECCIÓN DE ZONA CTA PARA OCULTAR CURSOR
+      // Detección de zona CTA para ocultar cursor
       const ctaSection = document.getElementById("cta-section");
       let inCTA = false;
 
@@ -369,7 +368,7 @@ const Rebecca = memo(() => {
       }
     };
 
-    // 🔧 LISTENERS SIMPLIFICADOS
+    // Listeners simplificados
     document.addEventListener("mousemove", handleCursorMove);
     container.addEventListener("mouseleave", handleMouseLeave);
     container.addEventListener("mouseenter", handleMouseEnter);
@@ -383,19 +382,6 @@ const Rebecca = memo(() => {
       }
     };
   }, [showHomePage]);
-  useEffect(() => {
-    // 🔧 ELIMINADO: handleMouseMove no utilizado para tooltip
-
-    // 🔧 TEMPORAL: Comentado para evitar conflicto con handler unificado
-    // El efecto del mouse solo depende de isHovering y isHoveringButton
-    // if (isHovering && !isHoveringButton) {
-    //   document.addEventListener("mousemove", handleMouseMove);
-    // }
-
-    return () => {
-      // document.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [isHovering, isHoveringButton]);
 
   // 🎯 CONTROL UNIFICADO DE SCROLL EN VISUALIZADOR HOME 3D
   useEffect(() => {
@@ -491,15 +477,8 @@ const Rebecca = memo(() => {
       );
 
       if (scrollContainer) {
-        // 🔧 ELIMINADO: Variables no utilizadas (lastUpdateTime, throttleDelay)
-
-        // 🔧 TEMPORAL: Comentado para evitar conflicto
-        // scrollContainer.addEventListener("mousemove", handleMouseMove, {
-        //   passive: true,
-        // });
-
         return () => {
-          // scrollContainer.removeEventListener("mousemove", handleMouseMove);
+          // Cleanup si fuera necesario
         };
       }
     }
@@ -845,7 +824,7 @@ const Rebecca = memo(() => {
 
               <div className="navigation-section">
                 <button
-                  className="homepage-access-button ai-matrix-button debug-button-position"
+                  className="homepage-access-button ai-matrix-button"
                   style={{
                     marginLeft: "5px",
                     transform: "translateY(35px)",
@@ -892,7 +871,6 @@ const Rebecca = memo(() => {
                   height="480px"
                   scale={1.2}
                   enableScrollRotation={true}
-                  isFooterActive={true}
                 />
               </div>
 

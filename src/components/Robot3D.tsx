@@ -48,7 +48,6 @@ interface RobotModelProps {
   position?: [number, number, number];
   rotation?: [number, number, number];
   scrollRotation?: number;
-  isFooterActive?: boolean; // 🔧 Estado compartido desde useFooterController
 }
 
 function RobotModel({
@@ -56,24 +55,15 @@ function RobotModel({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
   scrollRotation = 0,
-  isFooterActive = false, // 🔧 Usar prop en lugar de estado interno
 }: RobotModelProps) {
   const meshRef = useRef<THREE.Group>(null);
-  // 🔧 RESTAURADO: Estado para seguimiento del mouse (necesario para interacción)
+  // Estado para seguimiento del mouse (necesario para interacción)
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
   const [animationIntensity, setAnimationIntensity] = React.useState(0.1);
-  // 🔧 Usar prop isFooterActive en lugar de estado interno y observer
 
   const { scene } = useGLTF("/cabeza_robot.glb");
 
-  // 🔧 ELIMINADO: IntersectionObserver redundante - usar estado compartido
-
   React.useEffect(() => {
-    if (!isFooterActive) {
-      setAnimationIntensity(0.1);
-      return;
-    }
-
     const animatePulsation = () => {
       const time = Date.now() * 0.004;
       const pulse = Math.sin(time) * 0.5 + 0.5;
@@ -83,7 +73,7 @@ function RobotModel({
 
     const intervalId = setInterval(animatePulsation, 60);
     return () => clearInterval(intervalId);
-  }, [isFooterActive]);
+  }, []);
 
   React.useEffect(() => {
     if (scene) {
@@ -118,7 +108,7 @@ function RobotModel({
     }
   }, [scene, animationIntensity]);
 
-  // 🔧 RESTORED: MouseMove global with footer detection
+  // Mouse tracking para interacción con el robot
   React.useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       const footerContainer = document.querySelector("#footer-reveal");
@@ -137,7 +127,7 @@ function RobotModel({
         event.clientY >= rect.top &&
         event.clientY <= rect.bottom;
 
-      if (isInside && isFooterActive) {
+      if (isInside) {
         const x = (event.clientX - centerX) / (rect.width / 2);
         const y = (event.clientY - centerY) / (rect.height / 2);
 
@@ -155,11 +145,11 @@ function RobotModel({
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [isFooterActive]);
+  }, []);
 
   useFrame(() => {
     if (meshRef.current) {
-      // 🔧 RESTAURADO: Rotación base + scroll + seguimiento de mouse
+      // Rotación base + scroll + seguimiento de mouse
       let baseRotationY = rotation[1] + scrollRotation;
       const mouseRotationY = mousePosition.x * 0.3;
       const mouseRotationX = mousePosition.y * 0.2;
@@ -184,33 +174,30 @@ function RobotModel({
         rotation={rotation}
       />
 
-      {isFooterActive && (
-        <>
-          <pointLight
-            position={[0.2, 0.1, 0.5]}
-            color="#ff3300"
-            intensity={animationIntensity * 8}
-            distance={8}
-            decay={0.5}
-          />
+      {/* Luces de ambiente para el robot */}
+      <pointLight
+        position={[0.2, 0.1, 0.5]}
+        color="#ff3300"
+        intensity={animationIntensity * 8}
+        distance={8}
+        decay={0.5}
+      />
 
-          <pointLight
-            position={[0, 0.4, 0.3]}
-            color="#ff5500"
-            intensity={animationIntensity * 4}
-            distance={3}
-            decay={1.5}
-          />
+      <pointLight
+        position={[0, 0.4, 0.3]}
+        color="#ff5500"
+        intensity={animationIntensity * 4}
+        distance={3}
+        decay={1.5}
+      />
 
-          <pointLight
-            position={[0.2, 0.3, 0.4]}
-            color="#ff6600"
-            intensity={animationIntensity * 3}
-            distance={2.5}
-            decay={2}
-          />
-        </>
-      )}
+      <pointLight
+        position={[0.2, 0.3, 0.4]}
+        color="#ff6600"
+        intensity={animationIntensity * 3}
+        distance={2.5}
+        decay={2}
+      />
     </group>
   );
 }
@@ -241,7 +228,6 @@ interface Robot3DProps {
   height?: string;
   scale?: number;
   enableScrollRotation?: boolean;
-  isFooterActive?: boolean; // 🔧 Recibir estado desde useFooterController
 }
 
 const Robot3D: React.FC<Robot3DProps> = ({
@@ -249,7 +235,6 @@ const Robot3D: React.FC<Robot3DProps> = ({
   height = "300px",
   scale = 15,
   enableScrollRotation = false,
-  isFooterActive = false, // 🔧 Usar estado compartido en lugar de propio observer
 }) => {
   const [scrollRotation, setScrollRotation] = React.useState(0);
 
@@ -306,7 +291,6 @@ const Robot3D: React.FC<Robot3DProps> = ({
               position={[0, -1.05, 0]}
               rotation={[0, 0, 0]}
               scrollRotation={scrollRotation}
-              isFooterActive={isFooterActive}
             />
           </Suspense>
         </Canvas>

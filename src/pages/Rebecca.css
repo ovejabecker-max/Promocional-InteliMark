@@ -1712,7 +1712,7 @@ body,
   align-items: flex-start;
   position: relative; /* 🎯 PERMITIR POSICIONAMIENTO ABSOLUTO DEL BOTÓN */
   overflow: visible; /* 🎯 PERMITIR EXPANSIÓN DEL BOTÓN */
-  z-index: 100; /* 🎯 Z-INDEX UNIFICADO */
+  z-index: 100; /* 🎯 Z-INDEX ALTO PARA EL BOTÓN AI MATRIX */
   width: 100%; /* 🎯 AJUSTE: Ocupar todo el ancho disponible en footer-info */
   margin-top: 10px; /* 🎯 AJUSTE: Espacio adicional desde el newsletter */
 }
@@ -1739,7 +1739,7 @@ body,
   font-family: "Consolas", "Monaco", "Courier New", monospace;
   color: rgba(218, 128, 35, 0.6);
   pointer-events: auto !important; /* 🎯 FORZAR INTERACCIÓN COMPLETA DEL BOTÓN */
-  z-index: 200 !important; /* 🎯 Z-INDEX UNIFICADO */
+  z-index: 200 !important; /* 🎯 Z-INDEX ALTO PARA ELEMENTOS DEL FOOTER */
   overflow: hidden;
   width: 190px; /* Tamaño base inicial */
   height: 54px; /* 🎯 ALTURA EXACTA DEL INPUT (16px padding + contenido + 16px) */
@@ -3019,22 +3019,7 @@ body,
   cursor: not-allowed;
 }
 
-#boletinMensaje {
-  margin-top: 16px;
-  font-size: 1rem;
-  font-weight: 500;
-  text-align: left;
-  min-height: 24px;
-  transition: all 0.3s ease;
-  opacity: 0;
-  pointer-events: none; /* 🎯 NO INTERFERIR CON EL BOTÓN */
-}
-
-#boletinMensaje:not(:empty) {
-  opacity: 1;
-}
-
-/* 📧 ESTILOS PARA EL NUEVO COMPONENTE NEWSLETTER */
+/* 📧 ESTILOS PARA EL COMPONENTE NEWSLETTER */
 .newsletter-message {
   margin-top: 16px;
   font-size: 1rem;
@@ -3699,112 +3684,4 @@ body,
 /* Transiciones suaves para todos los elementos */
 .modern-arrow-button * {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ============================================================================
-   🦶 SISTEMA DE COORDINACIÓN UNIFICADA DEL FOOTER
-   ============================================================================ */
-
-/* 🎯 FOOTER CON ESTADO DE COORDINACIÓN */
-.footer-reveal[data-footer-active="true"] {
-  /* Footer activo - todos los componentes coordinados */
-  position: relative;
-}
-
-.footer-reveal[data-footer-active="true"]::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(
-    45deg,
-    transparent 0%,
-    var(--color-orange-alpha-10) 25%,
-    transparent 50%,
-    var(--color-orange-alpha-10) 75%,
-    transparent 100%
-  );
-  border-radius: inherit;
-  z-index: -1;
-  opacity: 0;
-  animation: footerCoordinationGlow 4s ease-in-out infinite;
-}
-
-.footer-reveal[data-footer-hovered="true"]::before {
-  opacity: 1;
-  animation-duration: 2s;
-}
-
-/* 🎯 COMPONENTES COORDINADOS */
-[data-footer-component][data-component-active="true"] {
-  position: relative;
-}
-
-[data-footer-component][data-component-active="true"]::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 1px solid var(--color-orange-alpha-20);
-  border-radius: 8px;
-  z-index: -1;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-/* 🎯 ELEMENTOS COORDINADOS */
-[data-footer-coordinated="true"] {
-  position: relative;
-}
-
-[data-footer-coordinated="true"]::before {
-  content: "●";
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 8px;
-  height: 8px;
-  background: var(--color-orange-primary);
-  border-radius: 50%;
-  font-size: 8px;
-  color: var(--color-orange-primary);
-  text-shadow: 0 0 4px var(--color-orange-primary);
-  z-index: 7;
-  opacity: 0;
-  transform: scale(0);
-  transition: all 0.3s ease;
-}
-
-/* 🎯 MOSTRAR INDICADORES EN MODO DEBUG (se puede activar temporalmente) */
-.footer-reveal[data-debug-mode="true"]
-  [data-footer-coordinated="true"]::before {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* 🎯 ANIMACIONES DE COORDINACIÓN */
-@keyframes footerCoordinationGlow {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.3;
-  }
-}
-
-/* 🎯 ESTADOS RESPONSIVOS PARA COORDINACIÓN */
-@media (max-width: 768px) {
-  .footer-reveal[data-footer-active="true"]::before {
-    opacity: 0.5;
-  }
-
-  [data-footer-component][data-component-active="true"]::after {
-    border-width: 0.5px;
-  }
 }
