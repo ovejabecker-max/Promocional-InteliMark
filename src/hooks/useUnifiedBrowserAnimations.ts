@@ -2,8 +2,9 @@ import { useEffect, useRef } from "react";
 
 // 🎯 CONFIGURACIÓN OPTIMIZADA PARA PERFORMANCE
 const ANIMATION_CONFIG = {
-  // Performance balanceada: 30fps para suavidad sin sobrecarga
+  // Performance balanceada: 30fps para título, 15fps para favicon
   TARGET_FPS: 30,
+  FAVICON_TARGET_FPS: 15, // ⚡ Optimizado específicamente para favicon
   // Título: actualización cada 400ms para mejor legibilidad
   TITLE_UPDATE_INTERVAL: 400,
   // Favicon: 3 segundos por rotación completa
@@ -51,6 +52,18 @@ export const useUnifiedBrowserAnimations = (
   } = config;
 
   const isActiveRef = useRef<boolean>(false);
+
+  // 🔍 HELPER: Detectar si elemento está en viewport (para pausar favicon cuando Robot3D visible)
+  const isElementInViewport = (element: HTMLElement): boolean => {
+    const rect = element.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  };
 
   useEffect(() => {
     // 🛡️ SINGLETON: Prevenir múltiples instancias activas
@@ -122,11 +135,14 @@ export const useUnifiedBrowserAnimations = (
 
     // ⚡ VARIABLES DE CONTROL DE PERFORMANCE
     const frameInterval = 1000 / ANIMATION_CONFIG.TARGET_FPS;
+    const faviconFrameInterval = 1000 / ANIMATION_CONFIG.FAVICON_TARGET_FPS; // ⚡ Intervalo específico favicon
     let lastFrameTime = 0;
     let lastTitleUpdate = 0;
+    let lastFaviconUpdate = 0; // ⚡ Control separado para favicon
     let startTime: number | null = null;
     let currentTitleIndex = 0;
     let lastFaviconDataURL = "";
+    let faviconFrameCount = 0; // ⚡ Contador para throttling escalonado
 
     // 🎬 BUCLE PRINCIPAL UNIFICADO DE ANIMACIÓN
     const unifiedAnimationLoop = (timestamp: number) => {
@@ -158,14 +174,15 @@ export const useUnifiedBrowserAnimations = (
         lastTitleUpdate = timestamp;
       }
 
-      // 🎨 ACTUALIZACIÓN DEL FAVICON (cada frame cuando sea necesario)
+      // 🎨 ACTUALIZACIÓN DEL FAVICON (optimizada con throttling escalonado)
       if (
         enableFavicon &&
         faviconCtx &&
         faviconCanvas &&
         faviconImg &&
         isImageLoaded &&
-        favicon
+        favicon &&
+        timestamp - lastFaviconUpdate > faviconFrameInterval
       ) {
         try {
           const elapsedTime = timestamp - startTime;
@@ -173,36 +190,64 @@ export const useUnifiedBrowserAnimations = (
             (elapsedTime % faviconRotationDuration) / faviconRotationDuration;
           const currentAngle = rotationProgress * Math.PI * 2;
 
-          // Renderizar favicon con rotación 3D
-          faviconCtx.clearRect(0, 0, faviconSize, faviconSize);
-          faviconCtx.save();
-          faviconCtx.translate(faviconSize / 2, faviconSize / 2);
-
-          // Efecto 3D: escalado en X según el coseno del ángulo
-          const scaleX = Math.cos(currentAngle);
-          faviconCtx.scale(scaleX, 1);
-
-          faviconCtx.drawImage(
-            faviconImg,
-            -faviconSize / 2,
-            -faviconSize / 2,
-            faviconSize,
-            faviconSize
+          // 🎯 DETECCIÓN INTELIGENTE: Pausar favicon si Robot3D está activo en viewport
+          const robot3DContainer = document.querySelector(
+            ".robot-3d-container"
           );
+          const isRobot3DVisible = robot3DContainer
+            ? isElementInViewport(robot3DContainer as HTMLElement)
+            : false;
 
-          faviconCtx.restore();
-
-          // 🎯 OPTIMIZACIÓN: Solo actualizar DOM cada 2 frames para reducir overhead
-          if (Math.floor(elapsedTime / frameInterval) % 2 === 0) {
-            const newDataURL = faviconCanvas.toDataURL("image/png");
-            if (
-              favicon.href !== newDataURL &&
-              lastFaviconDataURL !== newDataURL
-            ) {
-              favicon.href = newDataURL;
-              lastFaviconDataURL = newDataURL;
-            }
+          if (isRobot3DVisible) {
+            // Pausar favicon cuando Robot3D está visible para reducir overhead
+            return;
           }
+
+          // 🚀 RENDERIZADO OPTIMIZADO CON requestIdleCallback
+          const renderFaviconOperation = () => {
+            // Renderizar favicon con rotación 3D
+            faviconCtx.clearRect(0, 0, faviconSize, faviconSize);
+            faviconCtx.save();
+            faviconCtx.translate(faviconSize / 2, faviconSize / 2);
+
+            // Efecto 3D: escalado en X según el coseno del ángulo
+            const scaleX = Math.cos(currentAngle);
+            faviconCtx.scale(scaleX, 1);
+
+            faviconCtx.drawImage(
+              faviconImg,
+              -faviconSize / 2,
+              -faviconSize / 2,
+              faviconSize,
+              faviconSize
+            );
+
+            faviconCtx.restore();
+
+            // 🎯 TRIPLE THROTTLING ESCALONADO: Solo actualizar cada 3 frames para máxima eficiencia
+            faviconFrameCount++;
+            if (faviconFrameCount % 3 === 0) {
+              const newDataURL = faviconCanvas.toDataURL("image/png");
+              if (
+                favicon.href !== newDataURL &&
+                lastFaviconDataURL !== newDataURL
+              ) {
+                favicon.href = newDataURL;
+                lastFaviconDataURL = newDataURL;
+              }
+            }
+          };
+
+          // 🌟 OPTIMIZACIÓN HÍBRIDA: requestIdleCallback si está disponible
+          if ("requestIdleCallback" in window && !isRobot3DVisible) {
+            (window as any).requestIdleCallback(renderFaviconOperation, {
+              timeout: faviconFrameInterval,
+            });
+          } else {
+            renderFaviconOperation();
+          }
+
+          lastFaviconUpdate = timestamp;
         } catch (error) {
           console.warn("Error al renderizar favicon:", error);
         }
