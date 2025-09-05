@@ -8,7 +8,7 @@ import { vapiConfig } from "../config/vapi.config";
 const HomePage = lazy(() => import("./HomePage"));
 import Robot3D from "../components/Robot3D";
 import FuenteCero from "../components/FuenteCero";
-import { useFooterController } from "../hooks/useFooterController";
+import { NewsletterForm } from "../components/NewsletterForm";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png"; // Imagen optimizada V2
 import ContenedorCreditos from "../assets/contenedor_creditos.png"; // Importar imagen del contenedor tecnológico
@@ -31,9 +31,6 @@ const Rebecca = memo(() => {
   // 🎯 ESTADOS CONSOLIDADOS PARA EFECTOS DE HOVER/MOUSE
   const [isHoveringButton, setIsHoveringButton] = useState(false); // Hover del botón WhatsApp
   const [isHovering, setIsHovering] = useState(false); // Hover general del visualizador
-
-  // 🦶 CONTROLADOR UNIFICADO DEL FOOTER - Mantiene lógica actual intacta
-  const { footerState, handleFooterHover } = useFooterController();
 
   // 🎯 REFERENCIAS CONSOLIDADAS PARA EL CTA
   const magneticRefs = useRef<(HTMLSpanElement | null)[]>([]); // Referencias magnéticas del subtítulo
@@ -840,361 +837,20 @@ const Rebecca = memo(() => {
           </div>
         </section>
 
-        <footer
-          className="footer-reveal"
-          id="footer-reveal"
-          onMouseEnter={() => handleFooterHover(true)}
-          onMouseLeave={() => handleFooterHover(false)}
-          data-footer-active={footerState.isActive}
-          data-footer-hovered={footerState.isHovered}
-        >
-          <div
-            className="footer-content"
-            data-components-status={JSON.stringify(
-              footerState.componentsStatus
-            )}
-          >
+        <footer className="footer-reveal" id="footer-reveal">
+          <div className="footer-content">
+            {/* COLUMNA IZQUIERDA: Newsletter + AI Matrix Button */}
             <div className="footer-info">
-              <div
-                className="newsletter-section"
-                data-footer-component="newsletter"
-                data-component-active={footerState.componentsStatus.newsletter}
-              >
-                <h4>MANTENTE ACTUALIZADO</h4>
-                <h3>
-                  suscríbete a<br />
-                  nuestro boletín
-                </h3>
-                <p>
-                  Recibe las últimas novedades de nuestra fecha de lanzamiento y
-                  los increíbles descuentos y regalos que tenemos para ti.
-                </p>
-                <form
-                  className="newsletter-form"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                  }}
-                >
-                  <input
-                    type="email"
-                    id="boletinEmailInput"
-                    name="newsletter-email"
-                    className="newsletter-input"
-                    placeholder="Tu correo electrónico"
-                  />
-                  <button
-                    type="submit"
-                    id="boletinSubmitButton"
-                    className="newsletter-button modern-arrow-button"
-                  >
-                    <div className="button-background">
-                      <div className="metallic-surface"></div>
-                    </div>
-                    <div className="arrow-container center-absolute">
-                      <svg
-                        className="arrow-icon"
-                        viewBox="0 0 42 30"
-                        fill="none"
-                      >
-                        <defs>
-                          {/* Gradientes premium para renderizado de alta calidad */}
-                          <linearGradient
-                            id="arrowPrimaryGradient"
-                            x1="0%"
-                            y1="0%"
-                            x2="100%"
-                            y2="50%"
-                          >
-                            <stop
-                              offset="0%"
-                              stopColor="#da8023"
-                              stopOpacity="1"
-                            />
-                            <stop
-                              offset="15%"
-                              stopColor="#da8023"
-                              stopOpacity="1"
-                            />
-                            <stop
-                              offset="35%"
-                              stopColor="#da8023"
-                              stopOpacity="1"
-                            />
-                            <stop
-                              offset="55%"
-                              stopColor="#ffffff"
-                              stopOpacity="0.95"
-                            />
-                            <stop
-                              offset="75%"
-                              stopColor="#da8023"
-                              stopOpacity="0.9"
-                            />
-                            <stop
-                              offset="90%"
-                              stopColor="#ffffff"
-                              stopOpacity="0.85"
-                            />
-                            <stop
-                              offset="100%"
-                              stopColor="#da8023"
-                              stopOpacity="0.8"
-                            />
-                          </linearGradient>
+              <NewsletterForm />
 
-                          <linearGradient
-                            id="arrowSecondaryGradient"
-                            x1="0%"
-                            y1="0%"
-                            x2="100%"
-                            y2="50%"
-                          >
-                            <stop
-                              offset="0%"
-                              stopColor="#da8023"
-                              stopOpacity="0.4"
-                            />
-                            <stop
-                              offset="50%"
-                              stopColor="#ffffff"
-                              stopOpacity="0.25"
-                            />
-                            <stop
-                              offset="100%"
-                              stopColor="#da8023"
-                              stopOpacity="0.1"
-                            />
-                          </linearGradient>
-
-                          <radialGradient
-                            id="glowRadialGradient"
-                            cx="70%"
-                            cy="50%"
-                            r="60%"
-                          >
-                            <stop
-                              offset="0%"
-                              stopColor="#ffffff"
-                              stopOpacity="0.6"
-                            />
-                            <stop
-                              offset="20%"
-                              stopColor="#da8023"
-                              stopOpacity="0.4"
-                            />
-                            <stop
-                              offset="40%"
-                              stopColor="#ffffff"
-                              stopOpacity="0.3"
-                            />
-                            <stop
-                              offset="60%"
-                              stopColor="#da8023"
-                              stopOpacity="0.2"
-                            />
-                            <stop
-                              offset="80%"
-                              stopColor="#b3b4b0"
-                              stopOpacity="0.1"
-                            />
-                            <stop
-                              offset="100%"
-                              stopColor="#da8023"
-                              stopOpacity="0"
-                            />
-                          </radialGradient>
-
-                          <linearGradient
-                            id="speedLineGradient"
-                            x1="0%"
-                            y1="0%"
-                            x2="100%"
-                            y2="0%"
-                          >
-                            <stop
-                              offset="0%"
-                              stopColor="#da8023"
-                              stopOpacity="0.1"
-                            />
-                            <stop
-                              offset="70%"
-                              stopColor="#ffffff"
-                              stopOpacity="0.3"
-                            />
-                            <stop
-                              offset="100%"
-                              stopColor="#da8023"
-                              stopOpacity="0.5"
-                            />
-                          </linearGradient>
-                        </defs>
-
-                        {/* Líneas de velocidad ultra delgadas */}
-                        <g className="speed-lines-group">
-                          <path
-                            d="M1 8 L13 8"
-                            stroke="url(#speedLineGradient)"
-                            strokeWidth="0.8"
-                            strokeLinecap="round"
-                            className="speed-line speed-line-1"
-                          />
-                          <path
-                            d="M3 11 L15 11"
-                            stroke="url(#speedLineGradient)"
-                            strokeWidth="0.8"
-                            strokeLinecap="round"
-                            className="speed-line speed-line-2"
-                          />
-                          <path
-                            d="M2 14 L14 14"
-                            stroke="url(#speedLineGradient)"
-                            strokeWidth="0.8"
-                            strokeLinecap="round"
-                            className="speed-line speed-line-3"
-                          />
-                          <path
-                            d="M1 17 L13 17"
-                            stroke="url(#speedLineGradient)"
-                            strokeWidth="0.8"
-                            strokeLinecap="round"
-                            className="speed-line speed-line-4"
-                          />
-                          <path
-                            d="M3 20 L15 20"
-                            stroke="url(#speedLineGradient)"
-                            strokeWidth="0.8"
-                            strokeLinecap="round"
-                            className="speed-line speed-line-5"
-                          />
-                        </g>
-
-                        {/* Flecha secundaria - outline sutil */}
-                        <g className="secondary-arrow-group">
-                          <path
-                            d="M16 6 L30 15 L16 24 M22 15 L30 15"
-                            stroke="url(#arrowSecondaryGradient)"
-                            strokeWidth="1.2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="secondary-arrow-outline"
-                            fill="none"
-                          />
-                        </g>
-
-                        {/* Resplandor de fondo principal */}
-                        <g className="main-glow-group">
-                          <ellipse
-                            cx="30"
-                            cy="15"
-                            rx="14"
-                            ry="10"
-                            fill="url(#glowRadialGradient)"
-                            className="main-arrow-glow"
-                            opacity="0"
-                          />
-                        </g>
-
-                        {/* Flecha principal con detalles premium */}
-                        <g className="primary-arrow-group">
-                          {/* Base de la flecha con grosor mínimo */}
-                          <path
-                            d="M18 7 L32 15 L18 23 M25 15 L32 15"
-                            stroke="url(#arrowPrimaryGradient)"
-                            strokeWidth="1.8"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="primary-arrow-base"
-                            fill="none"
-                          />
-
-                          {/* Highlights internos ultra finos */}
-                          <path
-                            d="M20 9 L29 15 L20 21"
-                            stroke="#ffffff"
-                            strokeWidth="0.6"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="inner-highlight-1"
-                            opacity="0"
-                          />
-
-                          <path
-                            d="M22 11 L27 15 L22 19"
-                            stroke="#ffd700"
-                            strokeWidth="0.4"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="inner-highlight-2"
-                            opacity="0"
-                          />
-
-                          <path
-                            d="M24 13 L26 15 L24 17"
-                            stroke="#ffffff"
-                            strokeWidth="0.3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="inner-highlight-3"
-                            opacity="0"
-                          />
-
-                          {/* Puntos de luz micro */}
-                          <circle
-                            cx="25"
-                            cy="13"
-                            r="0.4"
-                            fill="#ffffff"
-                            className="micro-light-1"
-                            opacity="0"
-                          />
-                          <circle
-                            cx="27"
-                            cy="15"
-                            r="0.5"
-                            fill="#ffd700"
-                            className="micro-light-2"
-                            opacity="0"
-                          />
-                          <circle
-                            cx="25"
-                            cy="17"
-                            r="0.3"
-                            fill="#ffab69"
-                            className="micro-light-3"
-                            opacity="0"
-                          />
-
-                          {/* Línea de energía central */}
-                          <path
-                            d="M26 15 L31 15"
-                            stroke="#ffffff"
-                            strokeWidth="0.2"
-                            strokeLinecap="round"
-                            className="energy-line"
-                            opacity="0"
-                          />
-                        </g>
-                      </svg>
-                    </div>
-                    <div className="neon-glow center-absolute"></div>
-                  </button>
-                </form>
-                <p id="boletinMensaje"></p>
-              </div>
-
-              <div
-                className="navigation-section"
-                data-footer-component="aiMatrix"
-                data-component-active={footerState.componentsStatus.aiMatrix}
-              >
+              <div className="navigation-section">
                 <button
                   className="homepage-access-button ai-matrix-button debug-button-position"
-                  data-footer-coordinated="true"
                   style={{
-                    marginLeft: "5px", // 🎯 MOVIDO 5px HACIA LA IZQUIERDA (10px - 5px = 5px)
-                    transform: "translateY(35px)", // 🎯 MOVER 35px HACIA ABAJO (15px + 20px adicionales)
+                    marginLeft: "5px",
+                    transform: "translateY(35px)",
                     position: "relative",
-                    zIndex: 2000000, // 🎯 Z-INDEX MÁS ALTO QUE CURSORES Y CUALQUIER ELEMENTO
+                    zIndex: 2000000,
                   }}
                   onClick={() => {
                     window.location.href = "/";
@@ -1228,33 +884,22 @@ const Rebecca = memo(() => {
               </div>
             </div>
 
-            <div
-              className="footer-robot"
-              data-footer-component="robot3D"
-              data-component-active={footerState.componentsStatus.robot3D}
-            >
-              <div
-                className="robot-3d-container"
-                data-footer-coordinated="true"
-              >
+            {/* COLUMNA CENTRO: Robot3D + Créditos + Copyright */}
+            <div className="footer-robot">
+              <div className="robot-3d-container">
                 <Robot3D
                   width="380px"
                   height="480px"
                   scale={1.2}
                   enableScrollRotation={true}
-                  isFooterActive={footerState.componentsStatus.robot3D}
+                  isFooterActive={true}
                 />
               </div>
 
               {/* 🎯 CRÉDITOS DIRECTAMENTE DEBAJO DEL ROBOT */}
-              <div
-                className="footer-credits"
-                data-footer-component="credits"
-                data-component-active={footerState.componentsStatus.credits}
-              >
+              <div className="footer-credits">
                 <button
                   className="credits-link"
-                  data-footer-coordinated="true"
                   onClick={() => setShowCreditsModal(true)}
                 >
                   VER TODOS LOS CREDITOS
@@ -1263,11 +908,8 @@ const Rebecca = memo(() => {
               </div>
             </div>
 
-            <div
-              className="contact-info"
-              data-footer-component="contactInfo"
-              data-component-active={footerState.componentsStatus.contactInfo}
-            >
+            {/* COLUMNA DERECHA: Información de Contacto */}
+            <div className="contact-info">
               <h4>PONTE EN CONTACTO</h4>
 
               <div className="contact-item general">

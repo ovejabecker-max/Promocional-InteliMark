@@ -1622,6 +1622,17 @@ body,
   position: relative; /* Para posicionamiento absoluto de créditos */
 }
 
+/* 📧 COLUMNA IZQUIERDA: Newsletter + AI Matrix Button */
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espacio entre Newsletter y AI Matrix Button */
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 320px;
+}
+
 /* 📧 SECCIÓN NEWSLETTER - MEJOR ORGANIZACIÓN */
 .newsletter-section {
   display: flex;
@@ -1702,6 +1713,8 @@ body,
   position: relative; /* 🎯 PERMITIR POSICIONAMIENTO ABSOLUTO DEL BOTÓN */
   overflow: visible; /* 🎯 PERMITIR EXPANSIÓN DEL BOTÓN */
   z-index: 100; /* 🎯 Z-INDEX UNIFICADO */
+  width: 100%; /* 🎯 AJUSTE: Ocupar todo el ancho disponible en footer-info */
+  margin-top: 10px; /* 🎯 AJUSTE: Espacio adicional desde el newsletter */
 }
 
 /* ============================================================================
@@ -3019,6 +3032,18 @@ body,
 
 #boletinMensaje:not(:empty) {
   opacity: 1;
+}
+
+/* 📧 ESTILOS PARA EL NUEVO COMPONENTE NEWSLETTER */
+.newsletter-message {
+  margin-top: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  min-height: 24px;
+  transition: all 0.3s ease;
+  font-family: "Oxanium", sans-serif;
+  pointer-events: none; /* 🎯 NO INTERFERIR CON EL BOTÓN */
 }
 
 /* ⚡ AI MATRIX - ACTIVE STATE */
