@@ -59,54 +59,41 @@ function RobotModel({
   const meshRef = useRef<THREE.Group>(null);
   // Estado para seguimiento del mouse (necesario para interacción)
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
-  const [animationIntensity, setAnimationIntensity] = React.useState(0.1);
+
+  // 🎯 OPTIMIZACIÓN: Cache de materiales para evitar scene.traverse repetido
+  const materialsCache = useRef<
+    Array<{ material: THREE.MeshStandardMaterial; originalColor: THREE.Color }>
+  >([]);
+  const animationIntensityRef = useRef(0.1);
 
   const { scene } = useGLTF("/cabeza_robot.glb");
 
+  // 🎯 OPTIMIZACIÓN: Cachear materiales una sola vez al cargar el modelo
   React.useEffect(() => {
-    const animatePulsation = () => {
-      const time = Date.now() * 0.004;
-      const pulse = Math.sin(time) * 0.5 + 0.5;
-      const intensity = 0.1 + pulse * 2;
-      setAnimationIntensity(Math.min(intensity, 2.5));
-    };
-
-    const intervalId = setInterval(animatePulsation, 60);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  React.useEffect(() => {
-    if (scene) {
+    if (scene && materialsCache.current.length === 0) {
       scene.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh && child.material) {
-          const material = child.material;
+          const material = child.material as THREE.MeshStandardMaterial;
 
           if (material.color) {
             const color = material.color;
             const hsl = { h: 0, s: 0, l: 0 };
             color.getHSL(hsl);
 
+            // Solo cachear materiales naranjas emisivos
             if (hsl.h >= 0 && hsl.h <= 0.15 && hsl.s > 0.5) {
               if (!material.emissive) material.emissive = new THREE.Color();
 
-              const emissionIntensity = animationIntensity * 1.5;
-
-              material.emissive.setRGB(
-                color.r * emissionIntensity * 0.9,
-                color.g * emissionIntensity * 0.5,
-                color.b * emissionIntensity * 0.1
-              );
-
-              material.emissiveIntensity = animationIntensity * 3;
-              material.roughness = Math.max(0.1, 1 - animationIntensity * 0.4);
-              material.metalness = Math.min(1, 0.2 + animationIntensity * 0.3);
-              material.needsUpdate = true;
+              materialsCache.current.push({
+                material: material,
+                originalColor: color.clone(),
+              });
             }
           }
         }
       });
     }
-  }, [scene, animationIntensity]);
+  }, [scene]);
 
   // Mouse tracking para interacción con el robot
   React.useEffect(() => {
@@ -147,9 +134,42 @@ function RobotModel({
     };
   }, []);
 
-  useFrame(() => {
+  useFrame((state) => {
+    // 🎯 OPTIMIZACIÓN: Consolidar todas las animaciones en un solo bucle
+
+    // 1. Calcular intensidad de pulsación usando el clock de Three.js
+    const time = state.clock.elapsedTime;
+    const pulse = Math.sin(time * 4) * 0.5 + 0.5;
+    const currentIntensity = 0.1 + pulse * 2;
+    animationIntensityRef.current = Math.min(currentIntensity, 2.5);
+
+    // 2. Actualizar materiales solo si hay materiales cacheados
+    if (materialsCache.current.length > 0) {
+      materialsCache.current.forEach(({ material, originalColor }) => {
+        const emissionIntensity = animationIntensityRef.current * 1.5;
+
+        // Actualizar propiedades sin forzar needsUpdate
+        material.emissive.setRGB(
+          originalColor.r * emissionIntensity * 0.9,
+          originalColor.g * emissionIntensity * 0.5,
+          originalColor.b * emissionIntensity * 0.1
+        );
+
+        material.emissiveIntensity = animationIntensityRef.current * 3;
+        material.roughness = Math.max(
+          0.1,
+          1 - animationIntensityRef.current * 0.4
+        );
+        material.metalness = Math.min(
+          1,
+          0.2 + animationIntensityRef.current * 0.3
+        );
+        // 🎯 CLAVE: NO usar material.needsUpdate = true aquí
+      });
+    }
+
+    // 3. Actualizar rotación del robot
     if (meshRef.current) {
-      // Rotación base + scroll + seguimiento de mouse
       let baseRotationY = rotation[1] + scrollRotation;
       const mouseRotationY = mousePosition.x * 0.3;
       const mouseRotationX = mousePosition.y * 0.2;
@@ -174,11 +194,11 @@ function RobotModel({
         rotation={rotation}
       />
 
-      {/* Luces de ambiente para el robot */}
+      {/* 🎯 OPTIMIZACIÓN: Luces estáticas para mejor performance */}
       <pointLight
         position={[0.2, 0.1, 0.5]}
         color="#ff3300"
-        intensity={animationIntensity * 8}
+        intensity={6}
         distance={8}
         decay={0.5}
       />
@@ -186,7 +206,7 @@ function RobotModel({
       <pointLight
         position={[0, 0.4, 0.3]}
         color="#ff5500"
-        intensity={animationIntensity * 4}
+        intensity={3}
         distance={3}
         decay={1.5}
       />
@@ -194,7 +214,7 @@ function RobotModel({
       <pointLight
         position={[0.2, 0.3, 0.4]}
         color="#ff6600"
-        intensity={animationIntensity * 3}
+        intensity={2}
         distance={2.5}
         decay={2}
       />
