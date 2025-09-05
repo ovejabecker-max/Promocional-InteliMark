@@ -146,14 +146,21 @@ export const useUnifiedBrowserAnimations = (
 
     // 🎬 BUCLE PRINCIPAL UNIFICADO DE ANIMACIÓN
     const unifiedAnimationLoop = (timestamp: number) => {
-      // Verificar si debe continuar
+      // 🛑 VERIFICAR SI DEBE CONTINUAR - Si no, cancelar y salir completamente
       if (!isActiveRef.current || !globalIsActive) {
-        return;
+        if (globalAnimationId) {
+          cancelAnimationFrame(globalAnimationId);
+          globalAnimationId = null;
+        }
+        return; // Salir sin programar próximo frame
       }
 
       // 🚀 THROTTLING GLOBAL: Controlar FPS general
       if (timestamp - lastFrameTime < frameInterval) {
-        globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
+        // Solo programar próximo frame si aún está activo
+        if (isActiveRef.current && globalIsActive) {
+          globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
+        }
         return;
       }
 
@@ -200,51 +207,51 @@ export const useUnifiedBrowserAnimations = (
 
           if (isRobot3DVisible) {
             // Pausar favicon cuando Robot3D está visible para reducir overhead
-            return;
-          }
-
-          // 🚀 RENDERIZADO OPTIMIZADO CON requestIdleCallback
-          const renderFaviconOperation = () => {
-            // Renderizar favicon con rotación 3D
-            faviconCtx.clearRect(0, 0, faviconSize, faviconSize);
-            faviconCtx.save();
-            faviconCtx.translate(faviconSize / 2, faviconSize / 2);
-
-            // Efecto 3D: escalado en X según el coseno del ángulo
-            const scaleX = Math.cos(currentAngle);
-            faviconCtx.scale(scaleX, 1);
-
-            faviconCtx.drawImage(
-              faviconImg,
-              -faviconSize / 2,
-              -faviconSize / 2,
-              faviconSize,
-              faviconSize
-            );
-
-            faviconCtx.restore();
-
-            // 🎯 TRIPLE THROTTLING ESCALONADO: Solo actualizar cada 3 frames para máxima eficiencia
-            faviconFrameCount++;
-            if (faviconFrameCount % 3 === 0) {
-              const newDataURL = faviconCanvas.toDataURL("image/png");
-              if (
-                favicon.href !== newDataURL &&
-                lastFaviconDataURL !== newDataURL
-              ) {
-                favicon.href = newDataURL;
-                lastFaviconDataURL = newDataURL;
-              }
-            }
-          };
-
-          // 🌟 OPTIMIZACIÓN HÍBRIDA: requestIdleCallback si está disponible
-          if ("requestIdleCallback" in window && !isRobot3DVisible) {
-            (window as any).requestIdleCallback(renderFaviconOperation, {
-              timeout: faviconFrameInterval,
-            });
+            // No hacer return aquí, continuar con el bucle pero saltarse el favicon
           } else {
-            renderFaviconOperation();
+            // 🚀 RENDERIZADO OPTIMIZADO CON requestIdleCallback (solo si Robot3D no visible)
+            const renderFaviconOperation = () => {
+              // Renderizar favicon con rotación 3D
+              faviconCtx.clearRect(0, 0, faviconSize, faviconSize);
+              faviconCtx.save();
+              faviconCtx.translate(faviconSize / 2, faviconSize / 2);
+
+              // Efecto 3D: escalado en X según el coseno del ángulo
+              const scaleX = Math.cos(currentAngle);
+              faviconCtx.scale(scaleX, 1);
+
+              faviconCtx.drawImage(
+                faviconImg,
+                -faviconSize / 2,
+                -faviconSize / 2,
+                faviconSize,
+                faviconSize
+              );
+
+              faviconCtx.restore();
+
+              // 🎯 TRIPLE THROTTLING ESCALONADO: Solo actualizar cada 3 frames para máxima eficiencia
+              faviconFrameCount++;
+              if (faviconFrameCount % 3 === 0) {
+                const newDataURL = faviconCanvas.toDataURL("image/png");
+                if (
+                  favicon.href !== newDataURL &&
+                  lastFaviconDataURL !== newDataURL
+                ) {
+                  favicon.href = newDataURL;
+                  lastFaviconDataURL = newDataURL;
+                }
+              }
+            };
+
+            // 🌟 OPTIMIZACIÓN HÍBRIDA: requestIdleCallback si está disponible
+            if ("requestIdleCallback" in window) {
+              (window as any).requestIdleCallback(renderFaviconOperation, {
+                timeout: faviconFrameInterval,
+              });
+            } else {
+              renderFaviconOperation();
+            }
           }
 
           lastFaviconUpdate = timestamp;
@@ -255,9 +262,15 @@ export const useUnifiedBrowserAnimations = (
 
       lastFrameTime = timestamp;
 
-      // Continuar bucle si está activo
+      // 🔄 PROGRAMAR PRÓXIMO FRAME SOLO SI ESTÁ ACTIVO
       if (isActiveRef.current && globalIsActive) {
         globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
+      } else {
+        // 🛑 ASEGURAR CANCELACIÓN SI CONDICIONES CAMBIARON
+        if (globalAnimationId) {
+          cancelAnimationFrame(globalAnimationId);
+          globalAnimationId = null;
+        }
       }
     };
 
