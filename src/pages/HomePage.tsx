@@ -31,9 +31,6 @@ const AUDIO_CONFIG = {
 const SCROLL_CONFIG = {
   PORTAL_TRIGGER_PERCENTAGE: 70,
   GLITCH_TRIGGER_PERCENTAGE: 68,
-  EMBEDDED_GLITCH_START: 60,
-  EMBEDDED_GLITCH_END: 65,
-  EMBEDDED_GLITCH_THRESHOLD: 65,
   GLITCH_DURATION: 600,
   SETUP_RETRY_DELAY: 300,
   MOUSE_IDLE_TIMEOUT: 300,
@@ -204,17 +201,9 @@ const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
 
 TextPhrase2.displayName = "TextPhrase2";
 
-interface HomePageProps {
-  scrollContainer?: string;
-  isEmbedded?: boolean;
-  maxScrollPercentage?: number;
-}
+interface HomePageProps {}
 
-const HomePage: FC<HomePageProps> = ({
-  scrollContainer,
-  isEmbedded = false,
-  maxScrollPercentage = 100,
-}) => {
+const HomePage: FC<HomePageProps> = () => {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Group | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
@@ -729,13 +718,11 @@ const HomePage: FC<HomePageProps> = ({
           scrub: 1,
           invalidateOnRefresh: true,
           refreshPriority: -1,
-          scroller: scrollContainer ? `#${scrollContainer}` : window,
+          scroller: window,
           onUpdate: (self) => {
             const progress = Math.round(self.progress * 100);
 
-            const effectiveProgress = isEmbedded
-              ? Math.min(progress, maxScrollPercentage)
-              : progress;
+            const effectiveProgress = progress;
 
             if (Math.abs(effectiveProgress - scrollPercentage) >= 1) {
               setScrollPercentage(effectiveProgress);
@@ -744,66 +731,38 @@ const HomePage: FC<HomePageProps> = ({
         },
       });
 
-      if (!isEmbedded) {
-        ScrollTrigger.create({
-          trigger: scrollElement,
-          start: "top top",
-          end: "bottom bottom",
-          scroller: scrollContainer ? `#${scrollContainer}` : window,
-          onUpdate: (self) => {
-            const progress = self.progress * 100;
+      ScrollTrigger.create({
+        trigger: scrollElement,
+        start: "top top",
+        end: "bottom bottom",
+        scroller: window,
+        onUpdate: (self) => {
+          const progress = self.progress * 100;
 
-            if (
-              progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
-              progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
-              !glitchTriggeredRef.current
-            ) {
-              glitchTriggeredRef.current = true;
-              setIsDigitalGlitch(true);
+          if (
+            progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
+            progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+            !glitchTriggeredRef.current
+          ) {
+            glitchTriggeredRef.current = true;
+            setIsDigitalGlitch(true);
 
-              setTimeout(() => {
-                setIsDigitalGlitch(false);
-              }, SCROLL_CONFIG.GLITCH_DURATION);
-            }
+            setTimeout(() => {
+              setIsDigitalGlitch(false);
+            }, SCROLL_CONFIG.GLITCH_DURATION);
+          }
 
-            if (
-              progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
-              !portalTriggeredRef.current &&
-              !isTransitioning
-            ) {
-              portalTriggeredRef.current = true;
-              setIsTransitioning(true);
-              triggerPortalTransition();
-            }
-          },
-        });
-      } else {
-        ScrollTrigger.create({
-          trigger: scrollElement,
-          start: "top top",
-          end: "bottom bottom",
-          scroller: scrollContainer ? `#${scrollContainer}` : window,
-          onUpdate: (self) => {
-            const progress = self.progress * 100;
-
-            const limitedProgress = Math.min(progress, maxScrollPercentage);
-
-            if (
-              limitedProgress >= SCROLL_CONFIG.EMBEDDED_GLITCH_START &&
-              limitedProgress < SCROLL_CONFIG.EMBEDDED_GLITCH_END &&
-              !glitchTriggeredRef.current &&
-              maxScrollPercentage > SCROLL_CONFIG.EMBEDDED_GLITCH_THRESHOLD
-            ) {
-              glitchTriggeredRef.current = true;
-              setIsDigitalGlitch(true);
-
-              setTimeout(() => {
-                setIsDigitalGlitch(false);
-              }, SCROLL_CONFIG.GLITCH_DURATION);
-            }
-          },
-        });
-      }
+          if (
+            progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+            !portalTriggeredRef.current &&
+            !isTransitioning
+          ) {
+            portalTriggeredRef.current = true;
+            setIsTransitioning(true);
+            triggerPortalTransition();
+          }
+        },
+      });
 
       timeline.to(
         cameraRef.current!.position,
@@ -907,12 +866,7 @@ const HomePage: FC<HomePageProps> = ({
       glitchTriggeredRef.current = false;
       setIsTransitioning(false);
     };
-  }, [
-    triggerPortalTransition,
-    scrollContainer,
-    isEmbedded,
-    maxScrollPercentage,
-  ]);
+  }, [triggerPortalTransition]);
 
   return (
     <div ref={mainRef} className="homepage-container">

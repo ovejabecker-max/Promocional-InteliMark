@@ -1,11 +1,9 @@
 // src/pages/Rebecca.tsx (Versión Optimizada para Performance)
 
-import { useEffect, useRef, useState, memo, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import { createPortal } from "react-dom";
 import { VapiChatButton } from "../components/VapiChatButton";
 import { vapiConfig } from "../config/vapi.config";
-// 🚀 OPTIMIZADO: Lazy loading de HomePage
-const HomePage = lazy(() => import("./HomePage"));
 import Robot3D from "../components/Robot3D";
 import FuenteCero from "../components/FuenteCero";
 import { NewsletterForm } from "../components/NewsletterForm";
@@ -29,8 +27,7 @@ const Rebecca = memo(() => {
   const [isEffectActive, setIsEffectActive] = useState(false); // Control FuenteCero/Matrix Rain
 
   // 🎯 ESTADOS CONSOLIDADOS PARA EFECTOS DE HOVER/MOUSE
-  const [isHoveringButton, setIsHoveringButton] = useState(false); // Hover del botón WhatsApp
-  const [isHovering, setIsHovering] = useState(false); // Hover general del visualizador
+  const [isHovering, setIsHovering] = useState(false); // Hover general
 
   // 🎯 REFERENCIAS CONSOLIDADAS PARA EL CTA
   const magneticRefs = useRef<(HTMLSpanElement | null)[]>([]); // Referencias magnéticas del subtítulo
@@ -291,18 +288,6 @@ const Rebecca = memo(() => {
   }, []);
   const containerRef = useRef<HTMLDivElement>(null!);
   const tooltipRef = useRef<HTMLDivElement>(null!);
-  const buttonTooltipRef = useRef<HTMLDivElement>(null!);
-
-  const [isActive, setIsActive] = useState(false);
-  const [showHomePage, setShowHomePage] = useState(false);
-  // Ref para reflejar el estado actual de showHomePage dentro del efecto
-  const showHomePageRef = useRef(false);
-  useEffect(() => {
-    showHomePageRef.current = showHomePage;
-  }, [showHomePage]);
-
-  // Estados para instrucción "Clic para cerrar"
-  const [showCloseInstruction, setShowCloseInstruction] = useState(false);
 
   // 🎯 ESTADO PARA MODAL DE CRÉDITOS
   const [showCreditsModal, setShowCreditsModal] = useState(false);
@@ -324,11 +309,6 @@ const Rebecca = memo(() => {
 
     // Handler unificado: Solo actualizar posición del cursor
     const handleCursorMove = (e: MouseEvent) => {
-      if (showHomePage) {
-        cursorCross.style.display = "none";
-        return;
-      }
-
       // Detección de zona CTA para ocultar cursor
       const ctaSection = document.getElementById("cta-section");
       let inCTA = false;
@@ -363,9 +343,7 @@ const Rebecca = memo(() => {
     };
 
     const handleMouseEnter = () => {
-      if (!showHomePage) {
-        cursorCross.style.display = "block";
-      }
+      cursorCross.style.display = "block";
     };
 
     // Listeners simplificados
@@ -381,247 +359,12 @@ const Rebecca = memo(() => {
         container.removeChild(cursorCross);
       }
     };
-  }, [showHomePage]);
-
-  // 🎯 CONTROL UNIFICADO DE SCROLL EN VISUALIZADOR HOME 3D
-  useEffect(() => {
-    if (showHomePage && isActive) {
-      const scrollContainer = document.getElementById(
-        "homepage-scroll-container"
-      );
-
-      if (scrollContainer) {
-        // 🎯 RESETEAR POSICIÓN DE SCROLL AL ABRIR
-        scrollContainer.scrollTop = 0;
-        scrollContainer.scrollLeft = 0;
-
-        let ticking = false; // 🎯 THROTTLING: Prevenir múltiples llamadas por frame
-
-        // 🎯 HANDLER UNIFICADO: Optimizado para mejor performance
-        const handleUnifiedScroll = (e: Event) => {
-          if (!ticking) {
-            ticking = true;
-            requestAnimationFrame(() => {
-              try {
-                const container = e.target as HTMLElement;
-
-                // 🎯 PARTE 1: LIMITADOR DE SCROLL (55% del contenido total)
-                const maxScroll = container.scrollHeight * 0.55;
-                if (container.scrollTop > maxScroll) {
-                  container.scrollTop = maxScroll;
-                }
-
-                // 🎯 PARTE 2: CONTROL DE INSTRUCCIONES "CLIC PARA CERRAR"
-                const scrollTop = container.scrollTop;
-                const scrollHeight =
-                  container.scrollHeight - container.clientHeight;
-                const scrollPercent = (scrollTop / scrollHeight) * 100;
-
-                // Mostrar instrucción al 20% del scroll
-                const shouldShow = scrollPercent >= 20;
-                if (shouldShow !== showCloseInstruction) {
-                  setShowCloseInstruction(shouldShow);
-                }
-              } catch (error) {
-                // Silent error handling
-              } finally {
-                ticking = false; // 🎯 RESET: Permitir próxima actualización
-              }
-            });
-          }
-        };
-
-        // 🎯 UN SOLO EVENT LISTENER con passive: false para poder modificar scrollTop
-        scrollContainer.addEventListener("scroll", handleUnifiedScroll, {
-          passive: false,
-        });
-
-        // 🎯 VERIFICAR ESTADO INICIAL
-        const initialEvent = new Event("scroll");
-        Object.defineProperty(initialEvent, "target", {
-          value: scrollContainer,
-          enumerable: true,
-        });
-        handleUnifiedScroll(initialEvent);
-
-        // 🎯 FORZAR RECÁLCULO DESPUÉS DEL MONTAJE
-        const timeoutId = setTimeout(() => {
-          scrollContainer.style.height = "99.99%";
-          requestAnimationFrame(() => {
-            scrollContainer.style.height = "100%";
-          });
-        }, 100);
-
-        return () => {
-          clearTimeout(timeoutId);
-          scrollContainer.removeEventListener("scroll", handleUnifiedScroll);
-        };
-      }
-    } else {
-      // Resetear estados cuando se cierra el visualizador
-      setShowCloseInstruction(false);
-    }
-  }, [showHomePage, isActive, showCloseInstruction]);
-
-  // 🎯 REF PARA EL ESTADO ACTUAL DE showCloseInstruction (para mousemove)
-  const showCloseInstructionRef = useRef(showCloseInstruction);
-  useEffect(() => {
-    showCloseInstructionRef.current = showCloseInstruction;
-  }, [showCloseInstruction]);
-
-  // 🎯 SEPARACIÓN DEL CONTROL DE MOUSEMOVE PARA OPTIMIZACIÓN
-  useEffect(() => {
-    if (showHomePage && isActive) {
-      const scrollContainer = document.getElementById(
-        "homepage-scroll-container"
-      );
-
-      if (scrollContainer) {
-        return () => {
-          // Cleanup si fuera necesario
-        };
-      }
-    }
-  }, [showHomePage, isActive]);
-
-  const handleInteractiveClick = () => {
-    if (!isActive) {
-      setIsActive(true);
-      setShowHomePage(true);
-    }
-  };
+  }, []);
 
   return (
     <>
       <div ref={containerRef} className="rebecca-container">
         <div className="main-content-wrapper">
-          <div
-            id="interactive-container"
-            className={`flex-center ${isActive ? "active" : ""}`}
-            onClick={handleInteractiveClick}
-            onMouseEnter={(e) => {
-              setIsHoveringButton(true);
-              if (buttonTooltipRef.current) {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = rect.right + 15;
-                const y = rect.top + rect.height / 2 - 15;
-                buttonTooltipRef.current.style.left = x + "px";
-                buttonTooltipRef.current.style.top = y + "px";
-              }
-            }}
-            onMouseLeave={() => {
-              setIsHoveringButton(false);
-            }}
-            onMouseMove={(e) => {
-              if (!isActive && isHoveringButton && buttonTooltipRef.current) {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = rect.right + 15;
-                const y = rect.top + rect.height / 2 - 15;
-                buttonTooltipRef.current.style.left = x + "px";
-                buttonTooltipRef.current.style.top = y + "px";
-              }
-            }}
-          >
-            {showHomePage && (
-              <div
-                className="homepage-wrapper"
-                id="homepage-scroll-container"
-                style={{
-                  // 🎯 VISUALIZADOR LIMITADO: Solo mostrar escena inicial
-                  overflow: "auto",
-                  overflowX: "hidden",
-                  height: "100%",
-                  width: "100%",
-                  WebkitOverflowScrolling: "touch",
-                  scrollBehavior: "smooth",
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-
-                  setIsActive(false);
-                  setShowHomePage(false);
-                  setIsHoveringButton(false);
-                }}
-              >
-                <div
-                  className="homepage-embedded"
-                  style={{
-                    // Altura ajustada para contenido específico
-                    minHeight: "250vh", // Aumentado para alcanzar más contenido
-                    height: "250vh", // Altura suficiente para la frase objetivo
-                    width: "100%",
-                    position: "relative",
-                    isolation: "isolate",
-                    overflow: "hidden", // Cortar contenido que exceda
-                  }}
-                >
-                  <Suspense
-                    fallback={
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          height: "100%",
-                          color: "var(--color-orange-primary)",
-                          fontSize: "18px",
-                        }}
-                      >
-                        Cargando vista previa...
-                      </div>
-                    }
-                  >
-                    <HomePage
-                      scrollContainer="homepage-scroll-container"
-                      isEmbedded={true}
-                      maxScrollPercentage={55} // Límite de scroll del contenedor
-                    />
-                  </Suspense>
-                </div>
-
-                {/* Instrucción "Clic para cerrar" - Aparece al 20% del scroll */}
-                {showCloseInstruction && (
-                  <div
-                    style={{
-                      position: "fixed",
-                      right: "20px", // 🔧 FIX: Posición fija en lugar de seguir mouse
-                      top: "20px", // 🔧 FIX: Posición fija en lugar de seguir mouse
-                      color: "rgba(255, 255, 255, 0.7)",
-                      fontSize: "0.55rem",
-                      fontWeight: "300",
-                      letterSpacing: "1px",
-                      textTransform: "uppercase",
-                      pointerEvents: "none",
-                      zIndex: 10000,
-                      textShadow: "0 0 8px rgba(255, 255, 255, 0.3)",
-                      fontFamily: '"Orbitron", "Oxanium", sans-serif',
-                      transition:
-                        "left 0.4s ease-in-out, top 0.4s ease-in-out, opacity 0.3s ease", // 🎯 MEJORADO: 0.15s → 0.4s (más lento), ease-out → ease-in-out (más elegante)
-                      userSelect: "none",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Clic para cerrar
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          <div
-            ref={buttonTooltipRef}
-            className="button-tooltip button-tooltip-3d"
-            style={{
-              opacity: isHoveringButton && !isActive ? 1 : 0,
-              left: "-300px",
-              top: "-200px",
-            }}
-          >
-            <div className="ai-minimal-container">
-              <div className="ai-holo-text" data-text="HOME 3D">
-                HOME 3D
-              </div>
-            </div>
-          </div>
           <h1 className="portal-title">¡Bienvenido al futuro!</h1>
           <div className="vapi-content center-absolute">
             <VapiChatButton config={vapiConfig} variant="center" size="large" />
@@ -642,7 +385,7 @@ const Rebecca = memo(() => {
           <div
             ref={tooltipRef}
             className="cursor-tooltip"
-            style={{ opacity: isHovering && !isHoveringButton ? 1 : 0 }}
+            style={{ opacity: isHovering ? 1 : 0 }}
           >
             HABLA CON NUESTRA IA
           </div>
