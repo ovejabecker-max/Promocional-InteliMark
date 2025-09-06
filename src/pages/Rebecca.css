@@ -1233,7 +1233,7 @@ body,
   /* 🎭 BASE STEALTH - ESTADO INACTIVO (TRANSPARENTE) */
   position: relative;
   background: transparent; /* 🎯 FONDO COMPLETAMENTE TRANSPARENTE */
-  border: 1px solid rgba(218, 128, 35, 0.3); /* 🎯 BORDE SUTIL PARA VISIBILIDAD */
+  border: none; /* 🎯 SIN BORDE EN ESTADO NORMAL */
   border-radius: 15px;
   padding: 12px 10px;
   font-size: 0.8rem;
@@ -1302,7 +1302,7 @@ body,
   /* 🎭 BASE STEALTH - ESTADO INACTIVO (TRANSPARENTE) */
   position: relative;
   background: transparent; /* 🎯 FONDO COMPLETAMENTE TRANSPARENTE */
-  border: 1px solid rgba(218, 128, 35, 0.3); /* 🎯 BORDE SUTIL PARA VISIBILIDAD */
+  border: none; /* 🎯 SIN BORDE EN ESTADO NORMAL */
   border-radius: 15px;
   padding: 12px 10px;
   font-size: 0.8rem;
@@ -1444,12 +1444,12 @@ body,
   transition: all 0.4s ease;
 }
 
-/* 📡 TEXTO HOLOGRÁFICO */
+/* 📡 TEXTO HOLOGRÁFICO - RESPLANDOR FANTASMA PULSANTE */
 .holo-text {
   position: relative;
   z-index: 10;
   font-family: "Orbitron", "Consolas", monospace;
-  font-size: 0.7rem;
+  font-size: 0.75rem; /* 🎯 AUMENTADO: a 1rem (16px) para mejor proporción con la flecha de 16px */
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -1463,6 +1463,24 @@ body,
   white-space: nowrap; /* 🎯 MANTENER TEXTO EN UNA LÍNEA */
   flex-shrink: 0; /* 🎯 NO PERMITIR ENCOGIMIENTO */
   transform: translateX(0px); /* 🎯 POSICIÓN CENTRADA INICIAL */
+}
+
+/* 🌟 EFECTO RESPLANDOR FANTASMA PULSANTE */
+.holo-text::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: radial-gradient(
+    ellipse 40% 5% at center,
+    /* 🎯 ELIPSE ALARGADO: 40% ancho, 5% alto */ rgb(0, 0, 0) 50%,
+    /* 🎯 GRIS OSCURO para contraste sutil */ transparent 300%
+  );
+  animation: ghostGlow 4s ease-in-out infinite;
+  filter: blur(6px);
+  will-change: transform, opacity; /* 🎯 GPU acceleration */
+  transform: translateZ(0); /* 🎯 Force hardware layer */
+  pointer-events: none;
+  z-index: -1; /* 🎯 Detrás del texto */
 }
 
 .text-glitch {
@@ -1622,6 +1640,19 @@ body,
   100% {
     left: 100%;
     opacity: 0;
+  }
+}
+
+/* 🌟 ANIMACIÓN RESPLANDOR FANTASMA PULSANTE */
+@keyframes ghostGlow {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.95) translateZ(0);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05) translateZ(0);
   }
 }
 
@@ -1843,22 +1874,10 @@ body,
 
 /* 📧 ESTILOS PARA FUNCIONALIDAD DEL BOLETÍN */
 
-/* 🎯 OPTIMIZACIÓN DE ELEMENTOS INTERNOS DEL BOTÓN */
-.holo-text {
-  font-size: 0.65rem;
-  letter-spacing: 1.5px;
-}
-
 /* 🎯 ESPACIADO ADICIONAL PARA MEJOR LEGIBILIDAD */
 
 .contact-icon div {
   font-size: 14px;
-}
-
-/* 🎯 OPTIMIZACIÓN DE ELEMENTOS INTERNOS DEL BOTÓN */
-.holo-text {
-  font-size: 0.65rem;
-  letter-spacing: 1.5px;
 }
 
 /* 📧 ESTILOS PARA FUNCIONALIDAD DEL BOLETÍN */
