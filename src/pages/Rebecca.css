@@ -262,127 +262,14 @@ body,
 .glow-ring {
   width: 75%;
   height: 75%;
-  border: 4px solid transparent;
+  border: 2px solid rgba(138, 138, 138, 0.3);
   border-radius: 50%;
   background: transparent;
   position: absolute;
-  top: 12.5%; /* 🎯 RECENTRADO: (100% - 75%) / 2 = 12.5% */
-  left: 12.5%; /* 🎯 RECENTRADO: (100% - 75%) / 2 = 12.5% */
-  /* 🎯 POINTER-EVENTS CONSOLIDADO ARRIBA */
+  top: 12.5%;
+  left: 12.5%;
   z-index: 6;
-  opacity: 0.55; /* 🔥 OPACIDAD AUMENTADA: De 0.35 a 0.55 para mayor visibilidad de efectos */
-
-  /* 🎨 TEXTURA METÁLICA BASE CON GRADIENTES COMPLEJOS - OPACIDAD REDUCIDA */
-  background-image: 
-    /* Capa de reflejo principal (efecto espejo) */ linear-gradient(
-      45deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.4) 45%,
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0.4) 55%,
-      transparent 70%
-    ),
-    /* Capa de reflejo principal (efecto espejo) */
-      linear-gradient(
-        45deg,
-        transparent 30%,
-        rgba(255, 255, 255, 0.4) 45%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0.4) 55%,
-        transparent 70%
-      ),
-    /* Textura metálica base */
-      linear-gradient(
-        135deg,
-        rgba(42, 42, 42, 0.3) 0%,
-        /* 🎯 Añadida transparencia */ rgba(74, 74, 74, 0.3) 15%,
-        /* 🎯 Añadida transparencia */ rgba(106, 106, 106, 0.3) 30%,
-        /* 🎯 Añadida transparencia */ rgba(138, 138, 138, 0.3) 45%,
-        /* 🎯 Añadida transparencia */ rgba(122, 122, 122, 0.3) 60%,
-        /* 🎯 Añadida transparencia */ rgba(90, 90, 90, 0.3) 75%,
-        /* 🎯 Añadida transparencia */ rgba(58, 58, 58, 0.3) 90%,
-        /* 🎯 Añadida transparencia */ rgba(42, 42, 42, 0.3) 100%
-          /* 🎯 Añadida transparencia */
-      ),
-    /* Efectos de profundidad */
-      radial-gradient(
-        ellipse at 30% 30%,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.05) 40%,
-        transparent 70%
-      );
-
-  background-size: 200% 200%, 100% 100%, 100% 100%;
-  background-position: 0% 0%, 0% 0%, 0% 0%;
-  background-clip: border-box;
-
-  /* 🌟 EFECTOS DE SOMBRA Y RESPLANDOR MULTICAPA */
-  box-shadow: 
-    /* Resplandor exterior principal */ 0 0 20px
-      rgba(138, 138, 138, 0.3),
-    /* Resplandor interior sutil */ inset 0 0 10px rgba(255, 255, 255, 0.05),
-    /* Sombra de profundidad */ 0 0 40px rgba(42, 42, 42, 0.2),
-    /* Reflejo metálico */ inset 1px 1px 5px rgba(255, 255, 255, 0.1),
-    inset -1px -1px 5px rgba(0, 0, 0, 0.15);
-
-  /* 🎬 ANIMACIÓN CONSOLIDADA ARRIBA */
-}
-
-/* 🔬 PSEUDO-ELEMENTO PARA TEXTURA METÁLICA ADICIONAL */
-.glow-ring::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 50%;
-  z-index: -1;
-  opacity: 0.8; /* 🔥 OPACIDAD AUMENTADA: De 0.6 a 0.8 para mayor visibilidad del disco giratorio */
-
-  /* Gradiente metálico exterior con patrones de reflejo - MEJORADO PARA MAYOR VISIBILIDAD */
-  background: conic-gradient(
-    from 0deg,
-    #1a1a1a 0deg,
-    #4a4a4a 40deg,
-    #8a8a8a 80deg,
-    #bbbbbb 120deg,
-    #8a8a8a 160deg,
-    #4a4a4a 200deg,
-    #2a2a2a 240deg,
-    #1a1a1a 280deg,
-    #4a4a4a 320deg,
-    #1a1a1a 360deg
-  );
-
-  /* Efectos de brillo y textura - INTENSIFICADO */
-  box-shadow: 0 0 35px rgba(138, 138, 138, 0.25),
-    inset 0 0 15px rgba(0, 0, 0, 0.35), 0 0 20px rgba(187, 187, 187, 0.15);
-
-  /* 🎬 ANIMACIÓN CONSOLIDADA ARRIBA */
-}
-
-/* 🌟 PSEUDO-ELEMENTO PARA EFECTOS DE LUZ ADICIONALES */
-.glow-ring::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 105%;
-  height: 105%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  z-index: -2;
-
-  /* Resplandor exterior suave - REDUCIDO */
-  background: radial-gradient(
-    circle,
-    rgba(138, 138, 138, 0.08) 0%,
-    rgba(138, 138, 138, 0.04) 40%,
-    transparent 70%
-  );
-
-  /* 🎬 ANIMACIÓN CONSOLIDADA ARRIBA */
+  opacity: 0.4;
 }
 
 /* 🔥 ANILLO DE PULSO OPTIMIZADO */

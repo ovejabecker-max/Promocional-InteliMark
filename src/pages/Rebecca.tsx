@@ -139,33 +139,6 @@ const Rebecca = memo(() => {
     };
   }, [ctaState]);
 
-  // Window resize handler for responsive typewriter animation
-  useEffect(() => {
-    const handleResize = () => {
-      const lines = document.querySelectorAll(
-        ".subtitle-line-1, .subtitle-line-2"
-      );
-      lines.forEach((line) => {
-        const element = line as HTMLElement;
-        element.style.display = "none";
-        element.offsetHeight; // Trigger reflow
-        element.style.display = "block";
-      });
-    };
-
-    let resizeTimeout: number;
-    const debouncedResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(handleResize, 250);
-    };
-
-    window.addEventListener("resize", debouncedResize);
-    return () => {
-      window.removeEventListener("resize", debouncedResize);
-      clearTimeout(resizeTimeout);
-    };
-  }, []);
-
   return (
     <>
       <div ref={containerRef} className="rebecca-container">
