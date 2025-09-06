@@ -173,12 +173,7 @@ body,
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 🎯 CURSOR CAD PERSONALIZADO - APLICADO A ELEMENTOS ESPECÍFICOS DE REBECCA */
-.rebecca-container .main-content,
-.rebecca-container .background-effects,
-.rebecca-container .visual-effects {
-  cursor: none;
-}
+/* 🎯 CURSOR CAD - DUPLICADOS ELIMINADOS (ya está definido arriba) */
 
 /* 2️⃣ BOTÓN VAPI CHAT - ELEMENTO CENTRAL PRINCIPAL */
 

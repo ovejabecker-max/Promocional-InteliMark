@@ -95,14 +95,31 @@ function RobotModel({
     }
   }, [scene]);
 
-  // Mouse tracking para interacción con el robot
+  // 🔧 OPTIMIZACIÓN: Mouse tracking condicional - solo cuando el robot está visible
   React.useEffect(() => {
+    const footerContainer = document.querySelector("#footer-reveal");
+    if (!footerContainer) return; // 🔧 Early return si no existe el contenedor
+
+    let isRobotVisible = false;
+
+    // 🔧 Intersection Observer para detectar cuando el robot es visible
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isRobotVisible = entry.isIntersecting;
+          if (!isRobotVisible) {
+            setMousePosition({ x: 0, y: 0 }); // Reset posición cuando no es visible
+          }
+        });
+      },
+      { threshold: 0.1 } // 🔧 Activar cuando 10% del footer sea visible
+    );
+
+    observer.observe(footerContainer);
+
     const handleMouseMove = (event: MouseEvent) => {
-      const footerContainer = document.querySelector("#footer-reveal");
-      if (!footerContainer) {
-        setMousePosition({ x: 0, y: 0 });
-        return;
-      }
+      // 🔧 OPTIMIZACIÓN: Solo procesar si el robot es visible
+      if (!isRobotVisible) return;
 
       const rect = footerContainer.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
@@ -131,6 +148,7 @@ function RobotModel({
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      observer.disconnect(); // 🔧 Limpiar observer
     };
   }, []);
 

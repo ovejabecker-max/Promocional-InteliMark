@@ -14,6 +14,10 @@ const useArchitectAura = (easingFactor: number = 0.025) => {
   // Aura aún más rápida y visible
   const [auraStyle, setAuraStyle] = React.useState<React.CSSProperties>({});
   const [cursorStyle, setCursorStyle] = React.useState<React.CSSProperties>({});
+  const [mousePos, setMousePos] = React.useState<Point>({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+  });
   const mouse = useRef<Point>({
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
@@ -30,8 +34,10 @@ const useArchitectAura = (easingFactor: number = 0.025) => {
   const lastFrameRef = useRef<number>(0); // 🔧 Usar ref para persistir entre renders
 
   useEffect(() => {
+    // 🔧 OPTIMIZACIÓN: Un solo mouse listener para ambos sistemas
     const handleMouseMove = (event: MouseEvent) => {
       mouse.current = { x: event.clientX, y: event.clientY };
+      setMousePos({ x: event.clientX, y: event.clientY }); // 🔧 UNIFICADO: Actualizar ambos estados
       setCursorStyle({
         transform: `translate(${event.clientX}px, ${event.clientY}px)`,
       });
@@ -75,7 +81,7 @@ const useArchitectAura = (easingFactor: number = 0.025) => {
     };
   }, [easingFactor]);
 
-  return { auraStyle, cursorStyle, auraPosition: aura.current };
+  return { auraStyle, cursorStyle, auraPosition: aura.current, mousePos };
 };
 
 // --- Componente del Canvas de Matrix ---
@@ -264,18 +270,8 @@ const ChromaticAura: React.FC<ChromaticAuraProps> = ({ style }) => (
 const FuenteCero: React.FC<{ parentRef: React.RefObject<HTMLElement> }> = ({
   parentRef,
 }) => {
-  const [mousePos, setMousePos] = React.useState<Point>({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-  });
-  React.useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      setMousePos({ x: event.clientX, y: event.clientY });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-  const { auraStyle, auraPosition } = useArchitectAura(0.06);
+  // 🔧 OPTIMIZACIÓN: Eliminar estado duplicado - ahora viene del hook unificado
+  const { auraStyle, auraPosition, mousePos } = useArchitectAura(0.06);
 
   return (
     <div className="fuente-cero-container">
