@@ -2,11 +2,11 @@ import { useEffect, useRef } from "react";
 
 // 🎯 CONFIGURACIÓN OPTIMIZADA PARA PERFORMANCE
 const ANIMATION_CONFIG = {
-  // Performance balanceada: 30fps para título, 15fps para favicon
-  TARGET_FPS: 30,
+  // Performance ultra-conservadora: 20fps para reducir violaciones
+  TARGET_FPS: 20, // ⚡ Reducido de 30fps a 20fps para menos overhead
   FAVICON_TARGET_FPS: 15, // ⚡ Optimizado específicamente para favicon
-  // Título: actualización cada 400ms para mejor legibilidad
-  TITLE_UPDATE_INTERVAL: 400,
+  // Título: actualización cada 600ms para menor impacto en performance
+  TITLE_UPDATE_INTERVAL: 600, // ⚡ Aumentado de 400ms a 600ms
   // Favicon: 3 segundos por rotación completa
   FAVICON_ROTATION_DURATION: 3000,
   // Favicon: tamaño estándar
@@ -199,18 +199,32 @@ export const useUnifiedBrowserAnimations = (
       // Inicializar tiempo de inicio
       if (!startTime) startTime = timestamp;
 
-      // 📝 ACTUALIZACIÓN DEL TÍTULO (cada TITLE_UPDATE_INTERVAL)
-      if (
-        enableTitle &&
-        titleFrames.length > 0 &&
-        timestamp - lastTitleUpdate > ANIMATION_CONFIG.TITLE_UPDATE_INTERVAL
-      ) {
-        const currentFrame = titleFrames[currentTitleIndex];
-        if (currentFrame && document.title !== currentFrame) {
-          document.title = currentFrame;
+      // 📝 ACTUALIZACIÓN DEL TÍTULO (con throttling agresivo mejorado)
+      if (enableTitle && titleFrames.length > 0) {
+        const titleElapsed = timestamp - lastTitleUpdate;
+        const titleShouldUpdate =
+          titleElapsed >= ANIMATION_CONFIG.TITLE_UPDATE_INTERVAL;
+
+        if (titleShouldUpdate) {
+          const currentFrame = titleFrames[currentTitleIndex];
+          if (currentFrame && document.title !== currentFrame) {
+            document.title = currentFrame;
+            console.log(
+              `🔤 Título actualizado: frame ${currentTitleIndex}/${titleFrames.length}`
+            );
+          }
+          currentTitleIndex = (currentTitleIndex + 1) % titleFrames.length;
+          lastTitleUpdate = timestamp; // ⚡ Asegurar que se actualice el timestamp
         }
-        currentTitleIndex = (currentTitleIndex + 1) % titleFrames.length;
-        lastTitleUpdate = timestamp;
+
+        // 🛑 EARLY RETURN: Si solo necesitábamos actualizar título, salir temprano
+        if (titleShouldUpdate && !enableFavicon) {
+          lastFrameTime = timestamp;
+          if (isActiveRef.current && globalIsActive && !document.hidden) {
+            globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
+          }
+          return;
+        }
       }
 
       // 🎨 ACTUALIZACIÓN DEL FAVICON (optimizada con throttling escalonado)
