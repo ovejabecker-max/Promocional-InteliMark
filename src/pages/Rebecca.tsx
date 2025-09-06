@@ -1,4 +1,4 @@
-// src/pages/Rebecca.tsx (Versión Optimizada para Performance)
+// src/pages/Rebecca.tsx
 
 import { useEffect, useRef, useState, memo } from "react";
 import { createPortal } from "react-dom";
@@ -8,32 +8,28 @@ import Robot3D from "../components/Robot3D";
 import FuenteCero from "../components/FuenteCero";
 import { NewsletterForm } from "../components/NewsletterForm";
 
-import CTAButtonImage from "../assets/CTAButtonV2.png"; // Imagen optimizada V2
-import ContenedorCreditos from "../assets/contenedor_creditos.png"; // Importar imagen del contenedor tecnológico
+import CTAButtonImage from "../assets/CTAButtonV2.png";
+import ContenedorCreditos from "../assets/contenedor_creditos.png";
 import "./Rebecca.css";
 
 const Rebecca = memo(() => {
-  // 🎯 ESTADOS CONSOLIDADOS PARA LA SECCIÓN CTA
-  const [ctaScrollPercent, setCtaScrollPercent] = useState(0); // 0 a 1
-  const [isCtaButtonVisible, setIsCtaButtonVisible] = useState(false); // Control de fade-in tecnológico
-  const [isCtaTextVisible, setIsCtaTextVisible] = useState(false); // Control de texto
-  const [isClickProcessing, setIsClickProcessing] = useState(false); // Control click CTA
+  // Estados para la sección CTA
+  const [ctaScrollPercent, setCtaScrollPercent] = useState(0);
+  const [isCtaButtonVisible, setIsCtaButtonVisible] = useState(false);
+  const [isCtaTextVisible, setIsCtaTextVisible] = useState(false);
+  const [isClickProcessing, setIsClickProcessing] = useState(false);
 
-  // Banderas simplificadas para control de activación
   const [effectsActivated, setEffectsActivated] = useState({
     typewriter: false,
     button: false,
     matrix: false,
   });
 
-  // 🎯 ESTADOS CONSOLIDADOS PARA EFECTOS DE HOVER/MOUSE
-  // Estados removidos para simplificación
+  // Referencias
+  const containerRef = useRef<HTMLDivElement>(null);
+  const ctaSectionRef = useRef<HTMLElement>(null);
 
-  // 🎯 REFERENCIAS CONSOLIDADAS PARA EL CTA
-  const containerRef = useRef<HTMLDivElement>(null); // Referencia principal del contenedor
-  const ctaSectionRef = useRef<HTMLElement>(null); // Referencia principal de la sección CTA
-
-  // CONTROLADOR DE SCROLL CTA SIMPLIFICADO
+  // Controlador de scroll CTA
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -41,14 +37,14 @@ const Rebecca = memo(() => {
           const ratio = entry.intersectionRatio;
           setCtaScrollPercent(ratio);
 
-          // Control Matrix Rain (30% visible)
+          // Matrix Rain activation at 30%
           if (ratio >= 0.3 && !effectsActivated.matrix) {
             setEffectsActivated((prev) => ({ ...prev, matrix: true }));
           } else if (ratio < 0.3 && effectsActivated.matrix) {
             setEffectsActivated((prev) => ({ ...prev, matrix: false }));
           }
 
-          // Control Typewriter (90% visible)
+          // Typewriter activation at 90%
           if (ratio >= 0.9 && !effectsActivated.typewriter) {
             setEffectsActivated((prev) => ({ ...prev, typewriter: true }));
 
@@ -63,7 +59,7 @@ const Rebecca = memo(() => {
             if (line2) line2.classList.add("typewriter-active");
           }
 
-          // Control Botón WhatsApp (95% visible)
+          // WhatsApp button activation at 95%
           if (ratio >= 0.95 && !effectsActivated.button) {
             setEffectsActivated((prev) => ({ ...prev, button: true }));
             setIsCtaButtonVisible(true);
@@ -74,7 +70,7 @@ const Rebecca = memo(() => {
             setIsCtaTextVisible(false);
           }
 
-          // Reset completo (10% visible)
+          // Reset all effects at 10%
           if (
             ratio < 0.1 &&
             (effectsActivated.typewriter || effectsActivated.button)
@@ -101,7 +97,7 @@ const Rebecca = memo(() => {
         });
       },
       {
-        threshold: [0, 0.1, 0.3, 0.9, 0.95, 1], // Solo los thresholds necesarios
+        threshold: [0, 0.1, 0.3, 0.9, 0.95, 1],
       }
     );
 
@@ -114,18 +110,16 @@ const Rebecca = memo(() => {
         observer.unobserve(ctaSectionRef.current);
       }
     };
-  }, [effectsActivated]); // Dependencia simplificada
+  }, [effectsActivated]);
 
-  // 🎯 Listener para redimensionamiento de ventana para mejorar responsividad
+  // Window resize handler for responsive typewriter animation
   useEffect(() => {
     const handleResize = () => {
-      // Forzar recálculo de estilos del subtítulo para mejor adaptabilidad
       const lines = document.querySelectorAll(
         ".subtitle-line-1, .subtitle-line-2"
       );
       lines.forEach((line) => {
         const element = line as HTMLElement;
-        // Forzar reflow para recalcular dimensiones responsive
         element.style.display = "none";
         element.offsetHeight; // Trigger reflow
         element.style.display = "block";
@@ -135,7 +129,7 @@ const Rebecca = memo(() => {
     let resizeTimeout: number;
     const debouncedResize = () => {
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(handleResize, 250); // Debounce para performance
+      resizeTimeout = setTimeout(handleResize, 250);
     };
 
     window.addEventListener("resize", debouncedResize);
@@ -145,10 +139,9 @@ const Rebecca = memo(() => {
     };
   }, []);
 
-  // 🎯 ESTADO PARA MODAL DE CRÉDITOS
   const [showCreditsModal, setShowCreditsModal] = useState(false);
 
-  // SISTEMA DE CURSOR CAD SIMPLIFICADO
+  // Sistema de cursor CAD
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -159,13 +152,11 @@ const Rebecca = memo(() => {
     ) as HTMLDivElement | null;
     if (!cursorCross) {
       cursorCross = document.createElement("div");
-      cursorCross.className = "cursor-cross visible"; // Siempre visible
+      cursorCross.className = "cursor-cross visible";
       container.appendChild(cursorCross);
     }
 
-    // Handler unificado: Solo actualizar posición del cursor
     const handleCursorMove = (e: MouseEvent) => {
-      // Detección de zona CTA para ocultar cursor
       const ctaSection = document.getElementById("cta-section");
       let inCTA = false;
 
@@ -184,7 +175,6 @@ const Rebecca = memo(() => {
         container.style.setProperty("--cursor-y", "-100px");
       } else {
         cursorCross.style.display = "block";
-        // 🎯 Actualizar posición del cursor CAD
         requestAnimationFrame(() => {
           container.style.setProperty("--cursor-x", `${e.clientX}px`);
           container.style.setProperty("--cursor-y", `${e.clientY}px`);
@@ -202,7 +192,6 @@ const Rebecca = memo(() => {
       cursorCross.style.display = "block";
     };
 
-    // Listeners simplificados
     document.addEventListener("mousemove", handleCursorMove);
     container.addEventListener("mouseleave", handleMouseLeave);
     container.addEventListener("mouseenter", handleMouseEnter);
@@ -279,7 +268,6 @@ const Rebecca = memo(() => {
               </span>
             </h2>
 
-            {/* Subtítulo CTA */}
             <div className="cta-subtitle-space">
               <p className="cta-subtitle">
                 <span
@@ -297,7 +285,6 @@ const Rebecca = memo(() => {
               </p>
             </div>
 
-            {/* Botón CTA */}
             <div
               className={`cta-button-container ${
                 isCtaButtonVisible ? "visible" : "hidden"
@@ -306,7 +293,6 @@ const Rebecca = memo(() => {
               <div
                 className="cta-button-wrapper"
                 onClick={() => {
-                  // 🔧 OPTIMIZACIÓN: Prevenir clicks múltiples rápidos
                   if (isClickProcessing) return;
 
                   setIsClickProcessing(true);
@@ -324,7 +310,6 @@ const Rebecca = memo(() => {
                   wrapper.classList.remove("hover-active");
                 }}
               >
-                {/* Imagen del botón optimizada */}
                 <img
                   src={CTAButtonImage}
                   alt="WhatsApp Button"
@@ -333,7 +318,6 @@ const Rebecca = memo(() => {
                   decoding="async"
                 />
 
-                {/* Texto del botón adaptado a la pantalla rectangular existente */}
                 <div
                   className={`cta-button-text-overlay center-absolute flex-center ${
                     isCtaTextVisible ? "text-visible" : "text-hidden"
@@ -350,7 +334,6 @@ const Rebecca = memo(() => {
 
         <footer className="footer-reveal" id="footer-reveal">
           <div className="footer-content">
-            {/* COLUMNA IZQUIERDA: Newsletter + AI Matrix Button */}
             <div className="footer-info">
               <NewsletterForm />
 
@@ -368,18 +351,14 @@ const Rebecca = memo(() => {
                   }}
                 >
                   <div className="ai-matrix-container">
-                    {/* 🏹 TRIÁNGULO GEOMÉTRICO SIMPLE APUNTANDO A LA IZQUIERDA */}
                     <div className="data-matrix arrow-shape">
-                      {/* Contenedor principal del triángulo */}
                       <div className="data-stream ds1 triangle-container"></div>
-                    </div>
-
+                    </div>{" "}
                     <div className="hologram-layers">
                       <div className="holo-layer layer1"></div>
                       <div className="holo-layer layer2"></div>
                       <div className="holo-layer layer3"></div>
                     </div>
-
                     <div className="holo-text">
                       <span
                         className="text-glitch"
@@ -388,14 +367,12 @@ const Rebecca = memo(() => {
                         VOLVER AL INICIO
                       </span>
                     </div>
-
                     <div className="depth-scanner"></div>
                   </div>
                 </button>
               </div>
             </div>
 
-            {/* COLUMNA CENTRO: Robot3D + Créditos + Copyright */}
             <div className="footer-robot">
               <div className="robot-3d-container">
                 <Robot3D
@@ -406,7 +383,6 @@ const Rebecca = memo(() => {
                 />
               </div>
 
-              {/* 🎯 CRÉDITOS DIRECTAMENTE DEBAJO DEL ROBOT */}
               <div className="footer-credits">
                 <button
                   className="credits-link"
@@ -418,7 +394,6 @@ const Rebecca = memo(() => {
               </div>
             </div>
 
-            {/* COLUMNA DERECHA: Información de Contacto */}
             <div className="contact-info">
               <h4>PONTE EN CONTACTO</h4>
 
@@ -462,7 +437,6 @@ const Rebecca = memo(() => {
         </footer>
       </div>
 
-      {/* � MODAL OFICIAL DE CRÉDITOS - CONTENEDOR TECNOLÓGICO */}
       {showCreditsModal &&
         createPortal(
           <div
