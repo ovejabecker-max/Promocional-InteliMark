@@ -152,8 +152,6 @@ const Rebecca = memo(() => {
             <div className="pulse-ring"></div>
             <div className="rotating-ring-outer"></div>
             <div className="rotating-ring-inner"></div>
-            <div className="particle-ring"></div>
-            <div className="energy-pulse"></div>
             <div className="wave-effect"></div>
           </div>
         </div>
@@ -203,7 +201,7 @@ const Rebecca = memo(() => {
               </span>
             </h2>
 
-            <div className="cta-subtitle-space">
+            <div className="cta-subtitle">
               <p className="cta-subtitle">
                 <span
                   className="subtitle-line-1 typewriter-line"
@@ -265,8 +263,6 @@ const Rebecca = memo(() => {
                   }`}
                 >
                   <span className="cta-button-text-display">WHATSAPP</span>
-                  <div className="digital-glitch-overlay"></div>
-                  <div className="electrical-interference"></div>
                 </div>
               </div>
             </div>
@@ -293,12 +289,7 @@ const Rebecca = memo(() => {
                 >
                   <div className="ai-matrix-container">
                     <div className="data-matrix arrow-shape">
-                      <div className="data-stream ds1 triangle-container"></div>
-                    </div>{" "}
-                    <div className="hologram-layers">
-                      <div className="holo-layer layer1"></div>
-                      <div className="holo-layer layer2"></div>
-                      <div className="holo-layer layer3"></div>
+                      <div className="triangle-container"></div>
                     </div>
                     <div className="holo-text">
                       <span
@@ -308,6 +299,7 @@ const Rebecca = memo(() => {
                         VOLVER AL INICIO
                       </span>
                     </div>
+                    <div className="hologram-layers"></div>
                     <div className="depth-scanner"></div>
                   </div>
                 </button>
@@ -342,7 +334,7 @@ const Rebecca = memo(() => {
 
               <div className="contact-item general">
                 <div className="contact-icon">
-                  <div className="icon-general">📧</div>
+                  <div>📧</div>
                 </div>
                 <p>info@intelimark.cl</p>
                 <span className="contact-label">Información General</span>
@@ -350,7 +342,7 @@ const Rebecca = memo(() => {
 
               <div className="contact-item commercial">
                 <div className="contact-icon">
-                  <div className="icon-commercial">💼</div>
+                  <div>💼</div>
                 </div>
                 <p>pcarrasco@intelimark.cl</p>
                 <span className="contact-label">Departamento Comercial</span>
@@ -358,7 +350,7 @@ const Rebecca = memo(() => {
 
               <div className="contact-item phone">
                 <div className="contact-icon">
-                  <div className="icon-phone">📱</div>
+                  <div>📱</div>
                 </div>
                 <p>+56 9 4945 9379</p>
                 <span className="contact-label">WhatsApp / Llamadas</span>
@@ -366,7 +358,7 @@ const Rebecca = memo(() => {
 
               <div className="contact-item address">
                 <div className="contact-icon">
-                  <div className="icon-location">📍</div>
+                  <div>📍</div>
                 </div>
                 <p>
                   Alcázar 356, oficina 603
