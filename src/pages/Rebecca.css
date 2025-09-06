@@ -1040,26 +1040,23 @@ body,
 /* 🎯 EFECTOS DE HOVER PARA BOTÓN WHATSAPP */
 .cta-button-wrapper.hover-active {
   opacity: 1;
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-1px) scale(1.01);
   transition: all 0.3s ease;
 }
 
 .cta-button-wrapper.hover-active .cta-button-image {
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 /* 🎯 5. EFECTOS DE HOVER PARA TEXTO "WHATSAPP" */
 .cta-button-wrapper.hover-active .cta-button-text-display {
-  text-shadow: 0 0 6px rgba(255, 140, 0, 0.4),
-    0 0 12px var(--color-orange-primary), 0 0 20px rgba(255, 140, 0, 0.6);
+  text-shadow: 0 0 4px rgba(255, 140, 0, 0.3);
   color: var(--color-orange-primary);
-  transform: scale(1.02);
-  filter: brightness(1.1);
 }
 
 /* 🎯 6. ESTADO ACTIVE (CLICK) DEL BOTÓN */
 .cta-button-wrapper:active {
-  transform: scale(1.02) translateY(-1px);
+  transform: scale(1.01) translateY(-1px);
   transition: transform 0.1s ease;
 }
 
