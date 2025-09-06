@@ -111,12 +111,16 @@ export const useUnifiedBrowserAnimations = (
         }
 
         faviconImg = new Image();
-        faviconImg.src = "/src/assets/favicon_intelimark.png";
+        // 🎯 RUTA COMPATIBLE CON DESARROLLO Y PRODUCCIÓN
+        faviconImg.src = "/favicon.ico";
         faviconImg.onload = () => {
           isImageLoaded = true;
+          console.log("✅ Favicon cargado exitosamente");
         };
         faviconImg.onerror = () => {
-          console.warn("Error al cargar favicon image");
+          console.warn("⚠️ Error al cargar favicon, usando fallback");
+          // Fallback: usar el favicon por defecto del documento
+          isImageLoaded = false;
         };
       }
     }
@@ -318,15 +322,19 @@ export const useUnifiedBrowserAnimations = (
       }
     };
 
-    // 🎯 PAUSAR DURANTE INTERACCIONES CRÍTICAS
+    // 🎯 PAUSAR SOLO DURANTE INTERACCIONES CRÍTICAS (DESHABILITADO TEMPORALMENTE)
     const handleUserInteraction = () => {
-      // 🛑 PARADA TEMPORAL más agresiva durante interacciones
+      // 🛑 DESHABILITADO: El sistema de pausa/reanudación estaba causando overhead
+      // Comentado para mejorar performance
+      console.log(
+        "🔍 Click detectado - sistema de pausa deshabilitado para mejor performance"
+      );
+      /*
       if (globalAnimationId) {
         cancelAnimationFrame(globalAnimationId);
         globalAnimationId = null;
         console.log("⏸️ Animaciones pausadas por interacción del usuario");
 
-        // ⏱️ REANUDAR CON DELAY más largo para reducir conflictos
         setTimeout(() => {
           if (
             isActiveRef.current &&
@@ -337,8 +345,9 @@ export const useUnifiedBrowserAnimations = (
             console.log("▶️ Animaciones reanudadas después de interacción");
             globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
           }
-        }, 200); // Aumentado de 100ms a 200ms
+        }, 200);
       }
+      */
     };
 
     // 🚀 INICIALIZACIÓN DE EVENT LISTENERS
