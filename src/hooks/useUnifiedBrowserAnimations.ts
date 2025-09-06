@@ -111,16 +111,26 @@ export const useUnifiedBrowserAnimations = (
         }
 
         faviconImg = new Image();
-        // 🎯 RUTA COMPATIBLE CON DESARROLLO Y PRODUCCIÓN
-        faviconImg.src = "/favicon.ico";
+        // 🎯 USAR PNG EN LUGAR DE ICO PARA MEJOR COMPATIBILIDAD CON CANVAS
+        faviconImg.src = "/favicon.png";
         faviconImg.onload = () => {
           isImageLoaded = true;
-          console.log("✅ Favicon cargado exitosamente");
+          console.log("✅ Favicon PNG cargado exitosamente");
         };
         faviconImg.onerror = () => {
-          console.warn("⚠️ Error al cargar favicon, usando fallback");
-          // Fallback: usar el favicon por defecto del documento
-          isImageLoaded = false;
+          console.warn("⚠️ Error al cargar favicon PNG, intentando con ICO");
+          // Fallback: intentar con favicon.ico
+          if (faviconImg) {
+            faviconImg.src = "/favicon.ico";
+            faviconImg.onload = () => {
+              isImageLoaded = true;
+              console.log("✅ Favicon ICO cargado como fallback");
+            };
+            faviconImg.onerror = () => {
+              console.error("❌ Error al cargar ambos favicon (PNG y ICO)");
+              isImageLoaded = false;
+            };
+          }
         };
       }
     }
