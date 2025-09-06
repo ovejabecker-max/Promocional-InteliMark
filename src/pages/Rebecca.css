@@ -161,19 +161,17 @@ body,
   font-size: 18px;
   line-height: 1.6;
 
-  /* 🎯 FONDO NEGRO SÓLIDO PREMIUM */
+  /* Fondo negro sólido premium */
   background: var(--color-black);
 
-  /* 🔧 Cursor personalizado para todo el contenedor */
-  cursor: none;
+  /* Cursor CAD simplificado */
+  cursor: crosshair;
   box-sizing: border-box;
   scroll-behavior: auto;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-/* 🎯 CURSOR CAD - DUPLICADOS ELIMINADOS (ya está definido arriba) */
 
 /* 2️⃣ BOTÓN VAPI CHAT - ELEMENTO CENTRAL PRINCIPAL */
 
@@ -248,48 +246,6 @@ body,
 }
 
 /* 5️⃣ SISTEMA DE ANILLOS - EFECTOS VISUALES PARA BOTÓN VAPI */
-
-/* ============================================================================
-   🎯 CURSOR CAD PERSONALIZADO - SISTEMA DE CRUZ TECNOLÓGICA
-   ============================================================================ */
-.rebecca-container .cursor-cross {
-  position: fixed;
-  width: 25px;
-  height: 25px;
-  left: var(--cursor-x, -100px);
-  top: var(--cursor-y, -100px);
-  background: linear-gradient(
-      to right,
-      transparent 11px,
-      var(--color-orange-alpha-80) 11px,
-      var(--color-orange-alpha-80) 14px,
-      transparent 14px
-    ),
-    linear-gradient(
-      to bottom,
-      transparent 11px,
-      var(--color-orange-alpha-80) 11px,
-      var(--color-orange-alpha-80) 14px,
-      transparent 14px
-    );
-  pointer-events: none;
-  z-index: 50; /* 🔧 FIX: Z-index reducido de 9999 a valor razonable */
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  /* 🎯 TRANSITION CONSOLIDADA ARRIBA */
-  will-change: transform, opacity;
-}
-
-/* 🎯 CURSOR CAD - CRUZ VISIBLE */
-.rebecca-container .cursor-cross.visible {
-  opacity: 1 !important;
-}
-
-/* 🎯 CURSOR CAD - OCULTO POR EFECTOS ESPECIALES */
-
-/* 🎯 CURSOR CAD - CUADRADO CENTRAL DE MIRA - REMOVIDO (OPACITY: 0 PERMANENTE) */
-
-/* 🎯 CURSOR CAD - ELEMENTOS REMOVIDOS (OPACITY: 0 PERMANENTE) */
 
 /* ============================================================================
    2️⃣ BOTÓN VAPI CHAT - ELEMENTO CENTRAL PRINCIPAL
@@ -516,13 +472,7 @@ body,
   animation: wave-expansion 8s ease-out infinite;
 }
 
-/* � CONSOLIDACIÓN DE TRANSICIONES - EFECTOS DE OPACIDAD */
-.rebecca-container .cursor-cross,
-.rebecca-container.custom-cursor::after {
-  transition: opacity 0.1s ease;
-}
-
-/* �🌈 ANIMACIONES */
+/* 🌈 ANIMACIONES */
 
 /* 🎯 CONSOLIDACIÓN DE ANIMACIONES METÁLICAS */
 .glow-ring {
@@ -546,33 +496,6 @@ body,
 /* 🎯 ANIMACIÓN PREMIUM DE ESCANEO LÁSER INTELIMARK */
 
 /* ⚡ ANIMACIÓN DE INTENSIDAD LÁSER */
-
-/* � ANIMACIÓN AWWWARDS: FLUJO DE MATRIZ DE DATOS */
-/* 💬 TOOLTIP QUE SIGUE AL CURSOR */
-.cursor-tooltip {
-  position: fixed;
-  background: var(--color-orange-alpha-10);
-  color: var(--color-white-alpha-80);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 400;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 45;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  font-family: "Oxanium", monospace;
-  backdrop-filter: none;
-  transform: translate(15px, -50%);
-  border: 1px solid var(--color-orange-alpha-20);
-}
-
-.cursor-tooltip[style*="opacity: 1"] {
-  backdrop-filter: blur(5px); /* 🎯 OPTIMIZADO: Blur solo cuando visible */
-}
-
-/* --- FIN OPTIMIZACIÓN --- */
 
 /* 🌀 ANIMACIONES DIGITALES */
 /* digitalGlitch - REMOVIDA (NO SE USA EN EL CÓDIGO) */
@@ -875,6 +798,9 @@ body,
 
   /* 🔑 ESTRUCTURAL: Permite que el componente FuenteCero se posicione correctamente */
   min-height: 100vh;
+
+  /* Cursor normal para interacciones */
+  cursor: default;
 }
 
 /* 🎯 CONTENIDO INTERNO DEL CTA */
@@ -902,11 +828,6 @@ body,
 /* ============================================================================
    3️⃣ FASE 3: EFECTOS QUE INTERACTÚAN CON LA LLUVIA + AURA LUMINOSA
    ============================================================================ */
-
-/* 🌟 CURSOR PERSONALIZADO DENTRO DEL CTA */
-.call-to-action-section.active-effect {
-  cursor: none;
-}
 
 /* 🎯 AURA LUMINOSA QUE PERSIGUE AL MOUSE */
 .call-to-action-section .cta-content {
@@ -1141,7 +1062,7 @@ body,
 .cta-button-wrapper {
   position: relative;
   display: inline-block;
-  cursor: none; /* 🔧 FIX: Sin cursor nativo - usa cursor CAD personalizado */
+  cursor: crosshair;
   opacity: 0.8;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
