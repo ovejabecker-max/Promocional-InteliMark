@@ -53,18 +53,6 @@ export const useUnifiedBrowserAnimations = (
 
   const isActiveRef = useRef<boolean>(false);
 
-  // 🔍 HELPER: Detectar si elemento está en viewport (para pausar favicon cuando Robot3D visible)
-  const isElementInViewport = (element: HTMLElement): boolean => {
-    const rect = element.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  };
-
   useEffect(() => {
     // 🛡️ SINGLETON MEJORADO: Prevenir múltiples instancias activas
     if (globalIsActive) {
@@ -83,6 +71,16 @@ export const useUnifiedBrowserAnimations = (
     globalIsActive = true;
     isActiveRef.current = true;
     console.log("🚀 Nueva instancia de animación iniciada");
+
+    // ⚡ VARIABLES DE CONTROL OPTIMIZADAS
+    const faviconFrameInterval = 1000 / ANIMATION_CONFIG.FAVICON_TARGET_FPS;
+    let lastFaviconUpdate = 0;
+    let startTime: number | null = null;
+    let currentTitleIndex = 0;
+    let lastFaviconDataURL = "";
+    let faviconFrameCount = 0;
+    let titleInterval: number | null = null;
+    let titleFrames: string[] = [];
 
     // 🎯 INICIALIZACIÓN DE ELEMENTOS DOM
     let favicon: HTMLLinkElement | null = null;
@@ -135,8 +133,7 @@ export const useUnifiedBrowserAnimations = (
       }
     }
 
-    // 📝 CONFIGURACIÓN DEL TÍTULO
-    let titleFrames: string[] = [];
+    // 📝 SISTEMA SEPARADO DE TÍTULO (Optimizado con setInterval)
     if (enableTitle) {
       // Establecer título inicial inmediatamente
       document.title = TITLE_CONFIG.STATIC_PART.slice(0, -3); // "InteliMark"
@@ -155,79 +152,33 @@ export const useUnifiedBrowserAnimations = (
           prefix + rotated.substring(0, TITLE_CONFIG.VISIBLE_WIDTH)
         );
       }
+
+      // 🎯 TÍTULO INDEPENDIENTE: setInterval optimizado sin overhead del loop principal
+      titleInterval = setInterval(() => {
+        if (!document.hidden && enableTitle && titleFrames.length > 0) {
+          document.title = titleFrames[currentTitleIndex];
+          currentTitleIndex = (currentTitleIndex + 1) % titleFrames.length;
+        }
+      }, ANIMATION_CONFIG.TITLE_UPDATE_INTERVAL);
     }
 
-    // ⚡ VARIABLES DE CONTROL DE PERFORMANCE
-    const frameInterval = 1000 / ANIMATION_CONFIG.TARGET_FPS;
-    const faviconFrameInterval = 1000 / ANIMATION_CONFIG.FAVICON_TARGET_FPS; // ⚡ Intervalo específico favicon
-    let lastFrameTime = 0;
-    let lastTitleUpdate = 0;
-    let lastFaviconUpdate = 0; // ⚡ Control separado para favicon
-    let startTime: number | null = null;
-    let currentTitleIndex = 0;
-    let lastFaviconDataURL = "";
-    let faviconFrameCount = 0; // ⚡ Contador para throttling escalonado
-
-    // 🎬 BUCLE PRINCIPAL UNIFICADO DE ANIMACIÓN CON CONTROL ESTRICTO
-    const unifiedAnimationLoop = (timestamp: number) => {
-      // 🛑 VERIFICACIÓN ESTRICTA: Triple validación para evitar bucles infinitos
+    // 🎬 BUCLE PRINCIPAL OPTIMIZADO EXCLUSIVAMENTE PARA FAVICON
+    // 🎬 BUCLE PRINCIPAL OPTIMIZADO EXCLUSIVAMENTE PARA FAVICON
+    const faviconAnimationLoop = (timestamp: number) => {
+      // � VERIFICACIÓN SIMPLIFICADA: Solo para favicon
       if (!isActiveRef.current || !globalIsActive || document.hidden) {
         if (globalAnimationId) {
           cancelAnimationFrame(globalAnimationId);
           globalAnimationId = null;
         }
-        globalIsActive = false; // Asegurar estado global limpio
-        return; // ✋ SALIR COMPLETAMENTE sin programar próximo frame
-      }
-
-      // 🚀 THROTTLING AGRESIVO: Control estricto de FPS
-      if (timestamp - lastFrameTime < frameInterval) {
-        // ⚡ THROTTLING CON VALIDACIÓN: Solo continuar si realmente activo
-        if (isActiveRef.current && globalIsActive && !document.hidden) {
-          globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
-        } else {
-          // 🛑 Si las condiciones cambiaron durante throttling, cancelar
-          if (globalAnimationId) {
-            cancelAnimationFrame(globalAnimationId);
-            globalAnimationId = null;
-          }
-          globalIsActive = false;
-        }
+        globalIsActive = false;
         return;
       }
 
       // Inicializar tiempo de inicio
       if (!startTime) startTime = timestamp;
 
-      // 📝 ACTUALIZACIÓN DEL TÍTULO (con throttling agresivo mejorado)
-      if (enableTitle && titleFrames.length > 0) {
-        const titleElapsed = timestamp - lastTitleUpdate;
-        const titleShouldUpdate =
-          titleElapsed >= ANIMATION_CONFIG.TITLE_UPDATE_INTERVAL;
-
-        if (titleShouldUpdate) {
-          const currentFrame = titleFrames[currentTitleIndex];
-          if (currentFrame && document.title !== currentFrame) {
-            document.title = currentFrame;
-            console.log(
-              `🔤 Título actualizado: frame ${currentTitleIndex}/${titleFrames.length}`
-            );
-          }
-          currentTitleIndex = (currentTitleIndex + 1) % titleFrames.length;
-          lastTitleUpdate = timestamp; // ⚡ Asegurar que se actualice el timestamp
-        }
-
-        // 🛑 EARLY RETURN: Si solo necesitábamos actualizar título, salir temprano
-        if (titleShouldUpdate && !enableFavicon) {
-          lastFrameTime = timestamp;
-          if (isActiveRef.current && globalIsActive && !document.hidden) {
-            globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
-          }
-          return;
-        }
-      }
-
-      // 🎨 ACTUALIZACIÓN DEL FAVICON (optimizada con throttling escalonado)
+      // 🎨 ACTUALIZACIÓN EXCLUSIVA DEL FAVICON
       if (
         enableFavicon &&
         faviconCtx &&
@@ -243,61 +194,48 @@ export const useUnifiedBrowserAnimations = (
             (elapsedTime % faviconRotationDuration) / faviconRotationDuration;
           const currentAngle = rotationProgress * Math.PI * 2;
 
-          // 🎯 DETECCIÓN INTELIGENTE: Pausar favicon si Robot3D está activo en viewport
-          const robot3DContainer = document.querySelector(
-            ".robot-3d-container"
-          );
-          const isRobot3DVisible = robot3DContainer
-            ? isElementInViewport(robot3DContainer as HTMLElement)
-            : false;
+          // 🚀 RENDERIZADO OPTIMIZADO CON requestIdleCallback
+          const renderFaviconOperation = () => {
+            // Renderizar favicon con rotación 3D
+            faviconCtx.clearRect(0, 0, faviconSize, faviconSize);
+            faviconCtx.save();
+            faviconCtx.translate(faviconSize / 2, faviconSize / 2);
 
-          if (isRobot3DVisible) {
-            // Pausar favicon cuando Robot3D está visible para reducir overhead
-            // No hacer return aquí, continuar con el bucle pero saltarse el favicon
-          } else {
-            // 🚀 RENDERIZADO OPTIMIZADO CON requestIdleCallback (solo si Robot3D no visible)
-            const renderFaviconOperation = () => {
-              // Renderizar favicon con rotación 3D
-              faviconCtx.clearRect(0, 0, faviconSize, faviconSize);
-              faviconCtx.save();
-              faviconCtx.translate(faviconSize / 2, faviconSize / 2);
+            // Efecto 3D: escalado en X según el coseno del ángulo
+            const scaleX = Math.cos(currentAngle);
+            faviconCtx.scale(scaleX, 1);
 
-              // Efecto 3D: escalado en X según el coseno del ángulo
-              const scaleX = Math.cos(currentAngle);
-              faviconCtx.scale(scaleX, 1);
+            faviconCtx.drawImage(
+              faviconImg,
+              -faviconSize / 2,
+              -faviconSize / 2,
+              faviconSize,
+              faviconSize
+            );
 
-              faviconCtx.drawImage(
-                faviconImg,
-                -faviconSize / 2,
-                -faviconSize / 2,
-                faviconSize,
-                faviconSize
-              );
+            faviconCtx.restore();
 
-              faviconCtx.restore();
-
-              // 🎯 TRIPLE THROTTLING ESCALONADO: Solo actualizar cada 3 frames para máxima eficiencia
-              faviconFrameCount++;
-              if (faviconFrameCount % 3 === 0) {
-                const newDataURL = faviconCanvas.toDataURL("image/png");
-                if (
-                  favicon.href !== newDataURL &&
-                  lastFaviconDataURL !== newDataURL
-                ) {
-                  favicon.href = newDataURL;
-                  lastFaviconDataURL = newDataURL;
-                }
+            // 🎯 TRIPLE THROTTLING ESCALONADO: Solo actualizar cada 3 frames para máxima eficiencia
+            faviconFrameCount++;
+            if (faviconFrameCount % 3 === 0) {
+              const newDataURL = faviconCanvas.toDataURL("image/png");
+              if (
+                favicon.href !== newDataURL &&
+                lastFaviconDataURL !== newDataURL
+              ) {
+                favicon.href = newDataURL;
+                lastFaviconDataURL = newDataURL;
               }
-            };
-
-            // 🌟 OPTIMIZACIÓN HÍBRIDA: requestIdleCallback si está disponible
-            if ("requestIdleCallback" in window) {
-              (window as any).requestIdleCallback(renderFaviconOperation, {
-                timeout: faviconFrameInterval,
-              });
-            } else {
-              renderFaviconOperation();
             }
+          };
+
+          // 🌟 OPTIMIZACIÓN HÍBRIDA: requestIdleCallback si está disponible
+          if ("requestIdleCallback" in window) {
+            (window as any).requestIdleCallback(renderFaviconOperation, {
+              timeout: faviconFrameInterval,
+            });
+          } else {
+            renderFaviconOperation();
           }
 
           lastFaviconUpdate = timestamp;
@@ -306,21 +244,17 @@ export const useUnifiedBrowserAnimations = (
         }
       }
 
-      lastFrameTime = timestamp;
-
-      // 🔄 PROGRAMAR PRÓXIMO FRAME CON VALIDACIÓN TRIPLE
-      // Solo continuar si TODAS las condiciones se mantienen activas
+      // 🔄 PROGRAMAR PRÓXIMO FRAME SOLO SI HAY FAVICON ACTIVO
       if (isActiveRef.current && globalIsActive && !document.hidden) {
-        globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
+        globalAnimationId = requestAnimationFrame(faviconAnimationLoop);
       } else {
-        // 🛑 LIMPIEZA AGRESIVA: Si alguna condición falló, limpiar completamente
         if (globalAnimationId) {
           cancelAnimationFrame(globalAnimationId);
           globalAnimationId = null;
         }
         globalIsActive = false;
         isActiveRef.current = false;
-        console.log("🛑 AnimationLoop detenido: condiciones no cumplidas");
+        console.log("🛑 FaviconLoop detenido: condiciones no cumplidas");
       }
     };
 
@@ -341,37 +275,9 @@ export const useUnifiedBrowserAnimations = (
           globalIsActive = true;
           isActiveRef.current = true;
           console.log("▶️ Animaciones reanudadas: pestaña visible");
-          globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
+          globalAnimationId = requestAnimationFrame(faviconAnimationLoop);
         }
       }
-    };
-
-    // 🎯 PAUSAR SOLO DURANTE INTERACCIONES CRÍTICAS (DESHABILITADO TEMPORALMENTE)
-    const handleUserInteraction = () => {
-      // 🛑 DESHABILITADO: El sistema de pausa/reanudación estaba causando overhead
-      // Comentado para mejorar performance
-      console.log(
-        "🔍 Click detectado - sistema de pausa deshabilitado para mejor performance"
-      );
-      /*
-      if (globalAnimationId) {
-        cancelAnimationFrame(globalAnimationId);
-        globalAnimationId = null;
-        console.log("⏸️ Animaciones pausadas por interacción del usuario");
-
-        setTimeout(() => {
-          if (
-            isActiveRef.current &&
-            globalIsActive &&
-            !document.hidden &&
-            !globalAnimationId
-          ) {
-            console.log("▶️ Animaciones reanudadas después de interacción");
-            globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
-          }
-        }, 200);
-      }
-      */
     };
 
     // 🚀 INICIALIZACIÓN DE EVENT LISTENERS
@@ -379,15 +285,10 @@ export const useUnifiedBrowserAnimations = (
       passive: true,
     });
 
-    // Pausar durante clicks importantes para mejor UX
-    document.addEventListener("click", handleUserInteraction, {
-      passive: true,
-    });
-
     // ▶️ INICIALIZACIÓN CONTROLADA DE ANIMACIÓN
     if (!document.hidden && !globalAnimationId) {
-      console.log("🚀 Iniciando sistema de animaciones unificadas");
-      globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
+      console.log("🚀 Iniciando sistema de animaciones optimizado");
+      globalAnimationId = requestAnimationFrame(faviconAnimationLoop);
     }
 
     // 🧹 FUNCIÓN DE LIMPIEZA EXHAUSTIVA
@@ -407,8 +308,14 @@ export const useUnifiedBrowserAnimations = (
 
       // 🧹 LIMPIEZA DE EVENT LISTENERS
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      document.removeEventListener("click", handleUserInteraction);
       console.log("✅ Event listeners removidos");
+
+      // 🧹 LIMPIEZA DEL TÍTULO SEPARADO
+      if (titleInterval) {
+        clearInterval(titleInterval);
+        titleInterval = null;
+        console.log("✅ Título interval limpiado");
+      }
 
       // 🔄 RESTAURACIÓN DEL TÍTULO
       if (enableTitle) {

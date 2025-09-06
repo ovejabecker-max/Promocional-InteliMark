@@ -2161,13 +2161,15 @@ body,
 .text-glitch::before {
   color: #ff8c33;
   z-index: -1;
-  animation: glitchShift1 0.3s ease-in-out infinite alternate;
+  /* ✅ OPTIMIZADO: Sin animación por defecto - NO consume recursos */
+  animation: none;
 }
 
 .text-glitch::after {
   color: #ffa500;
   z-index: -2;
-  animation: glitchShift2 0.3s ease-in-out infinite alternate-reverse;
+  /* ✅ OPTIMIZADO: Sin animación por defecto - NO consume recursos */
+  animation: none;
 }
 
 /* 🔮 SCANNER DE PROFUNDIDAD */
@@ -2363,6 +2365,15 @@ body,
 .ai-matrix-button:hover .text-glitch::before,
 .ai-matrix-button:hover .text-glitch::after {
   opacity: 0.7;
+}
+
+/* ✅ ACTIVAR ANIMACIONES SOLO EN HOVER - Optimización de recursos */
+.ai-matrix-button:hover .text-glitch::before {
+  animation: glitchShift1 0.3s ease-in-out infinite alternate;
+}
+
+.ai-matrix-button:hover .text-glitch::after {
+  animation: glitchShift2 0.3s ease-in-out infinite alternate-reverse;
 }
 
 .ai-matrix-button:hover .depth-scanner {
