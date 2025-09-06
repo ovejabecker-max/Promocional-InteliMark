@@ -36,7 +36,7 @@ interface UnifiedBrowserAnimationsConfig {
   enableTitle?: boolean;
 }
 
-// 🌟 SISTEMA SINGLETON GLOBAL PARA EVITAR MÚLTIPLES INSTANCIAS
+// 🌟 SISTEMA SINGLETON GLOBAL MEJORADO PARA EVITAR MÚLTIPLES INSTANCIAS
 let globalAnimationId: number | null = null;
 let globalIsActive = false;
 
@@ -66,13 +66,23 @@ export const useUnifiedBrowserAnimations = (
   };
 
   useEffect(() => {
-    // 🛡️ SINGLETON: Prevenir múltiples instancias activas
+    // 🛡️ SINGLETON MEJORADO: Prevenir múltiples instancias activas
     if (globalIsActive) {
+      console.warn(
+        "⚠️ Intento de crear múltiples instancias de animación. Ignorando."
+      );
       return;
+    }
+
+    // 🔄 RESET PREVENTIVO: Limpiar cualquier estado residual
+    if (globalAnimationId) {
+      cancelAnimationFrame(globalAnimationId);
+      globalAnimationId = null;
     }
 
     globalIsActive = true;
     isActiveRef.current = true;
+    console.log("🚀 Nueva instancia de animación iniciada");
 
     // 🎯 INICIALIZACIÓN DE ELEMENTOS DOM
     let favicon: HTMLLinkElement | null = null;
@@ -144,22 +154,30 @@ export const useUnifiedBrowserAnimations = (
     let lastFaviconDataURL = "";
     let faviconFrameCount = 0; // ⚡ Contador para throttling escalonado
 
-    // 🎬 BUCLE PRINCIPAL UNIFICADO DE ANIMACIÓN
+    // 🎬 BUCLE PRINCIPAL UNIFICADO DE ANIMACIÓN CON CONTROL ESTRICTO
     const unifiedAnimationLoop = (timestamp: number) => {
-      // 🛑 VERIFICAR SI DEBE CONTINUAR - Si no, cancelar y salir completamente
-      if (!isActiveRef.current || !globalIsActive) {
+      // 🛑 VERIFICACIÓN ESTRICTA: Triple validación para evitar bucles infinitos
+      if (!isActiveRef.current || !globalIsActive || document.hidden) {
         if (globalAnimationId) {
           cancelAnimationFrame(globalAnimationId);
           globalAnimationId = null;
         }
-        return; // Salir sin programar próximo frame
+        globalIsActive = false; // Asegurar estado global limpio
+        return; // ✋ SALIR COMPLETAMENTE sin programar próximo frame
       }
 
-      // 🚀 THROTTLING GLOBAL: Controlar FPS general
+      // 🚀 THROTTLING AGRESIVO: Control estricto de FPS
       if (timestamp - lastFrameTime < frameInterval) {
-        // Solo programar próximo frame si aún está activo
-        if (isActiveRef.current && globalIsActive) {
+        // ⚡ THROTTLING CON VALIDACIÓN: Solo continuar si realmente activo
+        if (isActiveRef.current && globalIsActive && !document.hidden) {
           globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
+        } else {
+          // 🛑 Si las condiciones cambiaron durante throttling, cancelar
+          if (globalAnimationId) {
+            cancelAnimationFrame(globalAnimationId);
+            globalAnimationId = null;
+          }
+          globalIsActive = false;
         }
         return;
       }
@@ -262,29 +280,39 @@ export const useUnifiedBrowserAnimations = (
 
       lastFrameTime = timestamp;
 
-      // 🔄 PROGRAMAR PRÓXIMO FRAME SOLO SI ESTÁ ACTIVO
-      if (isActiveRef.current && globalIsActive) {
+      // 🔄 PROGRAMAR PRÓXIMO FRAME CON VALIDACIÓN TRIPLE
+      // Solo continuar si TODAS las condiciones se mantienen activas
+      if (isActiveRef.current && globalIsActive && !document.hidden) {
         globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
       } else {
-        // 🛑 ASEGURAR CANCELACIÓN SI CONDICIONES CAMBIARON
+        // 🛑 LIMPIEZA AGRESIVA: Si alguna condición falló, limpiar completamente
         if (globalAnimationId) {
           cancelAnimationFrame(globalAnimationId);
           globalAnimationId = null;
         }
+        globalIsActive = false;
+        isActiveRef.current = false;
+        console.log("🛑 AnimationLoop detenido: condiciones no cumplidas");
       }
     };
 
-    // 👁️ MANEJO DE VISIBILIDAD DE PÁGINA
+    // 👁️ MANEJO ESTRICTO DE VISIBILIDAD DE PÁGINA
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Pausar animaciones cuando la pestaña no es visible
+        // 🛑 PARADA INMEDIATA cuando la pestaña no es visible
+        isActiveRef.current = false;
+        globalIsActive = false;
         if (globalAnimationId) {
           cancelAnimationFrame(globalAnimationId);
           globalAnimationId = null;
         }
+        console.log("🔲 Animaciones pausadas: pestaña oculta");
       } else {
-        // Reanudar animaciones cuando la pestaña vuelve a ser visible
-        if (isActiveRef.current && globalIsActive && !globalAnimationId) {
+        // ▶️ REACTIVACIÓN CONTROLADA cuando la pestaña vuelve a ser visible
+        if (!globalIsActive) {
+          globalIsActive = true;
+          isActiveRef.current = true;
+          console.log("▶️ Animaciones reanudadas: pestaña visible");
           globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
         }
       }
@@ -292,16 +320,24 @@ export const useUnifiedBrowserAnimations = (
 
     // 🎯 PAUSAR DURANTE INTERACCIONES CRÍTICAS
     const handleUserInteraction = () => {
+      // 🛑 PARADA TEMPORAL más agresiva durante interacciones
       if (globalAnimationId) {
         cancelAnimationFrame(globalAnimationId);
         globalAnimationId = null;
+        console.log("⏸️ Animaciones pausadas por interacción del usuario");
 
-        // Reanudar después de breve pausa
+        // ⏱️ REANUDAR CON DELAY más largo para reducir conflictos
         setTimeout(() => {
-          if (isActiveRef.current && globalIsActive && !document.hidden) {
+          if (
+            isActiveRef.current &&
+            globalIsActive &&
+            !document.hidden &&
+            !globalAnimationId
+          ) {
+            console.log("▶️ Animaciones reanudadas después de interacción");
             globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
           }
-        }, 100);
+        }, 200); // Aumentado de 100ms a 200ms
       }
     };
 
@@ -315,30 +351,39 @@ export const useUnifiedBrowserAnimations = (
       passive: true,
     });
 
-    // ▶️ INICIAR ANIMACIÓN PRINCIPAL
-    if (!document.hidden) {
+    // ▶️ INICIALIZACIÓN CONTROLADA DE ANIMACIÓN
+    if (!document.hidden && !globalAnimationId) {
+      console.log("🚀 Iniciando sistema de animaciones unificadas");
       globalAnimationId = requestAnimationFrame(unifiedAnimationLoop);
     }
 
-    // 🧹 FUNCIÓN DE LIMPIEZA
+    // 🧹 FUNCIÓN DE LIMPIEZA EXHAUSTIVA
     return () => {
+      console.log("🧹 Ejecutando limpieza completa de animaciones");
+
+      // 🛑 PARADA INMEDIATA Y COMPLETA
       isActiveRef.current = false;
       globalIsActive = false;
 
-      // Cancelar animaciones
+      // 🔥 CANCELACIÓN AGRESIVA DE ANIMACIONES
       if (globalAnimationId) {
         cancelAnimationFrame(globalAnimationId);
         globalAnimationId = null;
+        console.log("✅ requestAnimationFrame cancelado exitosamente");
       }
 
-      // Limpiar event listeners
+      // 🧹 LIMPIEZA DE EVENT LISTENERS
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       document.removeEventListener("click", handleUserInteraction);
+      console.log("✅ Event listeners removidos");
 
-      // Restaurar título por defecto
+      // 🔄 RESTAURACIÓN DEL TÍTULO
       if (enableTitle) {
         document.title = TITLE_CONFIG.DEFAULT_TITLE;
+        console.log("✅ Título restaurado a estado por defecto");
       }
+
+      console.log("🎯 Limpieza de animaciones completada exitosamente");
     };
   }, [
     faviconSize,
