@@ -13,16 +13,22 @@ import ContenedorCreditos from "../assets/contenedor_creditos.png";
 import "./Rebecca.css";
 
 const Rebecca = memo(() => {
-  // Estados para la sección CTA
-  const [ctaScrollPercent, setCtaScrollPercent] = useState(0);
-  const [isCtaButtonVisible, setIsCtaButtonVisible] = useState(false);
-  const [isCtaTextVisible, setIsCtaTextVisible] = useState(false);
-  const [isClickProcessing, setIsClickProcessing] = useState(false);
+  // Estados consolidados para CTA
+  const [ctaState, setCtaState] = useState({
+    scrollPercent: 0,
+    buttonVisible: false,
+    textVisible: false,
+    clickProcessing: false,
+    effectsActivated: {
+      typewriter: false,
+      button: false,
+      matrix: false,
+    },
+  });
 
-  const [effectsActivated, setEffectsActivated] = useState({
-    typewriter: false,
-    button: false,
-    matrix: false,
+  // Estados de UI
+  const [uiState, setUiState] = useState({
+    showCreditsModal: false,
   });
 
   // Referencias
@@ -35,18 +41,27 @@ const Rebecca = memo(() => {
       (entries) => {
         entries.forEach((entry) => {
           const ratio = entry.intersectionRatio;
-          setCtaScrollPercent(ratio);
+          setCtaState((prev) => ({ ...prev, scrollPercent: ratio }));
 
           // Matrix Rain activation at 30%
-          if (ratio >= 0.3 && !effectsActivated.matrix) {
-            setEffectsActivated((prev) => ({ ...prev, matrix: true }));
-          } else if (ratio < 0.3 && effectsActivated.matrix) {
-            setEffectsActivated((prev) => ({ ...prev, matrix: false }));
+          if (ratio >= 0.3 && !ctaState.effectsActivated.matrix) {
+            setCtaState((prev) => ({
+              ...prev,
+              effectsActivated: { ...prev.effectsActivated, matrix: true },
+            }));
+          } else if (ratio < 0.3 && ctaState.effectsActivated.matrix) {
+            setCtaState((prev) => ({
+              ...prev,
+              effectsActivated: { ...prev.effectsActivated, matrix: false },
+            }));
           }
 
           // Typewriter activation at 90%
-          if (ratio >= 0.9 && !effectsActivated.typewriter) {
-            setEffectsActivated((prev) => ({ ...prev, typewriter: true }));
+          if (ratio >= 0.9 && !ctaState.effectsActivated.typewriter) {
+            setCtaState((prev) => ({
+              ...prev,
+              effectsActivated: { ...prev.effectsActivated, typewriter: true },
+            }));
 
             const line1 = document.querySelector(
               ".subtitle-line-1.typewriter-line"
@@ -60,26 +75,41 @@ const Rebecca = memo(() => {
           }
 
           // WhatsApp button activation at 95%
-          if (ratio >= 0.95 && !effectsActivated.button) {
-            setEffectsActivated((prev) => ({ ...prev, button: true }));
-            setIsCtaButtonVisible(true);
-            setTimeout(() => setIsCtaTextVisible(true), 600);
-          } else if (ratio < 0.3 && effectsActivated.button) {
-            setEffectsActivated((prev) => ({ ...prev, button: false }));
-            setIsCtaButtonVisible(false);
-            setIsCtaTextVisible(false);
+          if (ratio >= 0.95 && !ctaState.effectsActivated.button) {
+            setCtaState((prev) => ({
+              ...prev,
+              effectsActivated: { ...prev.effectsActivated, button: true },
+              buttonVisible: true,
+            }));
+            setTimeout(
+              () => setCtaState((prev) => ({ ...prev, textVisible: true })),
+              600
+            );
+          } else if (ratio < 0.3 && ctaState.effectsActivated.button) {
+            setCtaState((prev) => ({
+              ...prev,
+              effectsActivated: { ...prev.effectsActivated, button: false },
+              buttonVisible: false,
+              textVisible: false,
+            }));
           }
 
           // Reset all effects at 10%
           if (
             ratio < 0.1 &&
-            (effectsActivated.typewriter || effectsActivated.button)
+            (ctaState.effectsActivated.typewriter ||
+              ctaState.effectsActivated.button)
           ) {
-            setEffectsActivated({
-              typewriter: false,
-              button: false,
-              matrix: false,
-            });
+            setCtaState((prev) => ({
+              ...prev,
+              effectsActivated: {
+                typewriter: false,
+                button: false,
+                matrix: false,
+              },
+              buttonVisible: false,
+              textVisible: false,
+            }));
 
             const line1 = document.querySelector(
               ".subtitle-line-1.typewriter-line"
@@ -90,9 +120,6 @@ const Rebecca = memo(() => {
 
             if (line1) line1.classList.remove("typewriter-active");
             if (line2) line2.classList.remove("typewriter-active");
-
-            setIsCtaButtonVisible(false);
-            setIsCtaTextVisible(false);
           }
         });
       },
@@ -110,7 +137,7 @@ const Rebecca = memo(() => {
         observer.unobserve(ctaSectionRef.current);
       }
     };
-  }, [effectsActivated]);
+  }, [ctaState]);
 
   // Window resize handler for responsive typewriter animation
   useEffect(() => {
@@ -138,8 +165,6 @@ const Rebecca = memo(() => {
       clearTimeout(resizeTimeout);
     };
   }, []);
-
-  const [showCreditsModal, setShowCreditsModal] = useState(false);
 
   // Sistema de cursor CAD
   useEffect(() => {
@@ -228,22 +253,24 @@ const Rebecca = memo(() => {
         <section
           ref={ctaSectionRef}
           className={`call-to-action-section ${
-            effectsActivated.matrix ? "active-effect" : ""
+            ctaState.effectsActivated.matrix ? "active-effect" : ""
           }`}
           id="cta-section"
         >
-          {effectsActivated.matrix && <FuenteCero parentRef={ctaSectionRef} />}
+          {ctaState.effectsActivated.matrix && (
+            <FuenteCero parentRef={ctaSectionRef} />
+          )}
 
           <div className="cta-content">
             <h2 className="cta-title cta-title-container">
               <span
                 className={`cta-title-span trabajemos ${
-                  ctaScrollPercent >= 0.3 ? "visible" : ""
+                  ctaState.scrollPercent >= 0.3 ? "visible" : ""
                 }`}
                 style={{
                   transform: `translateX(${
                     -window.innerWidth * 0.7 +
-                    (Math.min(ctaScrollPercent, 0.9) / 0.9) *
+                    (Math.min(ctaState.scrollPercent, 0.9) / 0.9) *
                       window.innerWidth *
                       0.7
                   }px)`,
@@ -253,12 +280,12 @@ const Rebecca = memo(() => {
               </span>
               <span
                 className={`cta-title-span juntos ${
-                  ctaScrollPercent >= 0.3 ? "visible" : ""
+                  ctaState.scrollPercent >= 0.3 ? "visible" : ""
                 }`}
                 style={{
                   transform: `translateX(${
                     window.innerWidth * 0.7 -
-                    (Math.min(ctaScrollPercent, 0.9) / 0.9) *
+                    (Math.min(ctaState.scrollPercent, 0.9) / 0.9) *
                       window.innerWidth *
                       0.7
                   }px)`,
@@ -287,19 +314,25 @@ const Rebecca = memo(() => {
 
             <div
               className={`cta-button-container ${
-                isCtaButtonVisible ? "visible" : "hidden"
+                ctaState.buttonVisible ? "visible" : "hidden"
               }`}
             >
               <div
                 className="cta-button-wrapper"
                 onClick={() => {
-                  if (isClickProcessing) return;
+                  if (ctaState.clickProcessing) return;
 
-                  setIsClickProcessing(true);
+                  setCtaState((prev) => ({ ...prev, clickProcessing: true }));
                   window.open("https://wa.me/56949459379", "_blank");
 
-                  // Reset después de un breve delay
-                  setTimeout(() => setIsClickProcessing(false), 300);
+                  setTimeout(
+                    () =>
+                      setCtaState((prev) => ({
+                        ...prev,
+                        clickProcessing: false,
+                      })),
+                    300
+                  );
                 }}
                 onMouseEnter={(e) => {
                   const wrapper = e.currentTarget;
@@ -320,7 +353,7 @@ const Rebecca = memo(() => {
 
                 <div
                   className={`cta-button-text-overlay center-absolute flex-center ${
-                    isCtaTextVisible ? "text-visible" : "text-hidden"
+                    ctaState.textVisible ? "text-visible" : "text-hidden"
                   }`}
                 >
                   <span className="cta-button-text-display">WHATSAPP</span>
@@ -386,7 +419,9 @@ const Rebecca = memo(() => {
               <div className="footer-credits">
                 <button
                   className="credits-link"
-                  onClick={() => setShowCreditsModal(true)}
+                  onClick={() =>
+                    setUiState((prev) => ({ ...prev, showCreditsModal: true }))
+                  }
                 >
                   VER TODOS LOS CREDITOS
                 </button>
@@ -437,16 +472,20 @@ const Rebecca = memo(() => {
         </footer>
       </div>
 
-      {showCreditsModal &&
+      {uiState.showCreditsModal &&
         createPortal(
           <div
             className="credits-modal-overlay"
-            onClick={() => setShowCreditsModal(false)}
+            onClick={() =>
+              setUiState((prev) => ({ ...prev, showCreditsModal: false }))
+            }
           >
             <div className="credits-modal-container">
               <button
                 className="credits-close-button"
-                onClick={() => setShowCreditsModal(false)}
+                onClick={() =>
+                  setUiState((prev) => ({ ...prev, showCreditsModal: false }))
+                }
               >
                 ✕
               </button>
