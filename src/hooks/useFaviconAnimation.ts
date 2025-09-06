@@ -44,7 +44,7 @@ export const useFaviconAnimation = (config: FaviconAnimationConfig = {}) => {
     }
 
     const faviconImg = new Image();
-    faviconImg.src = "/src/assets/favicon_intelimark.png";
+    faviconImg.src = "/favicon.ico"; // 🎯 RUTA CORREGIDA PARA PRODUCCIÓN
 
     // Obtener o crear favicon link
     let favicon = document.querySelector(
