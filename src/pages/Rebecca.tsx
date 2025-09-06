@@ -19,114 +19,89 @@ const Rebecca = memo(() => {
   const [isCtaTextVisible, setIsCtaTextVisible] = useState(false); // Control de texto
   const [isClickProcessing, setIsClickProcessing] = useState(false); // Control click CTA
 
-  // Banderas para prevenir múltiples activaciones
-  const [typewriterTriggered, setTypewriterTriggered] = useState(false);
-  const [buttonTriggered, setButtonTriggered] = useState(false);
-  const [resetTriggered, setResetTriggered] = useState(false);
-  const [isTypewriterActive, setIsTypewriterActive] = useState(false); // Control del typewriter
-  const [isEffectActive, setIsEffectActive] = useState(false); // Control FuenteCero/Matrix Rain
+  // Banderas simplificadas para control de activación
+  const [effectsActivated, setEffectsActivated] = useState({
+    typewriter: false,
+    button: false,
+    matrix: false,
+  });
 
   // 🎯 ESTADOS CONSOLIDADOS PARA EFECTOS DE HOVER/MOUSE
-  const [isHovering, setIsHovering] = useState(false); // Hover general
+  // Estados removidos para simplificación
 
   // 🎯 REFERENCIAS CONSOLIDADAS PARA EL CTA
   const containerRef = useRef<HTMLDivElement>(null); // Referencia principal del contenedor
-  const tooltipRef = useRef<HTMLDivElement>(null); // Referencia del tooltip
   const ctaSectionRef = useRef<HTMLElement>(null); // Referencia principal de la sección CTA
 
-  // CONTROLADOR DE SCROLL CTA
+  // CONTROLADOR DE SCROLL CTA SIMPLIFICADO
   useEffect(() => {
-    /* 
-    📊 UMBRALES DE ACTIVACIÓN CTA:
-    • Matrix Rain: 30% visible → Activa lluvia de códigos
-    • Typewriter: 90% visible → Inicia animación de escritura
-    • Botón WhatsApp: 95% visible → Aparece botón + texto
-    • Reset: 10% visible → Resetea todos los efectos
-    • Desvanecimiento: 30% visible → Oculta botón
-    */
-
-    // 🎯 Función helper para control de typewriter (CON GUARD)
-    const handleTypewriterControl = (ratio: number, isActive: boolean) => {
-      if (ratio >= 0.9 && !isActive && !typewriterTriggered) {
-        setIsTypewriterActive(true);
-        setTypewriterTriggered(true); // Prevenir múltiples activaciones
-
-        const line1 = document.querySelector(
-          ".subtitle-line-1.typewriter-line"
-        );
-        const line2 = document.querySelector(
-          ".subtitle-line-2.typewriter-line"
-        );
-
-        if (line1) {
-          line1.classList.add("typewriter-active");
-        }
-        if (line2) {
-          line2.classList.add("typewriter-active");
-          console.log("✅ Typewriter línea 2 activada");
-        }
-      }
-    };
-
-    // 🎯 Función helper para control del botón WhatsApp (CON GUARD)
-    const handleButtonControl = (ratio: number) => {
-      if (ratio >= 0.95 && !buttonTriggered) {
-        setIsCtaButtonVisible(true);
-        setButtonTriggered(true); // Prevenir múltiples activaciones
-        setTimeout(() => setIsCtaTextVisible(true), 600);
-      } else if (ratio < 0.3 && buttonTriggered) {
-        setIsCtaButtonVisible(false);
-        setIsCtaTextVisible(false);
-        setButtonTriggered(false); // Reset para permitir reactivación
-      }
-    };
-
-    // 🎯 Función helper para reset completo (CON GUARD)
-    const handleResetEffects = (ratio: number, isActive: boolean) => {
-      if (ratio < 0.1 && isActive && !resetTriggered) {
-        setIsTypewriterActive(false);
-        setTypewriterTriggered(false); // Reset banderas
-        setResetTriggered(true); // Prevenir múltiples resets
-
-        const line1 = document.querySelector(
-          ".subtitle-line-1.typewriter-line"
-        );
-        const line2 = document.querySelector(
-          ".subtitle-line-2.typewriter-line"
-        );
-
-        if (line1) line1.classList.remove("typewriter-active");
-        if (line2) line2.classList.remove("typewriter-active");
-      } else if (ratio > 0.2) {
-        setResetTriggered(false); // Permitir nuevo reset cuando scroll sube
-      }
-    };
-
-    // 🎯 Función helper para FuenteCero/Matrix Rain
-    const handleMatrixRainControl = (ratio: number) => {
-      if (ratio >= 0.3) {
-        setIsEffectActive(true);
-      } else {
-        setIsEffectActive(false);
-      }
-    };
-
-    // 🎯 Observer principal reorganizado
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const ratio = entry.intersectionRatio;
           setCtaScrollPercent(ratio);
 
-          // 🎯 Ejecutar controles en orden lógico
-          handleTypewriterControl(ratio, isTypewriterActive);
-          handleButtonControl(ratio);
-          handleResetEffects(ratio, isTypewriterActive);
-          handleMatrixRainControl(ratio);
+          // Control Matrix Rain (30% visible)
+          if (ratio >= 0.3 && !effectsActivated.matrix) {
+            setEffectsActivated((prev) => ({ ...prev, matrix: true }));
+          } else if (ratio < 0.3 && effectsActivated.matrix) {
+            setEffectsActivated((prev) => ({ ...prev, matrix: false }));
+          }
+
+          // Control Typewriter (90% visible)
+          if (ratio >= 0.9 && !effectsActivated.typewriter) {
+            setEffectsActivated((prev) => ({ ...prev, typewriter: true }));
+
+            const line1 = document.querySelector(
+              ".subtitle-line-1.typewriter-line"
+            );
+            const line2 = document.querySelector(
+              ".subtitle-line-2.typewriter-line"
+            );
+
+            if (line1) line1.classList.add("typewriter-active");
+            if (line2) line2.classList.add("typewriter-active");
+          }
+
+          // Control Botón WhatsApp (95% visible)
+          if (ratio >= 0.95 && !effectsActivated.button) {
+            setEffectsActivated((prev) => ({ ...prev, button: true }));
+            setIsCtaButtonVisible(true);
+            setTimeout(() => setIsCtaTextVisible(true), 600);
+          } else if (ratio < 0.3 && effectsActivated.button) {
+            setEffectsActivated((prev) => ({ ...prev, button: false }));
+            setIsCtaButtonVisible(false);
+            setIsCtaTextVisible(false);
+          }
+
+          // Reset completo (10% visible)
+          if (
+            ratio < 0.1 &&
+            (effectsActivated.typewriter || effectsActivated.button)
+          ) {
+            setEffectsActivated({
+              typewriter: false,
+              button: false,
+              matrix: false,
+            });
+
+            const line1 = document.querySelector(
+              ".subtitle-line-1.typewriter-line"
+            );
+            const line2 = document.querySelector(
+              ".subtitle-line-2.typewriter-line"
+            );
+
+            if (line1) line1.classList.remove("typewriter-active");
+            if (line2) line2.classList.remove("typewriter-active");
+
+            setIsCtaButtonVisible(false);
+            setIsCtaTextVisible(false);
+          }
         });
       },
       {
-        threshold: Array.from({ length: 101 }, (_, i) => i / 100), // Precisión 0.01
+        threshold: [0, 0.1, 0.3, 0.9, 0.95, 1], // Solo los thresholds necesarios
       }
     );
 
@@ -139,12 +114,7 @@ const Rebecca = memo(() => {
         observer.unobserve(ctaSectionRef.current);
       }
     };
-  }, [
-    isTypewriterActive,
-    typewriterTriggered,
-    buttonTriggered,
-    resetTriggered,
-  ]); // Dependencias actualizadas
+  }, [effectsActivated]); // Dependencia simplificada
 
   // 🎯 Listener para redimensionamiento de ventana para mejorar responsividad
   useEffect(() => {
@@ -255,11 +225,7 @@ const Rebecca = memo(() => {
           <div className="vapi-content center-absolute">
             <VapiChatButton config={vapiConfig} variant="center" size="large" />
           </div>
-          <div
-            className="portal-effects center-absolute"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-          >
+          <div className="portal-effects center-absolute">
             <div className="glow-ring"></div>
             <div className="pulse-ring"></div>
             <div className="rotating-ring-outer"></div>
@@ -268,97 +234,45 @@ const Rebecca = memo(() => {
             <div className="energy-pulse"></div>
             <div className="wave-effect"></div>
           </div>
-          <div
-            ref={tooltipRef}
-            className="cursor-tooltip"
-            style={{ opacity: isHovering ? 1 : 0 }}
-          >
-            HABLA CON NUESTRA IA
-          </div>
         </div>
 
         <section
           ref={ctaSectionRef}
           className={`call-to-action-section ${
-            isEffectActive ? "active-effect" : ""
+            effectsActivated.matrix ? "active-effect" : ""
           }`}
           id="cta-section"
         >
-          {isEffectActive && <FuenteCero parentRef={ctaSectionRef} />}
+          {effectsActivated.matrix && <FuenteCero parentRef={ctaSectionRef} />}
 
           <div className="cta-content">
-            <h2
-              className="cta-title"
-              style={{
-                textAlign: "center",
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "clamp(8px, 2vw, 12px)",
-                width: "100%",
-                maxWidth: "none", // 🎯 REMOVIDO: límite de ancho para permitir animación completa
-                margin: "0 auto",
-                overflow: "visible", // 🎯 CAMBIADO: de hidden a visible para permitir animación desde bordes
-                minHeight: "clamp(120px, 15vh, 180px)", // Altura mínima para evitar corte
-                paddingTop: "clamp(10px, 2vh, 20px)", // 🎯 AGREGADO: padding superior
-                paddingBottom: "clamp(10px, 2vh, 20px)", // 🎯 AGREGADO: padding inferior
-              }}
-            >
+            <h2 className="cta-title cta-title-container">
               <span
+                className={`cta-title-span trabajemos ${
+                  ctaScrollPercent >= 0.3 ? "visible" : ""
+                }`}
                 style={{
-                  display: "inline-block",
                   transform: `translateX(${
                     -window.innerWidth * 0.7 +
                     (Math.min(ctaScrollPercent, 0.9) / 0.9) *
                       window.innerWidth *
                       0.7
-                  }px)`, // 🎯 RESTAURADO: Animación original desde bordes completos
-                  opacity: ctaScrollPercent >= 0.3 ? 1 : 0,
-                  transition: "transform 0.1s linear, opacity 0.2s",
-                  fontFamily: "SohoPro, Montserrat, Arial, sans-serif",
-                  fontWeight: 900,
-                  fontStyle: "italic",
-                  fontVariationSettings: '"wght" 900',
-                  letterSpacing: "clamp(0.02em, 0.5vw, 0.04em)",
-                  zIndex: 10,
-                  lineHeight: 1.1, // Evitar corte de texto
-                  fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
-                  color: "#ffffff",
-                  textShadow: "2px 2px 8px rgba(0, 0, 0, 0.7)",
-                  textAlign: "center",
-                  width: "auto",
-                  whiteSpace: "nowrap",
+                  }px)`,
                 }}
               >
                 TRABAJEMOS
               </span>
               <span
+                className={`cta-title-span juntos ${
+                  ctaScrollPercent >= 0.3 ? "visible" : ""
+                }`}
                 style={{
-                  display: "inline-block",
                   transform: `translateX(${
                     window.innerWidth * 0.7 -
                     (Math.min(ctaScrollPercent, 0.9) / 0.9) *
                       window.innerWidth *
                       0.7
-                  }px)`, // 🎯 RESTAURADO: Animación original desde bordes completos
-                  opacity: ctaScrollPercent >= 0.3 ? 1 : 0,
-                  transition: "transform 0.1s linear, opacity 0.2s",
-                  fontFamily: "SohoPro, Montserrat, Arial, sans-serif",
-                  fontWeight: 900,
-                  fontStyle: "italic",
-                  fontVariationSettings: '"wght" 900',
-                  letterSpacing: "clamp(0.02em, 0.5vw, 0.04em)",
-                  zIndex: 10,
-                  lineHeight: 1.1, // Evitar corte de texto
-                  textTransform: "uppercase",
-                  fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
-                  color: "#ffffff",
-                  textShadow: "2px 2px 8px rgba(0, 0, 0, 0.7)",
-                  textAlign: "center",
-                  width: "auto",
-                  whiteSpace: "nowrap",
+                  }px)`,
                 }}
               >
                 JUNTOS
@@ -417,11 +331,6 @@ const Rebecca = memo(() => {
                   className="cta-button-image"
                   loading="eager"
                   decoding="async"
-                  style={{
-                    maxWidth: "100%",
-                    height: "auto",
-                    display: "block",
-                  }}
                 />
 
                 {/* Texto del botón adaptado a la pantalla rectangular existente */}

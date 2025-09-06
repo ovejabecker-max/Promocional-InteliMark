@@ -938,6 +938,57 @@ body,
   width: 100%;
 }
 
+/* 🎯 NUEVAS CLASES PARA REEMPLAZAR ESTILOS INLINE */
+.cta-title-container {
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 12px);
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  overflow: visible;
+  min-height: clamp(120px, 15vh, 180px);
+  padding-top: clamp(10px, 2vh, 20px);
+  padding-bottom: clamp(10px, 2vh, 20px);
+}
+
+.cta-title-span {
+  display: inline-block;
+  opacity: 0;
+  transition: transform 0.1s linear, opacity 0.2s;
+  font-family: SohoPro, Montserrat, Arial, sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-variation-settings: "wght" 900;
+  letter-spacing: clamp(0.02em, 0.5vw, 0.04em);
+  z-index: 10;
+  line-height: 1.1;
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  width: auto;
+  white-space: nowrap;
+}
+
+.cta-title-span.visible {
+  opacity: 1;
+}
+
+.cta-title-span.juntos {
+  text-transform: uppercase;
+}
+
+.cta-button-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* ============================================================================
    5️⃣ FASE 5: EFECTOS DE ENTRADA CONTROLADOS POR SCROLL PARA EL TÍTULO
    ============================================================================ */
