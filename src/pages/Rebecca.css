@@ -1148,7 +1148,7 @@ body,
   color: rgba(218, 128, 35, 0.7); /* 🎯 TEXTO LIGERAMENTE MÁS VISIBLE */
   pointer-events: auto !important; /* 🎯 FORZAR INTERACCIÓN COMPLETA DEL BOTÓN */
   z-index: 200 !important; /* 🎯 Z-INDEX ALTO PARA ELEMENTOS DEL FOOTER */
-  /* overflow: hidden; ❌ REMOVIDO - El footer-reveal ya maneja overflow de toda la sección */
+  overflow: hidden; /* 🎯 RESTAURADO: Contener scanner dentro del botón */
   width: 190px; /* Tamaño base inicial */
   height: 54px; /* 🎯 ALTURA EXACTA DEL INPUT (16px padding + contenido + 16px) */
   display: block; /* 🎯 ASEGURAR DISPLAY BLOCK PARA CENTRADO */
@@ -1161,9 +1161,11 @@ body,
 .newsletter-input {
   flex: 1;
   padding: 16px 24px;
+
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50px;
   background: rgba(255, 255, 255, 0.1);
+  
   color: rgba(0, 0, 0, 0.8);
   font-size: 1.1rem;
   backdrop-filter: blur(10px);
@@ -1184,10 +1186,10 @@ body,
   background: rgba(255, 255, 255, 0.2);
 }
 
-.newsletter-button {
+.newsletter-butn {
   background: rgba(255, 255, 255, 0.9);
   color: #8b5cf6;
-  border: none;
+  order: none;
   padding: 16px 24px;
   border-radius: 50px;
   cursor: inherit; /* Heredar cursor CAD del contenedor padre */
@@ -1366,7 +1368,7 @@ body,
   animation: none;
 }
 
-/* 🔮 SCANNER DE PROFUNDIDAD */
+/* 🔮 SCANNER DE PROFUNDIDAD - CONTENIDO DENTRO DEL BOTÓN */
 .depth-scanner {
   position: absolute;
   top: 0;
@@ -1383,7 +1385,6 @@ body,
   );
   opacity: 0;
   pointer-events: none; /* 🎯 NO BLOQUEAR EVENTOS DEL BOTÓN PADRE */
-  /* transition: opacity 0.3s ease; - REMOVIDA (elemento permanece invisible) */
   animation: depthScan 3s ease-in-out infinite;
 }
 
@@ -1401,6 +1402,7 @@ body,
   border-radius: 18px; /* Aumentado de 16px */
   width: 260px; /* 🎯 REDUCIDO 10px ADICIONALES DEL ANCHO */
   height: 54px; /* 🎯 MISMA ALTURA QUE EL INPUT DEL NEWSLETTER */
+  overflow: hidden; /* 🎯 MANTENER CONTENCIÓN DEL SCANNER EN HOVER */
 
   /* 🔥 EFECTOS HOLOGRÁFICOS COMPLETOS */
   backdrop-filter: blur(15px); /* 🎯 BLUR APARECE SOLO EN HOVER */
@@ -2057,16 +2059,19 @@ body,
   z-index: 2;
 }
 
-/* Contenedor de flecha con renderizado premium */
+/* Contenedor de flecha con renderizado premium - CENTRADO PERFECTO */
 .arrow-container {
-  transform: var(--transform-center) translateZ(12px);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateZ(12px);
   width: 38px;
   height: 26px;
   z-index: 15;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 }
 
-/* SVG principal con efectos ultra refinados */
+/* SVG principal con efectos ultra refinados - CENTRADO CORREGIDO */
 .arrow-icon {
   width: 100%;
   height: 100%;
