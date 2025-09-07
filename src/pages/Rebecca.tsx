@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, memo } from "react";
 import { createPortal } from "react-dom";
 import { VapiChatButton } from "../components/VapiChatButton";
 import { vapiConfig } from "../config/vapi.config";
-import Robot3D from "../components/Robot3D";
 import FuenteCero from "../components/FuenteCero";
 import { NewsletterForm } from "../components/NewsletterForm";
 
@@ -308,12 +307,26 @@ const Rebecca = memo(() => {
 
             <div className="footer-robot">
               <div className="robot-3d-container">
-                <Robot3D
-                  width="380px"
-                  height="480px"
-                  scale={1.2}
-                  enableScrollRotation={true}
-                />
+                <div
+                  style={{
+                    width: "380px",
+                    height: "480px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "rgba(218, 128, 35, 0.1)",
+                    border: "2px dashed rgba(218, 128, 35, 0.3)",
+                    borderRadius: "10px",
+                    color: "#da8023",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                  }}
+                >
+                  🤖 Robot 3D
+                  <br />
+                  (Temporalmente deshabilitado)
+                </div>
               </div>
 
               <div className="footer-credits">
