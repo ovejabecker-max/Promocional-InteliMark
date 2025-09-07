@@ -1669,41 +1669,6 @@ body,
   font-family: "Oxanium", sans-serif;
 }
 
-/* 🤖 CONTENEDOR DEL ROBOT 3D */
-.footer-robot {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  align-self: flex-start;
-  transform: translateY(50px); /* 🎯 MOVER 50px HACIA ABAJO */
-  gap: 0; /* Sin gap para mantener elementos juntos */
-}
-
-/* 🤖 CONTENEDOR DEL ROBOT 3D - CENTRADO PERFECTO */
-.robot-3d-container {
-  position: relative;
-  margin: 0 auto; /* Centrado horizontal */
-  /* Dimensiones optimizadas para mejor proporción */
-  width: 350px; /* Ligeramente aumentado para mejor presencia */
-  height: 420px; /* Ligeramente aumentado */
-  /* Contenedor completamente transparente e invisible */
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  transition: none;
-  display: flex;
-  align-items: center;
-  justify-content: center; /* 🎯 CENTRADO PERFECTO */
-}
-
-.robot-3d-container:hover {
-  transform: none;
-  box-shadow: none;
-}
-
 /* 📧 ESTILOS PARA FUNCIONALIDAD DEL BOLETÍN */
 
 /* 🎯 ESPACIADO ADICIONAL PARA MEJOR LEGIBILIDAD */

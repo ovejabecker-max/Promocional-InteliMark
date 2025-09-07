@@ -305,28 +305,37 @@ const Rebecca = memo(() => {
               </div>
             </div>
 
-            <div className="footer-robot">
-              <div className="robot-3d-container">
-                <div
-                  style={{
-                    width: "380px",
-                    height: "480px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "rgba(218, 128, 35, 0.1)",
-                    border: "2px dashed rgba(218, 128, 35, 0.3)",
-                    borderRadius: "10px",
-                    color: "#da8023",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                  }}
-                >
-                  🤖 Robot 3D
-                  <br />
-                  (Temporalmente deshabilitado)
-                </div>
+            <div
+              style={{
+                textAlign: "center",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                transform: "translateY(50px)",
+                gap: 0,
+              }}
+            >
+              <div
+                style={{
+                  width: "380px",
+                  height: "480px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(218, 128, 35, 0.1)",
+                  border: "2px dashed rgba(218, 128, 35, 0.3)",
+                  borderRadius: "10px",
+                  color: "#da8023",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  margin: "0 auto",
+                }}
+              >
+                🤖 Robot 3D
+                <br />
+                (Temporalmente deshabilitado)
               </div>
 
               <div className="footer-credits">
