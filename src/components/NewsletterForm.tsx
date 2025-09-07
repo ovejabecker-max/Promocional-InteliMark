@@ -151,7 +151,6 @@ export const NewsletterForm: React.FC = () => {
               </g>
             </svg>
           </div>
-          <div className="neon-glow center-absolute"></div>
         </button>
       </form>
 
