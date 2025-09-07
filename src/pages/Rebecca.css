@@ -389,52 +389,6 @@ body,
 
 /* ANIMACIONES CINEMATOGRÁFICAS FUTURISTAS PARA ANILLO METÁLICO */
 
-/* Rotación metálica principal con efectos de brillo */
-@keyframes metallic-rotate {
-  0% {
-    transform: rotate(0deg);
-    filter: brightness(1) contrast(1) saturate(1);
-  }
-  25% {
-    filter: brightness(1.2) contrast(1.1) saturate(1.1);
-  }
-  50% {
-    transform: rotate(180deg);
-    filter: brightness(0.9) contrast(1.3) saturate(1.2);
-  }
-  75% {
-    filter: brightness(1.1) contrast(1.2) saturate(1.1);
-  }
-  100% {
-    transform: rotate(360deg);
-    filter: brightness(1) contrast(1) saturate(1);
-  }
-}
-
-/* Efecto de reflejo dinámico tipo espejo con ondas */
-@keyframes shimmer-effect {
-  0% {
-    background-position: -200% 0%, 0% 0%, 0% 0%;
-    filter: hue-rotate(0deg);
-  }
-  25% {
-    background-position: -100% 0%, 0% 0%, 0% 0%;
-    filter: hue-rotate(5deg);
-  }
-  50% {
-    background-position: 0% 0%, 0% 0%, 0% 0%;
-    filter: hue-rotate(0deg);
-  }
-  75% {
-    background-position: 100% 0%, 0% 0%, 0% 0%;
-    filter: hue-rotate(-5deg);
-  }
-  100% {
-    background-position: 200% 0%, 0% 0%, 0% 0%;
-    filter: hue-rotate(0deg);
-  }
-}
-
 /* Pulsación de resplandor metálico */
 @keyframes reflective-pulse {
   0% {
@@ -520,70 +474,6 @@ body,
 
 /* 🎯 TEXTO CON EFECTO DE TIPEO */
 
-/*  TOOLTIP SIMPLIFICADO */
-.button-tooltip.button-tooltip-3d {
-  position: fixed !important;
-  z-index: 60;
-  pointer-events: none !important;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(15, 5, 0, 0.9),
-    rgba(0, 0, 0, 0.95)
-  );
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--color-orange-alpha-80);
-  border-radius: 10px;
-  padding: 8px 15px; /* Reduced Size */
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8),
-    0 0 35px var(--color-orange-alpha-60), inset 0 0 20px rgba(0, 0, 0, 0.6);
-  width: auto;
-  height: auto;
-  white-space: nowrap;
-  transition: opacity 0.4s ease; /* Only transition opacity for hiding */
-  overflow: hidden;
-}
-
-.button-tooltip.button-tooltip-3d[style*="opacity: 1"] {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-/* Scanning grid overlay - Simplificado */
-.button-tooltip.button-tooltip-3d::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: linear-gradient(
-      var(--color-orange-alpha-20) 1px,
-      transparent 1px
-    ),
-    linear-gradient(to right, var(--color-orange-alpha-20) 1px, transparent 1px);
-  background-size: 25px 25px;
-  opacity: 0.3;
-  z-index: 0;
-}
-
-/* Efecto de borde sutil - Sin animación */
-.button-tooltip.button-tooltip-3d::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    var(--color-orange-alpha-30) 50%,
-    transparent 100%
-  );
-  opacity: 0.2;
-  z-index: 1;
-}
-
 .ai-minimal-container {
   position: relative;
   display: flex;
@@ -610,6 +500,7 @@ body,
   /* 🎯 FONDO NEGRO SÓLIDO */
   background: #000000;
   z-index: 1;
+  overflow: hidden; /* 🎯 AGREGADO: Contener todos los efectos dentro de la sección principal */
 }
 
 /* SECCIÓN CTA - REORGANIZACIÓN CRONOLÓGICA COMPLETA */
@@ -634,7 +525,7 @@ body,
   border: none; /* 🔧 ESTRUCTURAL: Sin bordes para el contenedor */
   box-sizing: border-box;
   z-index: 2;
-  overflow: hidden;
+  overflow: hidden; /* 🎯 CONTENCIÓN: Prevenir que efectos del CTA escapen hacia otras secciones */
 
   /* 🔑 ESTRUCTURAL: Permite que el componente FuenteCero se posicione correctamente */
   min-height: 100vh;
@@ -662,8 +553,13 @@ body,
    2️⃣ FASE 2: COMPONENTE FUENTECERO (LLUVIA DE CÓDIGOS)
    ============================================================================ */
 
-/* 🌧️ El componente FuenteCero se renderiza como fondo de la sección CTA */
-/* Los estilos específicos están en el componente React FuenteCero.tsx */
+/* 🌧️ El componente FuenteCero se renderiza como fondo de la sección CTA 
+   🎯 SISTEMA DE CONTENCIÓN IMPLEMENTADO:
+   - Aura luminosa: position: absolute (contenida dentro del CTA)
+   - Matrix canvas: position: absolute (contenida dentro del CTA)  
+   - Cursor dot: position: absolute (contenida dentro del CTA)
+   - Coordenadas relativas al CTA, no globales a la ventana
+*/
 
 /* ============================================================================
    3️⃣ FASE 3: EFECTOS QUE INTERACTÚAN CON LA LLUVIA + AURA LUMINOSA
@@ -945,7 +841,7 @@ body,
   /* Estado inicial - oculto por defecto */
   opacity: 0;
   width: 0;
-  overflow: hidden;
+  /* overflow: hidden; ❌ REMOVIDO - Redundante: el contenedor padre ya maneja overflow */
   white-space: nowrap;
   transition: opacity 0.2s ease, width 0.2s ease;
 }
@@ -1096,7 +992,7 @@ body,
   padding: 40px 20px; /* Reducido padding lateral para menos margen */
   box-sizing: border-box;
   z-index: 3;
-  overflow: hidden; /* 🎯 CAMBIADO: Prevenir scroll interno */
+  overflow: hidden; /* 🎯 CONTENCIÓN: Prevenir que efectos del footer escapen hacia otras secciones */
   background: linear-gradient(
       45deg,
       rgba(80, 80, 80, 0.8) 0%,
@@ -1242,7 +1138,7 @@ body,
   color: rgba(218, 128, 35, 0.7); /* 🎯 TEXTO LIGERAMENTE MÁS VISIBLE */
   pointer-events: auto !important; /* 🎯 FORZAR INTERACCIÓN COMPLETA DEL BOTÓN */
   z-index: 200 !important; /* 🎯 Z-INDEX ALTO PARA ELEMENTOS DEL FOOTER */
-  overflow: hidden;
+  /* overflow: hidden; ❌ REMOVIDO - El footer-reveal ya maneja overflow de toda la sección */
   width: 190px; /* Tamaño base inicial */
   height: 54px; /* 🎯 ALTURA EXACTA DEL INPUT (16px padding + contenido + 16px) */
   display: block; /* 🎯 ASEGURAR DISPLAY BLOCK PARA CENTRADO */
@@ -1332,21 +1228,6 @@ body,
   z-index: 8 !important;
 }
 
-/* 🎯 REGLA ESPECÍFICA PARA ELEMENTOS PROBLEMÁTICOS */
-.ai-matrix-button .text-glitch,
-.ai-matrix-button .text-glitch::before,
-.ai-matrix-button .text-glitch::after {
-  pointer-events: none !important;
-}
-
-/* 🎯 REGLA UNIVERSAL PARA FORZAR TODOS LOS ELEMENTOS INTERNOS */
-.ai-matrix-button > *,
-.ai-matrix-button > * > *,
-.ai-matrix-button > * > * > *,
-.ai-matrix-button > * > * > * > * {
-  pointer-events: none !important;
-}
-
 /* 🧠 CONTENEDOR MATRIZ DE IA */
 .ai-matrix-container {
   position: relative;
@@ -1401,22 +1282,6 @@ body,
   border-color: transparent var(--color-orange-primary) transparent transparent;
   filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8)) /* 🎯 RESPLANDOR NEGRO */
     drop-shadow(0 0 6px var(--color-orange-alpha-60));
-  transition: all 0.4s ease;
-}
-
-/* Triángulo interno más pequeño - TONALIDADES NARANJAS */
-.triangle-container::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 2px;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 6px 10px 6px 0; /* 🎯 INVERTIDO PARA APUNTAR A LA IZQUIERDA */
-  border-color: transparent var(--color-orange-alpha-70) transparent transparent; /* 🎯 SOLO TONALIDADES NARANJAS */
-  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6)); /* 🎯 RESPLANDOR NEGRO */
   transition: all 0.4s ease;
 }
 
@@ -2234,107 +2099,6 @@ body,
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Líneas de velocidad ultra delgadas */
-.speed-lines-group {
-  transform: translateZ(-3px);
-  opacity: 0.15;
-}
-
-.speed-line {
-  filter: drop-shadow(0 0.5px 1px rgba(0, 0, 0, 0.1));
-  transform-origin: left center;
-}
-
-.speed-line-1 {
-  transform: translateY(-0.5px) scaleX(0.9);
-}
-.speed-line-2 {
-  transform: translateY(-0.2px) scaleX(1);
-}
-.speed-line-3 {
-  transform: translateY(0px) scaleX(0.95);
-}
-.speed-line-4 {
-  transform: translateY(0.2px) scaleX(0.9);
-}
-.speed-line-5 {
-  transform: translateY(0.5px) scaleX(1);
-}
-
-/* Flecha secundaria (outline) */
-.secondary-arrow-group {
-  transform: translateZ(1px);
-  opacity: 0.2;
-}
-
-.secondary-arrow-outline {
-  filter: drop-shadow(0 0.5px 2px rgba(0, 0, 0, 0.15));
-}
-
-/* Resplandor principal */
-.main-glow-group {
-  transform: translateZ(2px);
-}
-
-.main-arrow-glow {
-  transition: all 0.5s ease;
-}
-
-/* Flecha principal con detalles premium */
-.primary-arrow-group {
-  transform: translateZ(10px);
-}
-
-.primary-arrow-base {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  transform: perspective(100px) rotateX(5deg);
-}
-
-/* Highlights internos */
-.inner-highlight-1,
-.inner-highlight-2,
-.inner-highlight-3 {
-  transition: all 0.4s ease;
-  transform-origin: center;
-}
-
-/* Micro luces */
-.micro-light-1,
-.micro-light-2,
-.micro-light-3 {
-  transition: all 0.3s ease;
-  transform-origin: center;
-}
-
-/* Línea de energía */
-.energy-line {
-  transition: all 0.3s ease;
-  transform-origin: left center;
-}
-
-/* Resplandor exterior */
-.neon-glow {
-  width: 45px;
-  height: 45px;
-  background: transparent;
-  border-radius: 50%;
-  z-index: 5;
-  opacity: 0;
-  transition: all 0.5s ease;
-}
-
-/* Animaciones */
-@keyframes neonPulse {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.2);
-    opacity: 0.3;
-  }
-}
-
 /* 🌟 EFECTOS HOVER PREMIUM - CONTORNO CALADO ILUMINADO + DETALLES HD CON RESPLANDOR CONTROLADO */
 .modern-arrow-button:hover {
   transform: scale(1.08) translateY(-4px) !important;
@@ -2353,22 +2117,6 @@ body,
     inset 0 -1px 2px rgba(0, 0, 0, 1) !important;
 }
 
-/* Resplandor exterior controlado */
-.modern-arrow-button:hover::before {
-  opacity: 1;
-  background: radial-gradient(
-    circle,
-    rgba(255, 69, 0, 0.6) 0%,
-    rgba(255, 107, 53, 0.4) 20%,
-    rgba(255, 140, 69, 0.2) 40%,
-    rgba(255, 180, 100, 0.1) 60%,
-    transparent 100%
-  );
-  filter: blur(20px);
-  animation: newsletter-glow-pulse 1.5s ease-in-out infinite alternate;
-  transform: scale(1.15);
-}
-
 /* Borde naranja interno premium con resplandor controlado */
 .modern-arrow-button:hover .button-background {
   box-shadow: 
@@ -2380,140 +2128,4 @@ body,
     inset 0 -2px 6px rgba(180, 40, 0, 1),
     inset 2px 0 4px rgba(255, 200, 120, 0.9),
     inset -2px 0 4px rgba(150, 30, 0, 0.9);
-}
-
-/* ACTIVAR flecha con renderizado premium */
-.modern-arrow-button:hover .arrow-icon {
-  transform: perspective(150px) rotateX(6deg) translateZ(18px);
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
-}
-
-.modern-arrow-button:hover .arrow-container {
-  transform: translate(-50%, -50%) translateZ(18px) scale(1.12);
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
-}
-
-/* ACTIVAR líneas de velocidad ultra delgadas */
-.modern-arrow-button:hover .speed-lines-group {
-  opacity: 0.9;
-}
-
-.modern-arrow-button:hover .speed-line {
-  filter: drop-shadow(0 0 4px rgba(255, 107, 53, 0.6))
-    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
-}
-
-.modern-arrow-button:hover .speed-line-1 {
-  transform: translateY(-0.5px) scaleX(1.1);
-}
-.modern-arrow-button:hover .speed-line-2 {
-  transform: translateY(-0.2px) scaleX(1.2);
-}
-.modern-arrow-button:hover .speed-line-3 {
-  transform: translateY(0px) scaleX(1.15);
-}
-.modern-arrow-button:hover .speed-line-4 {
-  transform: translateY(0.2px) scaleX(1.1);
-}
-.modern-arrow-button:hover .speed-line-5 {
-  transform: translateY(0.5px) scaleX(1.2);
-}
-
-/* ACTIVAR flecha secundaria */
-.modern-arrow-button:hover .secondary-arrow-group {
-  opacity: 0.8;
-}
-
-.modern-arrow-button:hover .secondary-arrow-outline {
-  filter: drop-shadow(0 0 8px rgba(255, 107, 53, 0.5))
-    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-}
-
-/* ACTIVAR resplandor principal */
-.modern-arrow-button:hover .main-arrow-glow {
-  opacity: 0.8;
-  animation: neonPulse 1.8s ease-in-out infinite alternate;
-}
-
-/* MAXIMIZAR flecha principal con todos los detalles premium */
-.modern-arrow-button:hover .primary-arrow-base {
-  filter: drop-shadow(0 0 25px rgba(255, 69, 0, 1))
-    drop-shadow(0 0 15px rgba(255, 107, 53, 0.8))
-    drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
-  transform: perspective(100px) rotateX(8deg) translateZ(2px);
-}
-
-/* ACTIVAR TODOS los highlights internos premium */
-.modern-arrow-button:hover .inner-highlight-1 {
-  opacity: 0.9;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
-  transform: scale(1.05);
-}
-
-.modern-arrow-button:hover .inner-highlight-2 {
-  opacity: 0.8;
-  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
-  transform: scale(1.08);
-}
-
-.modern-arrow-button:hover .inner-highlight-3 {
-  opacity: 0.7;
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
-  transform: scale(1.1);
-}
-
-/* ACTIVAR micro luces premium */
-.modern-arrow-button:hover .micro-light-1 {
-  opacity: 1;
-  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 1));
-  transform: scale(1.5);
-}
-
-.modern-arrow-button:hover .micro-light-2 {
-  opacity: 0.9;
-  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
-  transform: scale(1.8);
-}
-
-.modern-arrow-button:hover .micro-light-3 {
-  opacity: 0.8;
-  filter: drop-shadow(0 0 3px rgba(255, 171, 105, 0.7));
-  transform: scale(1.3);
-}
-
-/* ACTIVAR línea de energía */
-.modern-arrow-button:hover .energy-line {
-  opacity: 1;
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 1));
-  transform: scaleX(1.2);
-}
-
-/* ACTIVAR resplandor exterior controlado */
-.modern-arrow-button:hover .neon-glow {
-  opacity: 1;
-  background: radial-gradient(
-    circle,
-    rgba(255, 69, 0, 0.7) 0%,
-    rgba(255, 107, 53, 0.5) 15%,
-    rgba(255, 140, 69, 0.3) 30%,
-    rgba(255, 180, 100, 0.2) 50%,
-    rgba(255, 220, 140, 0.1) 70%,
-    transparent 100%
-  );
-  filter: blur(6px);
-  animation: neonPulse 1s ease-in-out infinite alternate;
-  transform: translate(-50%, -50%) scale(1.6);
-}
-
-/* 🌟 EFECTOS ACTIVE - Efecto de presión */
-.modern-arrow-button:active {
-  transform: scale(0.98) translateY(1px) !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4),
-    0 0 15px rgba(255, 69, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.6),
-    inset 0 -1px 2px rgba(255, 255, 255, 0.4) !important;
-}
-
-/* Transiciones suaves para todos los elementos */
-.modern-arrow-button * {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

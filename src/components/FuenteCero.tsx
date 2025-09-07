@@ -9,38 +9,55 @@ interface Point {
 }
 
 // --- Hook para el Aura ---
-// Aumentar el desfase entre el aura y el puntero (más lento)
-const useArchitectAura = (easingFactor: number = 0.025) => {
-  // Aura aún más rápida y visible
+// Aura ahora contenida dentro del CTA con coordenadas relativas
+const useArchitectAura = (
+  easingFactor: number = 0.025,
+  parentRef: React.RefObject<HTMLElement>
+) => {
+  // Aura contenida dentro del CTA
   const [auraStyle, setAuraStyle] = React.useState<React.CSSProperties>({});
   const [cursorStyle, setCursorStyle] = React.useState<React.CSSProperties>({});
   const [mousePos, setMousePos] = React.useState<Point>({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
+    x: 0,
+    y: 0,
   });
   const mouse = useRef<Point>({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
+    x: 0,
+    y: 0,
   });
   const aura = useRef<Point>({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
+    x: 0,
+    y: 0,
   });
   const prevMouse = useRef<Point>({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
+    x: 0,
+    y: 0,
   });
   const animationFrameId = useRef<number>(0);
   const lastFrameRef = useRef<number>(0); // 🔧 Usar ref para persistir entre renders
 
   useEffect(() => {
-    // 🔧 OPTIMIZACIÓN: Un solo mouse listener para ambos sistemas
+    // 🔧 OPTIMIZACIÓN: Un solo mouse listener con coordenadas relativas al CTA
     const handleMouseMove = (event: MouseEvent) => {
-      mouse.current = { x: event.clientX, y: event.clientY };
-      setMousePos({ x: event.clientX, y: event.clientY }); // 🔧 UNIFICADO: Actualizar ambos estados
-      setCursorStyle({
-        transform: `translate(${event.clientX}px, ${event.clientY}px)`,
-      });
+      if (!parentRef.current) return;
+
+      const rect = parentRef.current.getBoundingClientRect();
+      const relativeX = event.clientX - rect.left;
+      const relativeY = event.clientY - rect.top;
+
+      // Solo actualizar si el mouse está dentro del CTA
+      if (
+        relativeX >= 0 &&
+        relativeX <= rect.width &&
+        relativeY >= 0 &&
+        relativeY <= rect.height
+      ) {
+        mouse.current = { x: relativeX, y: relativeY };
+        setMousePos({ x: relativeX, y: relativeY }); // 🔧 RELATIVO: Coordenadas relativas al CTA
+        setCursorStyle({
+          transform: `translate(${relativeX}px, ${relativeY}px)`,
+        });
+      }
     };
     window.addEventListener("mousemove", handleMouseMove);
 
@@ -79,7 +96,7 @@ const useArchitectAura = (easingFactor: number = 0.025) => {
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(animationFrameId.current);
     };
-  }, [easingFactor]);
+  }, [easingFactor, parentRef]);
 
   return { auraStyle, cursorStyle, auraPosition: aura.current, mousePos };
 };
@@ -270,8 +287,11 @@ const ChromaticAura: React.FC<ChromaticAuraProps> = ({ style }) => (
 const FuenteCero: React.FC<{ parentRef: React.RefObject<HTMLElement> }> = ({
   parentRef,
 }) => {
-  // 🔧 OPTIMIZACIÓN: Eliminar estado duplicado - ahora viene del hook unificado
-  const { auraStyle, auraPosition, mousePos } = useArchitectAura(0.06);
+  // 🔧 OPTIMIZACIÓN: Eliminar estado duplicado - ahora viene del hook unificado con contención del CTA
+  const { auraStyle, auraPosition, mousePos } = useArchitectAura(
+    0.06,
+    parentRef
+  );
 
   return (
     <div className="fuente-cero-container">
@@ -313,7 +333,7 @@ const FuenteCero: React.FC<{ parentRef: React.RefObject<HTMLElement> }> = ({
         }
 
         .aura-container {
-          position: fixed;
+          position: absolute; /* 🎯 CAMBIADO: De 'fixed' a 'absolute' para contención dentro del CTA */
           top: -170px;
           left: -170px;
           width: 340px;
@@ -346,7 +366,7 @@ const FuenteCero: React.FC<{ parentRef: React.RefObject<HTMLElement> }> = ({
           animation: orbit 9s -4s linear infinite reverse, morph-shape 10s infinite ease-in-out;
         }
         .aura-cursor-dot-global {
-          position: fixed;
+          position: absolute; /* 🎯 CAMBIADO: De 'fixed' a 'absolute' para contención dentro del CTA */
           width: 5px;
           height: 5px;
           border-radius: 50%;
@@ -358,11 +378,12 @@ const FuenteCero: React.FC<{ parentRef: React.RefObject<HTMLElement> }> = ({
       `}</style>
       <MatrixCanvas auraPosition={auraPosition} parentRef={parentRef} />
       <ChromaticAura style={auraStyle} />
-      {/* Punto luminoso fuera del contenedor, posición fixed */}
+      {/* Punto luminoso contenido dentro del CTA, posición absolute */}
       <div
         className="aura-cursor-dot-global"
         style={{
-          position: "fixed",
+          position:
+            "absolute" /* 🎯 CAMBIADO: De 'fixed' a 'absolute' para contención */,
           left: mousePos.x + "px",
           top: mousePos.y + "px",
           width: "5px",
