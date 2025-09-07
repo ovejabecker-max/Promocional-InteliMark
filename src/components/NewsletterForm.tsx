@@ -59,7 +59,7 @@ export const NewsletterForm: React.FC = () => {
           <div className="button-background">
             <div className="metallic-surface"></div>
           </div>
-          <div className="arrow-container center-absolute">
+          <div className="arrow-container">
             <svg className="arrow-icon" viewBox="0 0 42 30" fill="none">
               <defs>
                 {/* Gradientes premium para renderizado de alta calidad */}
