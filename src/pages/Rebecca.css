@@ -1297,30 +1297,6 @@ body,
   transform: scale(1.05);
 }
 
-/* 🤖 BOTÓN MATRIX AI - INTERFAZ HOLOGRÁFICA FUTURISTA */
-.ai-matrix-button {
-  /* 🎭 BASE STEALTH - ESTADO INACTIVO (TRANSPARENTE) */
-  position: relative;
-  background: transparent; /* 🎯 FONDO COMPLETAMENTE TRANSPARENTE */
-  border: none; /* 🎯 SIN BORDE EN ESTADO NORMAL */
-  border-radius: 15px;
-  padding: 12px 10px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  font-family: "Consolas", "Monaco", "Courier New", monospace;
-  color: rgba(218, 128, 35, 0.7); /* 🎯 TEXTO LIGERAMENTE MÁS VISIBLE */
-  pointer-events: auto !important; /* 🎯 FORZAR INTERACCIÓN COMPLETA DEL BOTÓN */
-  z-index: 200 !important;
-  overflow: hidden;
-  width: 190px; /* Tamaño base inicial */
-  height: 54px; /* 🎯 ALTURA EXACTA DEL INPUT (16px padding + contenido + 16px) */
-  display: block; /* 🎯 ASEGURAR DISPLAY BLOCK PARA CENTRADO */
-
-  /* 🌟 EFECTOS BASE MÍNIMOS */
-  backdrop-filter: none; /* 🎯 SIN BLUR EN ESTADO NORMAL */
-  transition: all 0.4s ease; /* 🎯 TRANSICIÓN SUAVE PARA TODOS LOS CAMBIOS */
-}
-
 /* 🎯 AI MATRIX - ELEMENTS STRUCTURE */
 /* 🎯 ASEGURAR QUE TODOS LOS ELEMENTOS INTERNOS NO BLOQUEEN EVENTOS */
 .ai-matrix-button *,
@@ -1600,19 +1576,10 @@ body,
   transform: scale(1.1) translateX(8px); /* 🎯 SE DESPLAZA LIGERAMENTE A LA DERECHA */
 }
 
-.ai-matrix-button:hover .text-glitch::before,
-.ai-matrix-button:hover .text-glitch::after {
-  opacity: 0.7;
-}
-
 /* ✅ EFECTOS HOVER SIMPLIFICADOS - Sin glitch */
 .ai-matrix-button:hover .text-glitch::before,
 .ai-matrix-button:hover .text-glitch::after {
   opacity: 0.3;
-}
-
-.ai-matrix-button:hover .depth-scanner {
-  opacity: 1;
 }
 
 /* ⚡ ESTADO ACTIVO - IMPACTO FINAL */
@@ -1902,14 +1869,6 @@ body,
   transition: all 0.3s ease;
   font-family: "Oxanium", sans-serif;
   pointer-events: none; /* 🎯 NO INTERFERIR CON EL BOTÓN */
-}
-
-/* ⚡ AI MATRIX - ACTIVE STATE */
-.ai-matrix-button:active {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 0 0 3px rgba(218, 128, 35, 0.9),
-    0 0 30px rgba(218, 128, 35, 0.5), 0 8px 24px rgba(218, 128, 35, 0.3),
-    0 4px 16px rgba(0, 0, 0, 0.8);
 }
 
 /* ============================================================================
