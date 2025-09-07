@@ -147,7 +147,7 @@ body,
 
 /* 1️⃣ LAYOUT BASE Y CONTENEDORES PRINCIPALES */
 
-/* 🎯 CONTENEDOR REBECCA Y CONFIGURACIONES GENERALES */
+/* 🎯 CONTENEDOR REBECCA Y CONFIGURACIONES GENERALES - CURSOR CAD FORZADO */
 .rebecca-container {
   position: relative;
   width: 100%;
@@ -164,13 +164,24 @@ body,
   /* Fondo negro sólido premium */
   background: var(--color-black);
 
-  /* Cursor CAD simplificado */
-  cursor: crosshair;
+  /* Cursor CAD simplificado con alta especificidad */
+  cursor: crosshair !important;
   box-sizing: border-box;
   scroll-behavior: auto;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Asegurar que el cursor CAD se aplique a todos los elementos dentro de Rebecca */
+.rebecca-container * {
+  cursor: crosshair !important;
+}
+
+/* Excepciones específicas: CTA permite cursor personalizado de FuenteCero - v2 */
+.call-to-action-section,
+.call-to-action-section * {
+  cursor: none !important; /* Permite que FuenteCero maneje el cursor personalizado */
 }
 
 /* 2️⃣ BOTÓN VAPI CHAT - ELEMENTO CENTRAL PRINCIPAL */
@@ -530,8 +541,7 @@ body,
   /* 🔑 ESTRUCTURAL: Permite que el componente FuenteCero se posicione correctamente */
   min-height: 100vh;
 
-  /* Cursor normal para interacciones */
-  cursor: default;
+  /* Cursor manejado por reglas globales y FuenteCero */
 }
 
 /* 🎯 CONTENIDO INTERNO DEL CTA */
@@ -945,7 +955,7 @@ body,
   color: #ffffff;
   padding: 8px 16px; /* Más compacto */
   border-radius: 6px;
-  cursor: none; /* 🔧 FIX: Sin cursor nativo - usa cursor CAD personalizado */
+  cursor: inherit; /* Heredar cursor CAD del contenedor padre */
   font-size: 11px; /* Más pequeño */
   font-weight: bold;
   letter-spacing: 0.5px;
@@ -1180,7 +1190,7 @@ body,
   border: none;
   padding: 16px 24px;
   border-radius: 50px;
-  cursor: none; /* 🔧 FIX: Sin cursor nativo - usa cursor CAD personalizado */
+  cursor: inherit; /* Heredar cursor CAD del contenedor padre */
   transition: all 0.3s ease;
   font-weight: 600;
   min-width: 60px;
@@ -1206,7 +1216,7 @@ body,
 /* 🎯 FORZAR INTERACCIÓN COMPLETA DEL BOTÓN */
 /* 🎯 FORZAR INTERACCIÓN COMPLETA DEL BOTÓN */
 .ai-matrix-button {
-  cursor: none !important;
+  cursor: inherit !important; /* Heredar cursor CAD del contenedor padre */
   pointer-events: auto !important;
 }
 
@@ -1755,7 +1765,7 @@ body,
   color: #ffffff;
   font-size: 24px;
   font-weight: bold;
-  cursor: none; /* 🔧 FIX: Sin cursor nativo - usa cursor CAD personalizado */
+  cursor: inherit; /* Heredar cursor CAD del contenedor padre */
   z-index: 101;
   display: flex;
   align-items: center;

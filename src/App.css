@@ -16,10 +16,19 @@
   box-sizing: border-box;
 }
 
+/* Global styles - default for all pages */
 body,
 html {
   font-family: "Inter", "Segoe UI", "Roboto", sans-serif;
   line-height: 1.6;
+}
+
+/* Cursor oculto SOLO para HomePage específicamente */
+.homepage-container {
+  cursor: none !important;
+}
+
+.homepage-container * {
   cursor: none !important;
 }
 
