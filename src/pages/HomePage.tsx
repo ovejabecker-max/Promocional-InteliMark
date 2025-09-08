@@ -319,8 +319,8 @@ const HomePage: FC<HomePageProps> = () => {
       volume: AUDIO_CONFIG.AMBIENT_VOLUME,
       loop: true,
       preload: "auto",
-      onError: (error) => {
-        console.warn("Error cargando audio ambiente:", error.message);
+      onError: (_error) => {
+        // Commented for production - console.warn("Error cargando audio ambiente:", error.message);
       },
     });
 

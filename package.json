@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "lint": "eslint . --report-unused-disable-directives",
+    "lint:strict": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --fix --report-unused-disable-directives",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
@@ -30,6 +33,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "globals": "^16.3.0",
     "typescript": "^5.8.3",
     "vite": "^7.1.1"
   }

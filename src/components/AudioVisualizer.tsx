@@ -1,5 +1,5 @@
 // src/components/AudioVisualizer.tsx
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./AudioVisualizer.css";
 
 interface AudioVisualizerProps {
@@ -17,12 +17,7 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({ onAudioToggle }) => {
     }
 
     const newAudioState = !isAudioActive;
-    console.log(
-      "AudioVisualizer Toggle - Estado actual:",
-      isAudioActive,
-      "→ Nuevo estado:",
-      newAudioState
-    );
+    // Commented for production - console.log("AudioVisualizer Toggle - Estado actual:", isAudioActive, "→ Nuevo estado:", newAudioState);
 
     setIsAudioActive(newAudioState);
 
