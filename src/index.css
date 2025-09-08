@@ -10,13 +10,14 @@
 }
 
 :root {
-  font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Inter", "Segoe UI", "Roboto", system-ui, Avenir, Helvetica,
+    Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #0a0a0a;
+  background-color: #000; /* ✅ Unificado con HomePage para consistencia */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -24,17 +25,23 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 🔧 ELIMINAR TODOS LOS CURSORES NATIVOS GLOBALMENTE */
+/* 🔧 SISTEMA DE CURSOR PERSONALIZADO CONSOLIDADO */
 * {
   cursor: none !important;
 }
 
-/* 🔧 ASEGURAR QUE INPUTS Y TEXTAREA TAMBIÉN USEN CURSOR PERSONALIZADO */
+/* 🔧 REFUERZO ESPECÍFICO PARA ELEMENTOS INTERACTIVOS */
 input,
 textarea,
 select,
 button,
-a {
+a,
+.homepage-container,
+.homepage-container *,
+.homepage-container button,
+.homepage-container .audio-visualizer-container,
+.homepage-container .audio-activate-button,
+.homepage-container .audio-visualizer-active {
   cursor: none !important;
 }
 

@@ -19,17 +19,7 @@
 /* Global styles - default for all pages */
 body,
 html {
-  font-family: "Inter", "Segoe UI", "Roboto", sans-serif;
-  line-height: 1.6;
-}
-
-/* Cursor oculto SOLO para HomePage específicamente */
-.homepage-container {
-  cursor: none !important;
-}
-
-.homepage-container * {
-  cursor: none !important;
+  line-height: 1.6; /* ✅ Font-family heredado de :root para consistencia */
 }
 
 /* Global styles for better consistency */

@@ -1,17 +1,5 @@
-/* HomePage.css */
-
 /* ✅ Importar fuente Oxanium */
 @import url("https://fonts.googleapis.com/css2?family=Oxanium:wght@700&display=swap");
-
-/* 🎯 CURSOR PERSONALIZADO - MANTENER CONSISTENCIA CON REBECCA */
-.homepage-container,
-.homepage-container *,
-.homepage-container button,
-.homepage-container .audio-visualizer-container,
-.homepage-container .audio-activate-button,
-.homepage-container .audio-visualizer-active {
-  cursor: none !important;
-}
 
 /* 📱 VARIABLES CSS: Valores consolidados y reutilizables */
 :root {
@@ -41,15 +29,9 @@
   --size-full-width: 100%;
 }
 
-/* ✅ Reset global para asegurar scroll correcto */
-* {
-  box-sizing: border-box;
-}
-
+/* ✅ Estilos específicos para HomePage - optimizados y sin duplicaciones */
 body {
   background-color: #000;
-  margin: 0;
-  padding: 0;
   overflow-x: hidden; /* ✅ Evita scroll horizontal */
 }
 
@@ -225,7 +207,7 @@ body {
   );
 }
 
-/* 📱 RESPONSIVE: Media queries consolidadas */
+/* 📱 RESPONSIVE: Media queries consolidadas y optimizadas */
 
 /* Móvil grande y tablet pequeño */
 @media (min-width: 481px) {
@@ -243,7 +225,7 @@ body {
   }
 }
 
-/* Orientación landscape en móviles */
+/* ✅ Orientación landscape en móviles - !important necesario para sobrescribir las reglas anteriores */
 @media (max-height: 600px) and (orientation: landscape) {
   .responsive-scroll-height {
     height: var(--scroll-height-landscape) !important;
