@@ -228,7 +228,8 @@ const HomePage: FC<HomePageProps> = () => {
       webgl: {
         antialias: true,
         powerPreference: "high-performance" as const,
-        pixelRatio: Math.min(window.devicePixelRatio, 2),
+        // 🔧 PIXEL RATIO CONSERVADOR: Limitar para evitar frame rate violations
+        pixelRatio: Math.min(window.devicePixelRatio, 1.5), // Reducido de 2 a 1.5
       },
       mouseTrail: {
         maxPoints: 35,

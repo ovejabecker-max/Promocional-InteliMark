@@ -5,10 +5,13 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
-// 🚀 LAZY LOADING: HomePage solo se carga cuando es necesario
+// 🚀 LAZY LOADING: Ambas páginas se cargan solo cuando son necesarias
 const HomePage = lazy(() => import("./pages/HomePage"));
-import Rebecca from "./pages/Rebecca";
-import { useUnifiedBrowserAnimations } from "./hooks/useUnifiedBrowserAnimations";
+const Rebecca = lazy(() => import("./pages/Rebecca"));
+import { AnimationProvider } from "./contexts/AnimationContext";
+import { useOptimizedTabAnimations } from "./hooks/useOptimizedTabAnimations";
+import { useFrameRateLimiter } from "./hooks/useFrameRateLimiter";
+import { PageLoader } from "./components/PageLoader";
 import "./App.css";
 
 // ✅ COMPONENTE PARA RESTAURAR SCROLL EN NAVEGACIÓN
@@ -40,9 +43,13 @@ function ScrollToTop() {
   return null;
 }
 
-function App() {
-  // 🎯 EFECTOS UNIFICADOS DE PESTAÑA - Título + Favicon en un solo bucle optimizado
-  useUnifiedBrowserAnimations();
+// ✅ COMPONENTE PRINCIPAL CON ANIMACIONES OPTIMIZADAS
+function AppContent() {
+  // 🎯 EFECTOS UNIFICADOS DE PESTAÑA - Sistema optimizado
+  useOptimizedTabAnimations();
+
+  // 🔧 LIMITADOR DE FRAME RATE - Prevenir violations
+  useFrameRateLimiter();
 
   return (
     <Router
@@ -54,23 +61,7 @@ function App() {
       <div className="app">
         <ScrollToTop />
         <main className="app-main">
-          <Suspense
-            fallback={
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100vh",
-                  color: "#ff6b35",
-                  fontSize: "18px",
-                  fontFamily: "Arial, sans-serif",
-                }}
-              >
-                Cargando...
-              </div>
-            }
-          >
+          <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/rebecca" element={<Rebecca />} />
@@ -79,6 +70,15 @@ function App() {
         </main>
       </div>
     </Router>
+  );
+}
+
+// 🎯 APP PRINCIPAL CON PROVIDER DE ANIMACIONES
+function App() {
+  return (
+    <AnimationProvider>
+      <AppContent />
+    </AnimationProvider>
   );
 }
 
