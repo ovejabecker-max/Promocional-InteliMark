@@ -5,6 +5,7 @@ import React, {
   useContext,
   useState,
   useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 
@@ -119,13 +120,22 @@ export const TransitionProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   // 🎯 VALOR DEL CONTEXT
-  const contextValue: TransitionContextType = {
-    ...state,
-    startTransition,
-    updateProgress,
-    completeTransition,
-    resetTransition,
-  };
+  const contextValue = useMemo(
+    () => ({
+      ...state,
+      startTransition,
+      updateProgress,
+      completeTransition,
+      resetTransition,
+    }),
+    [
+      state,
+      startTransition,
+      updateProgress,
+      completeTransition,
+      resetTransition,
+    ]
+  );
 
   return (
     <TransitionContext.Provider value={contextValue}>
@@ -149,20 +159,22 @@ export const useTransition = (): TransitionContextType => {
 export const usePortalTransition = () => {
   const transition = useTransition();
 
-  const isFromPortal =
-    transition.transitionType === "portal" &&
-    transition.direction === "home-to-rebecca";
+  return useMemo(() => {
+    const isFromPortal =
+      transition.transitionType === "portal" &&
+      transition.direction === "home-to-rebecca";
 
-  const isToPortal =
-    transition.transitionType === "portal" &&
-    transition.direction === "rebecca-to-home";
+    const isToPortal =
+      transition.transitionType === "portal" &&
+      transition.direction === "rebecca-to-home";
 
-  return {
-    ...transition,
-    isFromPortal,
-    isToPortal,
-    portalData: transition.portalEffectsData,
-  };
+    return {
+      ...transition,
+      isFromPortal,
+      isToPortal,
+      portalData: transition.portalEffectsData,
+    };
+  }, [transition]);
 };
 
 export default TransitionContext;
