@@ -84,7 +84,7 @@
   opacity: 0;
   animation: quantum-particles 12s linear infinite;
   transition: opacity 0.5s ease;
-  z-index: -2;
+  z-index: 1; /* ✅ CORREGIDO: de -2 a 1 para hacerlo visible */
   pointer-events: none;
 }
 
@@ -191,14 +191,18 @@
     drop-shadow(0 0 40px rgba(255, 140, 0, 0.6));
 }
 
-/* 🧠 ESTADO ACTIVE (ESCUCHANDO) - IA PENSANDO */
+/* 🧠 ESTADO ACTIVE (IA PENSANDO) */
 .vapi-chat-button--active {
   animation: consciousness-field 3s ease-in-out infinite;
 }
 
+/* 🔊 EFECTO DE VOLUMEN - ASISTENTE HABLANDO */
 .vapi-chat-button--active .vapi-button-container::before {
   opacity: 1;
-  animation: thought-waves 2.2s ease-in-out infinite;
+  /* Anima la escala y la opacidad basado en el volumen */
+  transform: scale(calc(1 + var(--assistant-volume-level, 0) * 0.2));
+  opacity: calc(0.5 + var(--assistant-volume-level, 0) * 0.5);
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out; /* Transición suave */
 }
 
 .vapi-chat-button--active .vapi-button-container::after {
@@ -213,7 +217,6 @@
     drop-shadow(0 0 50px rgba(179, 180, 176, 0.6));
 }
 
-/* 🔥 CIRCUITO NEURONAL - EFECTO "PENSANDO" ULTRA AVANZADO */
 .vapi-chat-button--active .cls-2 {
   fill: #ff6600;
   animation: neural-thinking 0.8s ease-in-out infinite,
@@ -226,7 +229,30 @@
   transform-origin: center;
 }
 
+/* 🎤 ESTADO LISTENING - USUARIO HABLANDO */
+.vapi-chat-button--listening .cls-1 {
+  fill: #87ceeb; /* Se ilumina la silueta en azul cielo */
+  filter: drop-shadow(0 0 15px rgba(135, 206, 235, 0.8));
+}
+
+.vapi-chat-button--listening .cls-2 {
+  fill: #ffffff; /* El circuito se pone blanco para indicar que recibe señal */
+  animation: listening-pulse 1.5s ease-in-out infinite;
+}
+
 /* 🚀 ANIMACIONES ULTRA TECNOLÓGICAS */
+
+@keyframes listening-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
 
 /* 🌀 ROTACIÓN HOLOGRÁFICA */
 @keyframes holographic-rotation {

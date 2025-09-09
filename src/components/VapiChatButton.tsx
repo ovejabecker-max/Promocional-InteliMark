@@ -20,6 +20,8 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(({
   const {
     isSessionActive,
     isLoading,
+    isUserSpeaking,
+    assistantVolume,
     toggleCall
   } = useVapi(config);
 
@@ -27,17 +29,23 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(({
     const baseClass = 'vapi-chat-button';
     const sizeClass = `vapi-chat-button--${size}`;
     const variantClass = `vapi-chat-button--${variant}`;
-    const statusClass = isSessionActive 
-      ? 'vapi-chat-button--active' 
-      : isLoading 
-        ? 'vapi-chat-button--loading'
-        : 'vapi-chat-button--inactive';
+    
+    const statusClass = isUserSpeaking
+      ? 'vapi-chat-button--listening'
+      : isSessionActive 
+        ? 'vapi-chat-button--active' 
+        : isLoading 
+          ? 'vapi-chat-button--loading'
+          : 'vapi-chat-button--inactive';
     
     return `${baseClass} ${sizeClass} ${variantClass} ${statusClass} ${className}`;
-  }, [size, variant, isSessionActive, isLoading, className]);
+  }, [size, variant, isSessionActive, isLoading, isUserSpeaking, className]);
 
   return (
-    <div className="vapi-button-container">
+    <div 
+      className="vapi-button-container"
+      style={{ '--assistant-volume-level': assistantVolume } as React.CSSProperties}
+    >
       <button
         onClick={toggleCall}
         disabled={isLoading}
