@@ -50,7 +50,9 @@ const ANIMATION_CONFIG = {
   TEXT_LINE3_Z: 35,
   TEXT2_LINE1_Z: 20,
   TEXT2_LINE2_Z: 15,
-  NAVIGATION_DELAY: 2000,
+  // ✅ MEJORADO: Configuración basada en duración real calculada
+  NAVIGATION_FALLBACK_DELAY: 3000, // Fallback si onComplete falla
+  PORTAL_TOTAL_DURATION: 2.0, // Duración total calculada de la animación
 } as const;
 
 const TRAIL_CONFIG = {
@@ -214,6 +216,8 @@ const HomePage: FC<HomePageProps> = () => {
   const [isDigitalGlitch, setIsDigitalGlitch] = useState(false);
   const portalTriggeredRef = useRef(false);
   const glitchTriggeredRef = useRef(false);
+  // ✅ NUEVO: Control de estado de navegación
+  const navigationExecutedRef = useRef(false);
 
   const ambientAudioRef = useRef<HTMLAudioElement | null>(null);
   const [hasStartedAmbientSound, setHasStartedAmbientSound] = useState(false);
@@ -402,11 +406,22 @@ const HomePage: FC<HomePageProps> = () => {
   const mouseStoppedTimeoutRef = useRef<number | null>(null);
 
   const triggerPortalTransition = useCallback(() => {
+    console.log("🚀 triggerPortalTransition INICIADO");
+
     const canvas = canvasRef.current;
     const scene = sceneRef.current;
     const camera = cameraRef.current;
 
-    if (!canvas || !scene || !camera) return;
+    if (!canvas || !scene || !camera) {
+      console.error("❌ Elementos requeridos no encontrados:", {
+        canvas: !!canvas,
+        scene: !!scene,
+        camera: !!camera,
+      });
+      return;
+    }
+
+    console.log("✅ Elementos encontrados, iniciando transición...");
 
     if (transitionAudioRef.current && areSoundsEnabled) {
       transitionAudioRef.current.currentTime = 0;
@@ -433,13 +448,22 @@ const HomePage: FC<HomePageProps> = () => {
     scene.position.set(0, 0, 0);
     camera.lookAt(0, 0, 0);
 
+    // ✅ MEJORADO: Timeline con callback de finalización sincronizado
     const portalTimeline = gsap.timeline({
       ease: EASING_CONFIG.PORTAL_MAIN,
+      onUpdate: () => {
+        // 📊 OPCIONAL: Tracking de progreso para debugging
+        if (import.meta.env.DEV) {
+          const progress = Math.round(portalTimeline.progress() * 100);
+          if (progress % 25 === 0) {
+            // Log cada 25%
+            console.log(`Portal transition progress: ${progress}%`);
+          }
+        }
+      },
     });
 
-    setTimeout(() => {
-      navigate(ROUTES.REBECCA);
-    }, ANIMATION_CONFIG.NAVIGATION_DELAY);
+    // ❌ REMOVIDO: setTimeout fijo reemplazado por onComplete callback
 
     portalTimeline
       .to(
@@ -510,6 +534,42 @@ const HomePage: FC<HomePageProps> = () => {
         },
         1.7
       );
+
+    // 🛡️ SISTEMA DE RESPALDO: Navegación garantizada como última línea de defensa
+    const navigationFallback = setTimeout(() => {
+      if (!navigationExecutedRef.current) {
+        navigationExecutedRef.current = true;
+
+        // 🔓 RESTAURAR SCROLL: Habilitar scroll antes de navegar
+        document.body.style.overflow = "";
+
+        console.warn("Animation may have stalled, forcing navigation fallback");
+        navigate(ROUTES.REBECCA);
+      }
+    }, ANIMATION_CONFIG.NAVIGATION_FALLBACK_DELAY);
+
+    // 🧹 LIMPIEZA Y NAVEGACIÓN: Todo consolidado en un solo callback
+    portalTimeline.eventCallback("onComplete", () => {
+      // 🎯 NAVEGACIÓN SINCRONIZADA: Se ejecuta al completar la animación real
+      if (!navigationExecutedRef.current) {
+        navigationExecutedRef.current = true;
+
+        // 🔓 RESTAURAR SCROLL: Habilitar scroll antes de navegar
+        document.body.style.overflow = "";
+
+        console.log("Portal animation completed, navigating to Rebecca...");
+        navigate(ROUTES.REBECCA);
+      }
+
+      // Cancelar fallback
+      clearTimeout(navigationFallback);
+
+      // Reset para futuras transiciones
+      portalTriggeredRef.current = false;
+      setTimeout(() => {
+        navigationExecutedRef.current = false;
+      }, 1000);
+    });
   }, [navigate]);
 
   const renderTrail = useCallback(() => {
@@ -758,8 +818,14 @@ const HomePage: FC<HomePageProps> = () => {
             !portalTriggeredRef.current &&
             !isTransitioning
           ) {
+            console.log(`🌀 Portal trigger activado a ${progress}%`);
             portalTriggeredRef.current = true;
             setIsTransitioning(true);
+
+            // 🚫 BLOQUEAR SCROLL: Deshabilitar interacción durante transición
+            document.body.style.overflow = "hidden";
+            console.log("🚫 Scroll bloqueado");
+
             triggerPortalTransition();
           }
         },
@@ -862,9 +928,12 @@ const HomePage: FC<HomePageProps> = () => {
     }
 
     return () => {
+      // 🧹 LIMPIEZA COMPLETA: Restaurar scroll y estados
+      document.body.style.overflow = "";
       ScrollTrigger.killAll();
       portalTriggeredRef.current = false;
       glitchTriggeredRef.current = false;
+      navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
   }, [triggerPortalTransition]);
