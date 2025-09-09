@@ -1,6 +1,6 @@
 // src/pages/Rebecca.tsx
 
-import { useEffect, useRef, useState, memo, useCallback } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import { usePortalTransition } from "../contexts/TransitionContext";
@@ -46,28 +46,6 @@ const Rebecca = memo(() => {
   // Referencias
   const containerRef = useRef<HTMLDivElement>(null);
   const ctaSectionRef = useRef<HTMLElement>(null);
-
-  // 🚨 EFECTO INMEDIATO: Configurar estado inicial antes del render
-  useEffect(() => {
-    const isFromPortalNavigation =
-      location.state?.fromPortal || portalTransition.isFromPortal;
-
-    // 🎯 SI VIENE DE PORTAL: Ocultar inmediatamente cuando el ref esté disponible
-    if (isFromPortalNavigation) {
-      const hideContainer = () => {
-        if (containerRef.current) {
-          const container = containerRef.current;
-          container.style.opacity = "0";
-          container.style.visibility = "hidden";
-          container.style.display = "block"; // Asegurar que esté en el DOM
-        } else {
-          // Si el ref no está listo, intentar de nuevo en el próximo frame
-          requestAnimationFrame(hideContainer);
-        }
-      };
-      hideContainer();
-    }
-  }, [location.state?.fromPortal, portalTransition.isFromPortal]);
 
   // Controlador de scroll CTA
   useEffect(() => {
@@ -173,124 +151,21 @@ const Rebecca = memo(() => {
     };
   }, [ctaState]);
 
-  // � FUNCIÓN: Inicializar continuidad desde portal
-  const initializePortalContinuity = useCallback((_transitionData: unknown) => {
-    // 🎯 ANIMACIÓN DE PORTAL EXPANDIÉNDOSE DESDE EL CENTRO
-    const container = containerRef.current;
-    if (container) {
-      // 🎪 CREAR OVERLAY DE PORTAL PARA EL EFECTO DE REVELADO
-      const portalOverlay = document.createElement("div");
-      portalOverlay.className = "portal-reveal-overlay";
-      portalOverlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: #000000;
-        z-index: 10000;
-        pointer-events: none;
-        clip-path: circle(0% at 50% 50%);
-        transition: clip-path 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      `;
-
-      // 🌟 CREAR BORDE DEL PORTAL CON EFECTO ENERGÉTICO
-      const portalBorder = document.createElement("div");
-      portalBorder.className = "portal-energy-border";
-      portalBorder.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #da8023;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10001;
-        pointer-events: none;
-        box-shadow: 
-          0 0 15px #da8023,
-          inset 0 0 15px #da8023;
-        opacity: 1;
-        transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      `;
-
-      // 🚀 ASEGURAR QUE EL CONTENIDO ESTÉ COMPLETAMENTE PREPARADO
-      container.style.opacity = "1";
-      container.style.visibility = "visible";
-      container.style.filter = "none";
-      container.style.transform = "scale(1)";
-      container.style.display = "block";
-
-      // Añadir elementos al DOM
-      document.body.appendChild(portalOverlay);
-      document.body.appendChild(portalBorder);
-
-      // �🌀 ANIMACIÓN SINCRONIZADA: Portal empieza inmediatamente
-      setTimeout(() => {
-        // Expansión del borde
-        portalBorder.style.width = "100vmax";
-        portalBorder.style.height = "100vmax";
-        portalBorder.style.opacity = "0.3";
-
-        // Expansión del overlay
-        portalOverlay.style.clipPath = "circle(120% at 50% 50%)";
-      }, 50);
-
-      // 🎬 LIMPIEZA Y FINALIZACIÓN
-      setTimeout(() => {
-        // Remover elementos
-        portalOverlay.remove();
-        portalBorder.remove();
-
-        // 🎯 GARANTIZAR VISIBILIDAD FINAL DEL CONTENIDO
-        container.style.opacity = "1";
-        container.style.visibility = "visible";
-        container.style.display = "block";
-        container.style.filter = "none";
-        container.style.transform = "scale(1)";
-
-        // Marcar como completado
-        setEntryState((prev) => ({
-          ...prev,
-          portalAnimationCompleted: true,
-        }));
-      }, 1600); // Tiempo total de la animación
-    }
-  }, []);
-
-  // 🎬 FUNCIÓN: Inicializar entrada normal
-  const initializeNormalEntry = useCallback(() => {
-    const container = containerRef.current;
-    if (container) {
-      // Fade in normal
-      container.style.opacity = "0";
-      container.style.transition = "opacity 0.5s ease";
-
-      setTimeout(() => {
-        container.style.opacity = "1";
-        setEntryState((prev) => ({ ...prev, portalAnimationCompleted: true }));
-
-        setTimeout(() => {
-          container.style.transition = "";
-        }, 500);
-      }, 50);
-    }
-  }, []);
-
-  // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones (SOLO UNA VEZ)
+  // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones
   useEffect(() => {
-    // Solo ejecutar si no se ha inicializado aún
-    if (entryState.hasInitialized) return;
-
-    // Capturar valores una sola vez para evitar dependencias reactivas
-    const isFromPortalNavigation = Boolean(
-      location.state?.fromPortal || portalTransition.isFromPortal
-    );
+    const isFromPortalNavigation =
+      location.state?.fromPortal || portalTransition.isFromPortal;
     const transitionData =
       location.state?.transitionData || portalTransition.portalData;
 
-    if (isFromPortalNavigation) {
+    console.log("🎯 Rebecca initialized - Portal detection:", {
+      isFromPortalNavigation,
+      portalTransitionActive: portalTransition.isTransitioning,
+      transitionType: portalTransition.transitionType,
+      hasTransitionData: !!transitionData,
+    });
+
+    if (isFromPortalNavigation && !entryState.hasInitialized) {
       setEntryState((prev) => ({
         ...prev,
         fromPortal: true,
@@ -299,7 +174,7 @@ const Rebecca = memo(() => {
 
       // 🎬 INICIAR ANIMACIÓN DE CONTINUIDAD PORTAL
       initializePortalContinuity(transitionData);
-    } else {
+    } else if (!entryState.hasInitialized) {
       setEntryState((prev) => ({
         ...prev,
         fromPortal: false,
@@ -309,8 +184,45 @@ const Rebecca = memo(() => {
       // 🎬 INICIAR ANIMACIÓN NORMAL
       initializeNormalEntry();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entryState.hasInitialized]); // Solo depender de hasInitialized
+  }, [location.state, portalTransition, entryState.hasInitialized]);
+
+  // 🎬 FUNCIÓN: Inicializar continuidad desde portal
+  const initializePortalContinuity = (transitionData: any) => {
+    console.log("🌀 Initializing portal continuity with data:", transitionData);
+
+    // ✅ SIN ANIMACIÓN: Rebecca aparece directamente
+    const container = containerRef.current;
+    if (container) {
+      // Mostrar inmediatamente sin efectos
+      container.style.opacity = "1";
+      container.style.filter = "none";
+      container.style.transform = "none";
+      container.style.transition = "";
+
+      // Marcar como completado inmediatamente
+      setEntryState((prev) => ({
+        ...prev,
+        portalAnimationCompleted: true,
+      }));
+    }
+  };
+
+  // 🎬 FUNCIÓN: Inicializar entrada normal
+  const initializeNormalEntry = () => {
+    console.log("🎯 Initializing normal entry");
+
+    const container = containerRef.current;
+    if (container) {
+      // ✅ SIN ANIMACIÓN: Mostrar inmediatamente
+      container.style.opacity = "1";
+      container.style.filter = "none";
+      container.style.transform = "none";
+      container.style.transition = "";
+
+      // Marcar como completado inmediatamente
+      setEntryState((prev) => ({ ...prev, portalAnimationCompleted: true }));
+    }
+  };
 
   return (
     <>
@@ -334,11 +246,7 @@ const Rebecca = memo(() => {
           <div className="vapi-content center-absolute">
             <VapiChatButton config={vapiConfig} variant="center" size="large" />
           </div>
-          <div
-            className={`portal-effects center-absolute ${
-              entryState.fromPortal ? "enhanced-effects" : ""
-            }`}
-          >
+          <div className="portal-effects center-absolute">
             <div className="glow-ring"></div>
             <div className="pulse-ring"></div>
             <div className="rotating-ring-outer"></div>

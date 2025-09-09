@@ -52,7 +52,7 @@ const ANIMATION_CONFIG = {
   TEXT2_LINE1_Z: 20,
   TEXT2_LINE2_Z: 15,
   // ✅ MEJORADO: Configuración basada en duración real calculada
-  NAVIGATION_FALLBACK_DELAY: 2000, // Fallback si onComplete falla (reducido para nueva duración)
+  NAVIGATION_FALLBACK_DELAY: 3000, // Fallback si onComplete falla
   PORTAL_TOTAL_DURATION: 2.0, // Duración total calculada de la animación
 } as const;
 
@@ -477,7 +477,7 @@ const HomePage: FC<HomePageProps> = () => {
         camera.position,
         {
           z: -80,
-          duration: 0.2, // Reducido de 0.3
+          duration: 0.3,
           ease: EASING_CONFIG.PORTAL_CAMERA_INITIAL,
         },
         0
@@ -488,26 +488,26 @@ const HomePage: FC<HomePageProps> = () => {
           x: 0.1,
           y: 0.1,
           z: 0.1,
-          duration: 0.4, // Reducido de 0.6
+          duration: 0.6,
           ease: EASING_CONFIG.PORTAL_SCALE_INITIAL,
         },
-        0.1 // Reducido de 0.2
+        0.2
       )
       .to(
         camera.position,
         {
           z: ANIMATION_CONFIG.CAMERA_TUNNEL_Z,
-          duration: 0.5, // Reducido de 0.7
+          duration: 0.7,
           ease: EASING_CONFIG.PORTAL_CAMERA_TUNNEL,
         },
-        0.3 // Reducido de 0.4
+        0.4
       )
       .to(
         scene.rotation,
         {
           z: Math.PI * 2,
           x: Math.PI * 0.3,
-          duration: 1.0, // Reducido de 1.4
+          duration: 1.4,
           ease: EASING_CONFIG.PORTAL_ROTATION,
         },
         0.1
@@ -518,28 +518,28 @@ const HomePage: FC<HomePageProps> = () => {
           x: 0.02,
           y: 0.02,
           z: 0.02,
-          duration: 0.3, // Reducido de 0.5
+          duration: 0.5,
           ease: EASING_CONFIG.PORTAL_SCALE_FINAL,
         },
-        0.6 // Reducido de 0.8
+        0.8
       )
       .to(
         canvas,
         {
           filter: UI_CONFIG.CSS_FILTER_TRANSITION,
-          duration: 0.2, // Reducido de 0.3
+          duration: 0.3,
           ease: EASING_CONFIG.PORTAL_FILTER,
         },
-        1.1 // Reducido de 1.5
+        1.5
       )
       .to(
         canvas,
         {
           opacity: 0,
-          duration: 0.2, // Reducido de 0.3
+          duration: 0.3,
           ease: EASING_CONFIG.PORTAL_FADEOUT,
         },
-        1.3 // Reducido de 1.7
+        1.7
       );
 
     // 🛡️ SISTEMA DE RESPALDO: Navegación garantizada como última línea de defensa
