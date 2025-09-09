@@ -1,6 +1,6 @@
 // src/pages/Rebecca.tsx
 
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState, memo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import { usePortalTransition } from "../contexts/TransitionContext";
@@ -173,43 +173,8 @@ const Rebecca = memo(() => {
     };
   }, [ctaState]);
 
-  // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones
-  useEffect(() => {
-    const isFromPortalNavigation =
-      location.state?.fromPortal || portalTransition.isFromPortal;
-    const transitionData =
-      location.state?.transitionData || portalTransition.portalData;
-
-    console.log("🎯 Rebecca initialized - Portal detection:", {
-      isFromPortalNavigation,
-      portalTransitionActive: portalTransition.isTransitioning,
-      transitionType: portalTransition.transitionType,
-      hasTransitionData: !!transitionData,
-    });
-
-    if (isFromPortalNavigation && !entryState.hasInitialized) {
-      setEntryState((prev) => ({
-        ...prev,
-        fromPortal: true,
-        hasInitialized: true,
-      }));
-
-      // 🎬 INICIAR ANIMACIÓN DE CONTINUIDAD PORTAL
-      initializePortalContinuity(transitionData);
-    } else if (!entryState.hasInitialized) {
-      setEntryState((prev) => ({
-        ...prev,
-        fromPortal: false,
-        hasInitialized: true,
-      }));
-
-      // 🎬 INICIAR ANIMACIÓN NORMAL
-      initializeNormalEntry();
-    }
-  }, [location.state, portalTransition, entryState.hasInitialized]);
-
-  // 🎬 FUNCIÓN: Inicializar continuidad desde portal
-  const initializePortalContinuity = (_transitionData: unknown) => {
+  // � FUNCIÓN: Inicializar continuidad desde portal
+  const initializePortalContinuity = useCallback((_transitionData: unknown) => {
     // 🎯 ANIMACIÓN DE PORTAL EXPANDIÉNDOSE DESDE EL CENTRO
     const container = containerRef.current;
     if (container) {
@@ -261,7 +226,7 @@ const Rebecca = memo(() => {
       document.body.appendChild(portalOverlay);
       document.body.appendChild(portalBorder);
 
-      // 🌀 ANIMACIÓN SINCRONIZADA: Portal empieza inmediatamente
+      // �🌀 ANIMACIÓN SINCRONIZADA: Portal empieza inmediatamente
       setTimeout(() => {
         // Expansión del borde
         portalBorder.style.width = "100vmax";
@@ -292,10 +257,10 @@ const Rebecca = memo(() => {
         }));
       }, 1600); // Tiempo total de la animación
     }
-  };
+  }, []);
 
   // 🎬 FUNCIÓN: Inicializar entrada normal
-  const initializeNormalEntry = () => {
+  const initializeNormalEntry = useCallback(() => {
     const container = containerRef.current;
     if (container) {
       // Fade in normal
@@ -311,7 +276,41 @@ const Rebecca = memo(() => {
         }, 500);
       }, 50);
     }
-  };
+  }, []);
+
+  // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones (SOLO UNA VEZ)
+  useEffect(() => {
+    // Solo ejecutar si no se ha inicializado aún
+    if (entryState.hasInitialized) return;
+
+    // Capturar valores una sola vez para evitar dependencias reactivas
+    const isFromPortalNavigation = Boolean(
+      location.state?.fromPortal || portalTransition.isFromPortal
+    );
+    const transitionData =
+      location.state?.transitionData || portalTransition.portalData;
+
+    if (isFromPortalNavigation) {
+      setEntryState((prev) => ({
+        ...prev,
+        fromPortal: true,
+        hasInitialized: true,
+      }));
+
+      // 🎬 INICIAR ANIMACIÓN DE CONTINUIDAD PORTAL
+      initializePortalContinuity(transitionData);
+    } else {
+      setEntryState((prev) => ({
+        ...prev,
+        fromPortal: false,
+        hasInitialized: true,
+      }));
+
+      // 🎬 INICIAR ANIMACIÓN NORMAL
+      initializeNormalEntry();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entryState.hasInitialized]); // Solo depender de hasInitialized
 
   return (
     <>
