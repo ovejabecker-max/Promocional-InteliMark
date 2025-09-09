@@ -9,6 +9,7 @@ import { useEffect, lazy, Suspense } from "react";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const Rebecca = lazy(() => import("./pages/Rebecca"));
 import { AnimationProvider } from "./contexts/AnimationContext";
+import { TransitionProvider } from "./contexts/TransitionContext";
 import { useOptimizedTabAnimations } from "./hooks/useOptimizedTabAnimations";
 import { useFrameRateLimiter } from "./hooks/useFrameRateLimiter";
 import { PageLoader } from "./components/PageLoader";
@@ -73,11 +74,13 @@ function AppContent() {
   );
 }
 
-// 🎯 APP PRINCIPAL CON PROVIDER DE ANIMACIONES
+// 🎯 APP PRINCIPAL CON PROVIDERS ANIDADOS
 function App() {
   return (
     <AnimationProvider>
-      <AppContent />
+      <TransitionProvider>
+        <AppContent />
+      </TransitionProvider>
     </AnimationProvider>
   );
 }

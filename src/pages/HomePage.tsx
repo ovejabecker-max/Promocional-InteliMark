@@ -14,6 +14,7 @@ import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useNavigate } from "react-router-dom";
+import { useTransition } from "../contexts/TransitionContext";
 import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
 import AudioVisualizer from "../components/AudioVisualizer";
@@ -51,7 +52,7 @@ const ANIMATION_CONFIG = {
   TEXT2_LINE1_Z: 20,
   TEXT2_LINE2_Z: 15,
   // ✅ MEJORADO: Configuración basada en duración real calculada
-  NAVIGATION_FALLBACK_DELAY: 3000, // Fallback si onComplete falla
+  NAVIGATION_FALLBACK_DELAY: 2000, // Fallback si onComplete falla (reducido para nueva duración)
   PORTAL_TOTAL_DURATION: 2.0, // Duración total calculada de la animación
 } as const;
 
@@ -226,6 +227,9 @@ const HomePage: FC<HomePageProps> = () => {
   const transitionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const navigate = useNavigate();
+
+  // 🌀 NUEVO: Hook de gestión de transiciones
+  const transitionContext = useTransition();
 
   const config = useMemo(() => {
     return {
@@ -452,9 +456,12 @@ const HomePage: FC<HomePageProps> = () => {
     const portalTimeline = gsap.timeline({
       ease: EASING_CONFIG.PORTAL_MAIN,
       onUpdate: () => {
+        // 📊 Actualizar progreso en TransitionContext
+        const progress = Math.round(portalTimeline.progress() * 100);
+        transitionContext.updateProgress(progress);
+
         // 📊 OPCIONAL: Tracking de progreso para debugging
         if (import.meta.env.DEV) {
-          const progress = Math.round(portalTimeline.progress() * 100);
           if (progress % 25 === 0) {
             // Log cada 25%
             console.log(`Portal transition progress: ${progress}%`);
@@ -470,7 +477,7 @@ const HomePage: FC<HomePageProps> = () => {
         camera.position,
         {
           z: -80,
-          duration: 0.3,
+          duration: 0.2, // Reducido de 0.3
           ease: EASING_CONFIG.PORTAL_CAMERA_INITIAL,
         },
         0
@@ -481,26 +488,26 @@ const HomePage: FC<HomePageProps> = () => {
           x: 0.1,
           y: 0.1,
           z: 0.1,
-          duration: 0.6,
+          duration: 0.4, // Reducido de 0.6
           ease: EASING_CONFIG.PORTAL_SCALE_INITIAL,
         },
-        0.2
+        0.1 // Reducido de 0.2
       )
       .to(
         camera.position,
         {
           z: ANIMATION_CONFIG.CAMERA_TUNNEL_Z,
-          duration: 0.7,
+          duration: 0.5, // Reducido de 0.7
           ease: EASING_CONFIG.PORTAL_CAMERA_TUNNEL,
         },
-        0.4
+        0.3 // Reducido de 0.4
       )
       .to(
         scene.rotation,
         {
           z: Math.PI * 2,
           x: Math.PI * 0.3,
-          duration: 1.4,
+          duration: 1.0, // Reducido de 1.4
           ease: EASING_CONFIG.PORTAL_ROTATION,
         },
         0.1
@@ -511,28 +518,28 @@ const HomePage: FC<HomePageProps> = () => {
           x: 0.02,
           y: 0.02,
           z: 0.02,
-          duration: 0.5,
+          duration: 0.3, // Reducido de 0.5
           ease: EASING_CONFIG.PORTAL_SCALE_FINAL,
         },
-        0.8
+        0.6 // Reducido de 0.8
       )
       .to(
         canvas,
         {
           filter: UI_CONFIG.CSS_FILTER_TRANSITION,
-          duration: 0.3,
+          duration: 0.2, // Reducido de 0.3
           ease: EASING_CONFIG.PORTAL_FILTER,
         },
-        1.5
+        1.1 // Reducido de 1.5
       )
       .to(
         canvas,
         {
           opacity: 0,
-          duration: 0.3,
+          duration: 0.2, // Reducido de 0.3
           ease: EASING_CONFIG.PORTAL_FADEOUT,
         },
-        1.7
+        1.3 // Reducido de 1.7
       );
 
     // 🛡️ SISTEMA DE RESPALDO: Navegación garantizada como última línea de defensa
@@ -557,8 +564,18 @@ const HomePage: FC<HomePageProps> = () => {
         // 🔓 RESTAURAR SCROLL: Habilitar scroll antes de navegar
         document.body.style.overflow = "";
 
+        // ✅ COMPLETAR TRANSICIÓN EN CONTEXT
+        transitionContext.completeTransition();
+
         console.log("Portal animation completed, navigating to Rebecca...");
-        navigate(ROUTES.REBECCA);
+
+        // 🚀 NAVEGAR CON ESTADO DE TRANSICIÓN
+        navigate(ROUTES.REBECCA, {
+          state: {
+            fromPortal: true,
+            transitionData: transitionContext.portalEffectsData,
+          },
+        });
       }
 
       // Cancelar fallback
@@ -821,6 +838,32 @@ const HomePage: FC<HomePageProps> = () => {
             console.log(`🌀 Portal trigger activado a ${progress}%`);
             portalTriggeredRef.current = true;
             setIsTransitioning(true);
+
+            // 🌀 INICIAR TRANSICIÓN EN CONTEXT
+            transitionContext.startTransition({
+              type: "portal",
+              direction: "home-to-rebecca",
+              fromPage: "home",
+              toPage: "rebecca",
+              portalData: {
+                cameraPosition: cameraRef.current
+                  ? {
+                      x: cameraRef.current.position.x,
+                      y: cameraRef.current.position.y,
+                      z: cameraRef.current.position.z,
+                    }
+                  : undefined,
+                sceneRotation: sceneRef.current
+                  ? {
+                      x: sceneRef.current.rotation.x,
+                      y: sceneRef.current.rotation.y,
+                      z: sceneRef.current.rotation.z,
+                    }
+                  : undefined,
+                lastScrollPercentage: progress,
+                glitchTriggered: glitchTriggeredRef.current,
+              },
+            });
 
             // 🚫 BLOQUEAR SCROLL: Deshabilitar interacción durante transición
             document.body.style.overflow = "hidden";

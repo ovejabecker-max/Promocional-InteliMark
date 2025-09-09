@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, memo } from "react";
 import { createPortal } from "react-dom";
+import { useLocation } from "react-router-dom";
+import { usePortalTransition } from "../contexts/TransitionContext";
 import { VapiChatButton } from "../components/VapiChatButton";
 import { vapiConfig } from "../config/vapi.config";
 import FuenteCero from "../components/FuenteCero";
@@ -12,6 +14,17 @@ import ContenedorCreditos from "../assets/contenedor_creditos.png";
 import "./Rebecca.css";
 
 const Rebecca = memo(() => {
+  // 🌀 HOOKS DE TRANSICIÓN: Detectar si viene de portal
+  const location = useLocation();
+  const portalTransition = usePortalTransition();
+
+  // 🎯 ESTADO DE ENTRADA: Desde portal o navegación normal
+  const [entryState, setEntryState] = useState({
+    fromPortal: false,
+    hasInitialized: false,
+    portalAnimationCompleted: false,
+  });
+
   // Estados consolidados para CTA
   const [ctaState, setCtaState] = useState({
     scrollPercent: 0,
@@ -33,6 +46,28 @@ const Rebecca = memo(() => {
   // Referencias
   const containerRef = useRef<HTMLDivElement>(null);
   const ctaSectionRef = useRef<HTMLElement>(null);
+
+  // 🚨 EFECTO INMEDIATO: Configurar estado inicial antes del render
+  useEffect(() => {
+    const isFromPortalNavigation =
+      location.state?.fromPortal || portalTransition.isFromPortal;
+
+    // 🎯 SI VIENE DE PORTAL: Ocultar inmediatamente cuando el ref esté disponible
+    if (isFromPortalNavigation) {
+      const hideContainer = () => {
+        if (containerRef.current) {
+          const container = containerRef.current;
+          container.style.opacity = "0";
+          container.style.visibility = "hidden";
+          container.style.display = "block"; // Asegurar que esté en el DOM
+        } else {
+          // Si el ref no está listo, intentar de nuevo en el próximo frame
+          requestAnimationFrame(hideContainer);
+        }
+      };
+      hideContainer();
+    }
+  }, [location.state?.fromPortal, portalTransition.isFromPortal]);
 
   // Controlador de scroll CTA
   useEffect(() => {
@@ -138,15 +173,173 @@ const Rebecca = memo(() => {
     };
   }, [ctaState]);
 
+  // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones
+  useEffect(() => {
+    const isFromPortalNavigation =
+      location.state?.fromPortal || portalTransition.isFromPortal;
+    const transitionData =
+      location.state?.transitionData || portalTransition.portalData;
+
+    console.log("🎯 Rebecca initialized - Portal detection:", {
+      isFromPortalNavigation,
+      portalTransitionActive: portalTransition.isTransitioning,
+      transitionType: portalTransition.transitionType,
+      hasTransitionData: !!transitionData,
+    });
+
+    if (isFromPortalNavigation && !entryState.hasInitialized) {
+      setEntryState((prev) => ({
+        ...prev,
+        fromPortal: true,
+        hasInitialized: true,
+      }));
+
+      // 🎬 INICIAR ANIMACIÓN DE CONTINUIDAD PORTAL
+      initializePortalContinuity(transitionData);
+    } else if (!entryState.hasInitialized) {
+      setEntryState((prev) => ({
+        ...prev,
+        fromPortal: false,
+        hasInitialized: true,
+      }));
+
+      // 🎬 INICIAR ANIMACIÓN NORMAL
+      initializeNormalEntry();
+    }
+  }, [location.state, portalTransition, entryState.hasInitialized]);
+
+  // 🎬 FUNCIÓN: Inicializar continuidad desde portal
+  const initializePortalContinuity = (_transitionData: unknown) => {
+    // 🎯 ANIMACIÓN DE PORTAL EXPANDIÉNDOSE DESDE EL CENTRO
+    const container = containerRef.current;
+    if (container) {
+      // 🎪 CREAR OVERLAY DE PORTAL PARA EL EFECTO DE REVELADO
+      const portalOverlay = document.createElement("div");
+      portalOverlay.className = "portal-reveal-overlay";
+      portalOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000000;
+        z-index: 10000;
+        pointer-events: none;
+        clip-path: circle(0% at 50% 50%);
+        transition: clip-path 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      `;
+
+      // 🌟 CREAR BORDE DEL PORTAL CON EFECTO ENERGÉTICO
+      const portalBorder = document.createElement("div");
+      portalBorder.className = "portal-energy-border";
+      portalBorder.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #da8023;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10001;
+        pointer-events: none;
+        box-shadow: 
+          0 0 15px #da8023,
+          inset 0 0 15px #da8023;
+        opacity: 1;
+        transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      `;
+
+      // 🚀 ASEGURAR QUE EL CONTENIDO ESTÉ COMPLETAMENTE PREPARADO
+      container.style.opacity = "1";
+      container.style.visibility = "visible";
+      container.style.filter = "none";
+      container.style.transform = "scale(1)";
+      container.style.display = "block";
+
+      // Añadir elementos al DOM
+      document.body.appendChild(portalOverlay);
+      document.body.appendChild(portalBorder);
+
+      // 🌀 ANIMACIÓN SINCRONIZADA: Portal empieza inmediatamente
+      setTimeout(() => {
+        // Expansión del borde
+        portalBorder.style.width = "100vmax";
+        portalBorder.style.height = "100vmax";
+        portalBorder.style.opacity = "0.3";
+
+        // Expansión del overlay
+        portalOverlay.style.clipPath = "circle(120% at 50% 50%)";
+      }, 50);
+
+      // 🎬 LIMPIEZA Y FINALIZACIÓN
+      setTimeout(() => {
+        // Remover elementos
+        portalOverlay.remove();
+        portalBorder.remove();
+
+        // 🎯 GARANTIZAR VISIBILIDAD FINAL DEL CONTENIDO
+        container.style.opacity = "1";
+        container.style.visibility = "visible";
+        container.style.display = "block";
+        container.style.filter = "none";
+        container.style.transform = "scale(1)";
+
+        // Marcar como completado
+        setEntryState((prev) => ({
+          ...prev,
+          portalAnimationCompleted: true,
+        }));
+      }, 1600); // Tiempo total de la animación
+    }
+  };
+
+  // 🎬 FUNCIÓN: Inicializar entrada normal
+  const initializeNormalEntry = () => {
+    const container = containerRef.current;
+    if (container) {
+      // Fade in normal
+      container.style.opacity = "0";
+      container.style.transition = "opacity 0.5s ease";
+
+      setTimeout(() => {
+        container.style.opacity = "1";
+        setEntryState((prev) => ({ ...prev, portalAnimationCompleted: true }));
+
+        setTimeout(() => {
+          container.style.transition = "";
+        }, 500);
+      }, 50);
+    }
+  };
+
   return (
     <>
-      <div ref={containerRef} className="rebecca-container">
+      <div
+        ref={containerRef}
+        className={`rebecca-container ${
+          entryState.fromPortal ? "from-portal" : "normal-entry"
+        } ${
+          entryState.portalAnimationCompleted
+            ? "animation-completed"
+            : "animating"
+        }`}
+      >
         <div className="main-content-wrapper">
-          <h1 className="portal-title">¡Bienvenido al futuro!</h1>
+          <h1 className="portal-title">
+            {entryState.fromPortal
+              ? "¡Bienvenido al futuro!"
+              : "¡Bienvenido al futuro!"}
+            {/* Opcional: Texto diferente según el origen */}
+          </h1>
           <div className="vapi-content center-absolute">
             <VapiChatButton config={vapiConfig} variant="center" size="large" />
           </div>
-          <div className="portal-effects center-absolute">
+          <div
+            className={`portal-effects center-absolute ${
+              entryState.fromPortal ? "enhanced-effects" : ""
+            }`}
+          >
             <div className="glow-ring"></div>
             <div className="pulse-ring"></div>
             <div className="rotating-ring-outer"></div>

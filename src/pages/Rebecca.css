@@ -138,6 +138,112 @@ body,
   line-height: 1;
 }
 
+/* 🌀 ESTADOS DE TRANSICIÓN - ENTRADA DESDE PORTAL VS NAVEGACIÓN NORMAL */
+
+/* 🎯 ESTADO BASE: Entrada desde portal - SIN ANIMACIÓN CSS (manejado por JS) */
+.rebecca-container.from-portal.animating {
+  opacity: 1;
+  filter: none;
+  transform: scale(1);
+  /* Sin transiciones CSS - todo manejado por JavaScript para mejor control */
+}
+
+.rebecca-container.from-portal.animation-completed {
+  opacity: 1;
+  filter: none;
+  transform: scale(1);
+}
+
+/* 🎯 ESTADO BASE: Entrada normal */
+.rebecca-container.normal-entry.animating {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.rebecca-container.normal-entry.animation-completed {
+  opacity: 1;
+}
+
+/* � OVERLAY DE REVELADO DE PORTAL - Estilos base (aplicados por JS) */
+.portal-reveal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #000 60%,
+    #000 100%
+  ) !important;
+  z-index: 10000 !important;
+  pointer-events: none !important;
+  /* clip-path aplicado dinámicamente por JavaScript */
+}
+
+/* 🌟 BORDE ENERGÉTICO DEL PORTAL */
+.portal-energy-border {
+  position: fixed !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+  animation: portalEnergyPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes portalEnergyPulse {
+  0% {
+    box-shadow: 0 0 20px #da8023, inset 0 0 20px #da8023, 0 0 40px #ff8c33,
+      inset 0 0 40px #ff8c33;
+  }
+  100% {
+    box-shadow: 0 0 30px #da8023, inset 0 0 30px #da8023, 0 0 60px #ff8c33,
+      inset 0 0 60px #ff8c33, 0 0 80px rgba(218, 128, 35, 0.3);
+  }
+}
+
+/* �🌟 EFECTOS MEJORADOS PARA ENTRADA PORTAL */
+.portal-effects.enhanced-effects {
+  animation: portalRevealEffects 2.5s ease-out;
+}
+
+@keyframes portalRevealEffects {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.8);
+    filter: brightness(150%) contrast(120%)
+      drop-shadow(0 0 30px rgba(218, 128, 35, 0.8));
+  }
+  30% {
+    opacity: 0.8;
+    transform: scale(0.95);
+    filter: brightness(130%) contrast(110%)
+      drop-shadow(0 0 25px rgba(218, 128, 35, 0.6));
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+    filter: brightness(115%) contrast(105%)
+      drop-shadow(0 0 20px rgba(218, 128, 35, 0.4));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+/* 🎇 ANIMACIÓN DE RESPLANDOR TEMPORAL POST-PORTAL */
+@keyframes portalGlow {
+  0% {
+    filter: drop-shadow(0 0 20px rgba(218, 128, 35, 0.6)) brightness(110%);
+  }
+  50% {
+    filter: drop-shadow(0 0 35px rgba(218, 128, 35, 0.8)) brightness(120%);
+  }
+  100% {
+    filter: none;
+  }
+}
+
 /* SECCIÓN PRINCIPAL - PRIMERA PANTALLA Y ELEMENTOS CENTRALES */
 
 /* 🎯 DISEÑO DESKTOP PURO - SIN RESPONSIVE ADAPTATIVO
