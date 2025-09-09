@@ -273,21 +273,6 @@ const HomePage: FC<HomePageProps> = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const timeoutId = setTimeout(() => {
-      const scrollElement = scrollRef.current;
-      if (scrollElement && scrollElement.offsetHeight === 0) {
-        scrollElement.style.minHeight = UI_CONFIG.SCROLL_HEIGHT;
-      }
-    }, 500);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
   const createAudioElement = useCallback(
     (config: {
       src: string;
