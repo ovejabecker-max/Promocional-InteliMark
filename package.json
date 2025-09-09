@@ -24,8 +24,8 @@
     "three": "^0.178.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
+    "@types/react": "^18.3.24",
+    "@types/react-dom": "^18.3.7",
     "@types/three": "^0.178.1",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
