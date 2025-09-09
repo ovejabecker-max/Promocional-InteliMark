@@ -1,4 +1,4 @@
-import { useRef, useMemo, memo } from "react";
+import { useRef, useMemo, memo, useEffect } from "react";
 import type { FC } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
@@ -19,7 +19,7 @@ const LogoWithGlitchEffect: FC<LogoWithGlitchEffectProps> = memo(
     const texture = useTexture(logoTexture);
 
     // Configurar la textura para CALIDAD PREMIUM
-    useMemo(() => {
+    useEffect(() => {
       if (texture) {
         // Filtros de alta calidad con mipmaps
         texture.minFilter = THREE.LinearMipmapLinearFilter; // Calidad premium con mipmaps
@@ -96,7 +96,7 @@ const LogoWithGlitchEffect: FC<LogoWithGlitchEffectProps> = memo(
     }, [texture]);
 
     // Actualizar uniforms basado en el scroll - SOLO PIXELACIÓN
-    useMemo(() => {
+    useEffect(() => {
       if (!materialRef.current) return;
 
       // OPTIMIZACIÓN: Después del 15% apagar TODO para liberar recursos (logo ya no visible)
