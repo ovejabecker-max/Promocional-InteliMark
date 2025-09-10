@@ -90,99 +90,74 @@ body {
 
 @keyframes digitalGlitchEffect {
   0% {
+    transform: translate(0);
     filter: none;
-    transform: translateZ(0);
-    background: none;
+    clip-path: inset(0);
   }
   5% {
-    filter: saturate(3) contrast(2) brightness(1.5);
-    transform: translateX(-4px) skewX(1deg);
-    background: repeating-linear-gradient(
-      0deg,
-      var(--color-transparent) 0px,
-      var(--color-transparent) 2px,
-      var(--color-primary-orange) 2px,
-      var(--color-primary-orange) 3px,
-      var(--color-transparent) 3px,
-      var(--color-transparent) 8px
-    );
+    transform: translate(-2px, 2px);
+    filter: brightness(2.5) contrast(2);
+    clip-path: inset(10% 20% 50% 5%);
   }
   10% {
-    filter: saturate(5) contrast(3) brightness(0.8);
-    transform: translateX(6px) skewX(-2deg);
-    background: repeating-linear-gradient(
-      0deg,
-      var(--color-transparent) 0px,
-      var(--color-transparent) 1px,
-      var(--color-gray-light) 1px,
-      var(--color-gray-light) 2px,
-      var(--color-transparent) 2px,
-      var(--color-transparent) 6px,
-      var(--color-white) 6px,
-      var(--color-white) 7px,
-      var(--color-transparent) 7px,
-      var(--color-transparent) 12px
-    );
+    transform: translate(3px, -1px);
+    filter: invert(100%);
+    clip-path: inset(80% 30% 2% 10%);
+  }
+  15% {
+    transform: translate(-1px, -3px);
+    filter: brightness(1) contrast(1);
+    clip-path: inset(0);
+  }
+  20% {
+    transform: translate(2px, 2px);
+    filter: brightness(3) contrast(3) hue-rotate(90deg);
+    clip-path: polygon(0 0, 100% 0, 100% 5%, 0 5%, 0 10%, 100% 10%, 100% 15%, 0 15%);
   }
   25% {
-    filter: saturate(8) contrast(6) brightness(3);
-    transform: translateX(-5px) skewX(2deg);
-    background: repeating-linear-gradient(
-      0deg,
-      #c26d1a 0px,
-      #c26d1a 2px,
-      var(--color-transparent) 2px,
-      var(--color-transparent) 3px,
-      #9c9d9a 3px,
-      #9c9d9a 4px,
-      var(--color-transparent) 4px,
-      var(--color-transparent) 7px,
-      #f5f5f5 7px,
-      #f5f5f5 8px,
-      var(--color-transparent) 8px,
-      var(--color-transparent) 11px
-    );
+    transform: translate(-3px, 1px);
+    filter: none;
+    clip-path: inset(40% 0 40% 0);
+  }
+  30% {
+    transform: translate(0);
+    filter: brightness(1.5) contrast(1.5);
+    clip-path: inset(0);
+  }
+  40% {
+    transform: translate(5px, 5px) scale(1.1);
+    filter: invert(100%) brightness(4);
+    clip-path: inset(60% 10% 5% 20%);
   }
   50% {
-    filter: saturate(15) contrast(10) brightness(0.2);
-    transform: translateX(10px) skewX(-5deg);
-    background: repeating-linear-gradient(
-      0deg,
-      var(--color-transparent) 0px,
-      var(--color-transparent) 1px,
-      #a3540f 1px,
-      #a3540f 3px,
-      #59595a 3px,
-      #59595a 4px,
-      var(--color-transparent) 4px,
-      var(--color-transparent) 5px,
-      #e8e8e8 5px,
-      #e8e8e8 7px,
-      var(--color-transparent) 7px,
-      var(--color-transparent) 10px
-    );
+    transform: translate(-5px, -5px) scale(0.9);
+    filter: none;
+    clip-path: inset(10% 5% 70% 15%);
   }
-  75% {
-    filter: saturate(12) contrast(8) brightness(3.2);
-    transform: translateX(-6px) skewX(3.2deg);
-    background: repeating-linear-gradient(
-      0deg,
-      var(--color-white) 0px,
-      var(--color-white) 2px,
-      #e2761d 2px,
-      #e2761d 3px,
-      var(--color-transparent) 3px,
-      var(--color-transparent) 6px,
-      #999a97 6px,
-      #999a97 7px,
-      var(--color-transparent) 7px,
-      var(--color-transparent) 10px
-    );
+  60% {
+    transform: translate(1px, 3px);
+    filter: brightness(2) contrast(1);
+    clip-path: inset(0);
+  }
+  70% {
+    transform: translate(-2px, -1px) scale(1.05);
+    filter: brightness(0.5) contrast(2.5);
+    clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%);
+  }
+  80% {
+    transform: translate(4px, -3px) scale(0.95);
+    filter: invert(100%);
+    clip-path: inset(25% 25% 25% 25%);
+  }
+  90% {
+    transform: translate(-1px, 2px);
+    filter: none;
+    clip-path: inset(0);
   }
   100% {
+    transform: translate(0);
     filter: none;
-    transform: translateZ(0);
-    background: none;
+    clip-path: inset(0);
   }
 }
 
