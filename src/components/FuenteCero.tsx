@@ -296,8 +296,6 @@ const FuenteCero: React.FC<{ parentRef: React.RefObject<HTMLElement> }> = ({
   return (
     <div className="fuente-cero-container">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-
         html, body, #root, .rebecca-container, .fuente-cero-container {
             background: #000 !important;
             min-width: 100vw !important;
