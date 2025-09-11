@@ -86,7 +86,7 @@ export const NewsletterForm: React.FC = () => {
               </defs>
               <g className="arrow-group">
                 <path
-                  d="M12 8L20 15L12 22"
+                  d="M19 8L27 15L19 22"
                   stroke="url(#arrowGradientPremium)"
                   strokeWidth="3"
                   strokeLinecap="round"
@@ -96,7 +96,7 @@ export const NewsletterForm: React.FC = () => {
                   className="main-arrow"
                 />
                 <circle
-                  cx="20"
+                  cx="27"
                   cy="15"
                   r="1.5"
                   fill="url(#arrowGradientPremium)"
@@ -104,7 +104,7 @@ export const NewsletterForm: React.FC = () => {
                   opacity="0.8"
                 />
                 <path
-                  d="M8 8L16 15L8 22"
+                  d="M15 8L23 15L15 22"
                   stroke="url(#arrowGradientPremium)"
                   strokeWidth="1.5"
                   strokeLinecap="round"
@@ -115,9 +115,9 @@ export const NewsletterForm: React.FC = () => {
                 />
                 <g className="energy-lines" opacity="0">
                   <line
-                    x1="5"
+                    x1="12"
                     y1="10"
-                    x2="25"
+                    x2="32"
                     y2="10"
                     stroke="#ffffff"
                     strokeWidth="0.2"
@@ -126,9 +126,9 @@ export const NewsletterForm: React.FC = () => {
                     opacity="0"
                   />
                   <line
-                    x1="5"
+                    x1="12"
                     y1="15"
-                    x2="25"
+                    x2="32"
                     y2="15"
                     stroke="#ffffff"
                     strokeWidth="0.3"
@@ -137,9 +137,9 @@ export const NewsletterForm: React.FC = () => {
                     opacity="0"
                   />
                   <line
-                    x1="5"
+                    x1="12"
                     y1="20"
-                    x2="25"
+                    x2="32"
                     y2="20"
                     stroke="#ffffff"
                     strokeWidth="0.2"

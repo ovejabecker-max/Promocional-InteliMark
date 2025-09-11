@@ -1,5 +1,3 @@
-
-
 /* VARIABLES CSS - COLORES Y GRADIENTES CONSOLIDADOS */
 :root {
   /* UTILIDADES COMUNES */
@@ -950,10 +948,9 @@ body,
 /* 📋 ESTRUCTURA ORGANIZATIVA:
    1️⃣ BASE FOOTER STYLES & LAYOUT CONFIGURATION
    2️⃣ BOTÓN AI MATRIX (VOLVER AL INICIO) - Cronológico completo
-   3️⃣ BOTÓN NEWSLETTER (FORMULARIO) - Cronológico completo  
+   3️⃣ NEWSLETTER COMPONENT (CONSOLIDADO) - Formulario + Botón Modern Arrow
    4️⃣ BOTÓN DE CRÉDITOS (SIMPLE) - Sección de footer
-   5️⃣ BOTÓN MODERN ARROW (NEWSLETTER) - Cronológico completo
-   6️⃣ FOOTER CREDITS & FINAL ADJUSTMENTS
+   5️⃣ FOOTER CREDITS & FINAL ADJUSTMENTS
    ============================================================================ */
 
 /* 🎯 SECCIÓN DE CRÉDITOS DEL FOOTER */
@@ -1066,78 +1063,7 @@ body,
   max-width: 320px;
 }
 
-/* 📧 SECCIÓN NEWSLETTER - MEJOR ORGANIZACIÓN */
-.newsletter-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px; /* Reducido de 16px */
-  transform: translateY(10px);
-  max-width: 280px; /* 🎯 ANCHO REDUCIDO para input más corto */
-}
-
-.footer-info h4 {
-  font-size: 0.85rem;
-  color: rgba(0, 0, 0, 0.6);
-  margin: 0;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2.2px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  font-family: "Oxanium", sans-serif;
-}
-
-/* 📝 TÍTULO Y DESCRIPCIÓN DE NEWSLETTER */
-.footer-info h3 {
-  font-size: 2.8rem;
-  color: rgba(0, 0, 0, 0.9);
-  margin: 0;
-  font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  font-family: "Oxanium", sans-serif;
-  max-width: 270px; /* 🎯 AUMENTADO de 220px a 240px para que "a" quepa en línea 1 */
-  word-wrap: break-word;
-}
-
-.footer-info p {
-  font-size: 1.1rem;
-  color: rgba(0, 0, 0, 0.7);
-  margin: 0;
-  line-height: 1.4;
-  font-weight: 400;
-  max-width: 265px !important; /* 🎯 MÁS RESTRICTIVO y forzado con !important */
-  word-wrap: break-word;
-  font-family: "Oxanium", sans-serif;
-  white-space: normal; /* 🎯 ASEGURAR QUE PERMITA SALTOS DE LÍNEA */
-}
-
-/* 📧 FORMULARIO DE NEWSLETTER - MEJORADO */
-.newsletter-form {
-  display: flex;
-  gap: 14px;
-  margin: 0;
-  position: relative;
-  z-index: 1; /* 🎯 Z-INDEX BAJO PARA NO INTERFERIR CON EL BOTÓN AI */
-}
-
-/* 📝 SECCIONES ORGANIZADAS DEL FOOTER */
-.newsletter-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: relative;
-  z-index: 1; /* 🎯 Z-INDEX BAJO PARA NO INTERFERIR CON EL BOTÓN AI */
-}
-
-/* 🎯 ASEGURAR QUE TODOS LOS ELEMENTOS DEL NEWSLETTER TENGAN Z-INDEX BAJO */
-.newsletter-section *,
-.newsletter-form,
-.newsletter-form *,
-.newsletter-button,
-.newsletter-input {
-  z-index: 1 !important;
-}
+/* ======== SECCIÓN NEWSLETTER REMOVIDA - CONSOLIDADA MÁS ABAJO ======== */
 
 .navigation-section {
   display: flex;
@@ -1178,50 +1104,7 @@ body,
   transition: all 0.4s ease; /* 🎯 TRANSICIÓN SUAVE PARA TODOS LOS CAMBIOS */
 }
 
-.newsletter-input {
-  flex: 1;
-  padding: 16px 24px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50px;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(0, 0, 0, 0.8);
-  font-size: 1.1rem;
-  backdrop-filter: blur(10px);
-  transition: var(--transition-smooth);
-  /* 🎯 TIPOGRAFÍA CORRECTA: OXANIUM COMO EL RESTO DEL FOOTER */
-  font-family: "Oxanium", sans-serif;
-}
-
-.newsletter-input::placeholder {
-  color: rgba(0, 0, 0, 0.5);
-  /* 🎯 TIPOGRAFÍA CORRECTA: OXANIUM COMO EL RESTO DEL FOOTER */
-  font-family: "Oxanium", sans-serif;
-}
-
-.newsletter-input:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.newsletter-button {
-  background: rgba(255, 255, 255, 0.9);
-  color: #8b5cf6;
-  border: none;
-  padding: 16px 24px;
-  border-radius: 50px;
-  cursor: inherit; /* Heredar cursor CAD del contenedor padre */
-  transition: all 0.3s ease;
-  font-weight: 600;
-  min-width: 60px;
-  /* 🎯 TIPOGRAFÍA CORRECTA: OXANIUM COMO EL RESTO DEL FOOTER */
-  font-family: "Oxanium", sans-serif;
-}
-
-.newsletter-button:hover {
-  background: #ffffff;
-  transform: scale(1.05);
-}
+/* ======== ESTILOS NEWSLETTER REMOVIDOS - CONSOLIDADOS MÁS ABAJO ======== */
 
 /* 🎯 AI MATRIX - ELEMENTS STRUCTURE */
 /* 🎯 ASEGURAR QUE TODOS LOS ELEMENTOS INTERNOS NO BLOQUEEN EVENTOS */
@@ -1707,29 +1590,7 @@ body,
   font-size: 14px;
 }
 
-/* 📧 ESTILOS PARA FUNCIONALIDAD DEL BOLETÍN */
-.newsletter-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.newsletter-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* 📧 ESTILOS PARA EL COMPONENTE NEWSLETTER */
-.newsletter-message {
-  margin-top: 16px;
-  font-size: 1rem;
-  font-weight: 500;
-  text-align: left;
-  min-height: 24px;
-  transition: all 0.3s ease;
-  font-family: "Oxanium", sans-serif;
-  pointer-events: none; /* 🎯 NO INTERFERIR CON EL BOTÓN */
-}
+/* ======== ESTADOS NEWSLETTER REMOVIDOS - CONSOLIDADOS MÁS ABAJO ======== */
 
 /* ============================================================================
    6️⃣ MODAL OFICIAL DE CRÉDITOS - CONTENEDOR TECNOLÓGICO
@@ -1951,8 +1812,164 @@ body,
 }
 
 /* ============================================================================
+   📧 NEWSLETTER COMPONENT - SECCIÓN CONSOLIDADA COMPLETA
+   ============================================================================ */
+
+/* 📧 CONTENEDOR PRINCIPAL DEL NEWSLETTER */
+.newsletter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 1; /* 🎯 Z-INDEX BAJO PARA NO INTERFERIR CON EL BOTÓN AI */
+  transform: translateY(10px);
+  max-width: 280px; /* 🎯 ANCHO REDUCIDO para input más corto */
+}
+
+/* 📧 TÍTULOS Y TEXTOS DEL NEWSLETTER */
+.footer-info h4 {
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2.2px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "Oxanium", sans-serif;
+}
+
+.footer-info h3 {
+  font-size: 2.8rem;
+  color: rgba(0, 0, 0, 0.9);
+  margin: 0;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-family: "Oxanium", sans-serif;
+  max-width: 270px; /* 🎯 AUMENTADO de 220px a 240px para que "a" quepa en línea 1 */
+  word-wrap: break-word;
+}
+
+.footer-info p {
+  font-size: 1.1rem;
+  color: rgba(0, 0, 0, 0.7);
+  margin: 0;
+  line-height: 1.4;
+  font-weight: 400;
+  max-width: 265px !important; /* 🎯 MÁS RESTRICTIVO y forzado con !important */
+  word-wrap: break-word;
+  font-family: "Oxanium", sans-serif;
+  white-space: normal; /* 🎯 ASEGURAR QUE PERMITA SALTOS DE LÍNEA */
+}
+
+/* 📧 FORMULARIO DEL NEWSLETTER */
+.newsletter-form {
+  display: flex;
+  gap: 14px;
+  margin: 0;
+  position: relative;
+  z-index: 1; /* 🎯 Z-INDEX BAJO PARA NO INTERFERIR CON EL BOTÓN AI */
+}
+
+/* 📧 CAMPO DE INPUT DEL EMAIL */
+.newsletter-input {
+  flex: 1;
+  padding: 16px 24px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(0, 0, 0, 0.8);
+  font-size: 1.1rem;
+  backdrop-filter: blur(10px);
+  transition: var(--transition-smooth);
+  font-family: "Oxanium", sans-serif;
+}
+
+.newsletter-input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+  font-family: "Oxanium", sans-serif;
+}
+
+.newsletter-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 📧 BOTÓN DEL NEWSLETTER - SOLO CON DISEÑO MODERN-ARROW */
+/* Nota: El botón del newsletter usa exclusivamente el diseño .modern-arrow-button
+   Los estilos base .newsletter-button están comentados para evitar conflictos */
+/*
+.newsletter-button {
+  background: rgba(255, 255, 255, 0.9);
+  color: #8b5cf6;
+  border: none;
+  padding: 16px 24px;
+  border-radius: 50px;
+  cursor: inherit;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  min-width: 60px;
+  font-family: "Oxanium", sans-serif;
+}
+
+.newsletter-button:hover {
+  background: #ffffff;
+  transform: scale(1.05);
+}
+*/
+
+/* 📧 ESTADOS DISABLED DEL NEWSLETTER */
+.newsletter-button:disabled,
+.newsletter-button.modern-arrow-button:disabled,
+.modern-arrow-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
+}
+
+.newsletter-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 📧 MENSAJE DE ESTADO DEL NEWSLETTER */
+.newsletter-message {
+  margin-top: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  min-height: 24px;
+  transition: all 0.3s ease;
+  font-family: "Oxanium", sans-serif;
+  pointer-events: none; /* 🎯 NO INTERFERIR CON EL BOTÓN */
+}
+
+/* 🎯 Z-INDEX ORGANIZATION - NEWSLETTER COMPONENTS */
+.newsletter-section *,
+.newsletter-form,
+.newsletter-form *,
+.newsletter-input {
+  z-index: 1 !important;
+}
+
+/* 🎯 MODERN-ARROW-BUTTON Z-INDEX - HIGHER FOR PROPER LAYERING */
+.newsletter-button.modern-arrow-button,
+.newsletter-button.modern-arrow-button *,
+.modern-arrow-button,
+.modern-arrow-button * {
+  z-index: 10 !important;
+}
+
+/* ============================================================================
    5️⃣ BOTÓN MODERN ARROW (NEWSLETTER) - CRONOLÓGICO COMPLETO
    ============================================================================ */
+
+/* 🔥 IMPORTANTE: Este botón es parte integral del componente Newsletter
+   NO es un botón independiente - trabaja en conjunto con .newsletter-form
+   Cualquier modificación debe considerar la estructura completa del newsletter */
 
 /* 🎯 BOTÓN NEGRO CON CONTORNO CALADO PREMIUM */
 .modern-arrow-button {
@@ -1960,6 +1977,7 @@ body,
   height: 60px !important;
   border-radius: 50% !important;
   position: relative !important;
+  flex-shrink: 0 !important; /* 🎯 EVITAR DEFORMACIÓN EN FLEX CONTAINER */
   /* Anillo exterior NEGRO con contorno calado ultra fino */
   background: linear-gradient(
     145deg,
@@ -2082,7 +2100,10 @@ body,
   position: absolute !important;
   top: 50% !important;
   left: 50% !important;
-  transform: translate(-50%, -50%) translateZ(12px) !important;
+  transform: translate(
+    -50%,
+    -50%
+  ) !important; /* 🎯 REMOVIDO: translateZ que podía causar efectos 3D */
   width: 38px !important;
   height: 26px !important;
   z-index: 15 !important;
@@ -2101,7 +2122,7 @@ body,
   height: 100% !important;
   display: block !important;
   margin: 0 auto !important;
-  transform: perspective(150px) rotateX(3deg) !important;
+  transform: none !important; /* 🎯 REMOVIDO: perspective 3D que causaba forma ovalada */
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
 }
 
