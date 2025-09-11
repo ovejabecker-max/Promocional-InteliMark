@@ -108,15 +108,13 @@
   animation: matrix-pulse 2s ease-in-out infinite;
 }
 
-/* 🖼️ IMAGEN DE FONDO DEL CONTENEDOR */
-.cinematic-credits-modal::before {
-  content: "";
+/* 🖼️ MARCO TECNOLÓGICO CON IMAGEN DE FONDO */
+.credits-tech-frame {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("/src/assets/contenedor_creditos.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -125,7 +123,8 @@
 }
 
 /* 📜 CONTENEDOR DE TEXTO FLOTANTE */
-.cinematic-credits-content {
+.cinematic-credits-content,
+.credits-screen-content {
   position: relative;
   z-index: 2;
   width: 100%;
@@ -139,8 +138,154 @@
   font-family: "Arial", sans-serif;
 }
 
+/* 🎬 CONTENEDOR DE SCROLL DE CRÉDITOS */
+.credits-scroll-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 2;
+  padding: 1.5rem;
+  margin: 0 auto;
+
+  /* 🖤 FONDO NEGRO CON GRADIENTE Y BORDE NARANJA */
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(20, 20, 20, 0.95) 50%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  border: 2px solid var(--intelimark-orange);
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(218, 128, 35, 0.3),
+    inset 0 0 20px rgba(0, 0, 0, 0.5);
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--intelimark-orange-40) transparent;
+}
+
+.credits-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.credits-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.credits-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--intelimark-orange-40);
+  border-radius: 4px;
+}
+
+.credits-scroll {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.credit-section {
+  width: 100%;
+  padding: 1rem 0;
+}
+
+/* 🌟 EFECTOS HOLOGRÁFICOS */
+.hologram-scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--intelimark-orange),
+    transparent
+  );
+  animation: hologram-scan 4s linear infinite;
+  z-index: 3;
+}
+
+.hologram-interference {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--intelimark-orange-10) 2px,
+    var(--intelimark-orange-10) 4px
+  );
+  opacity: 0.1;
+  animation: interference-flicker 3s ease-in-out infinite;
+  z-index: 1;
+}
+
+.hologram-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+      var(--intelimark-orange-20) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, var(--intelimark-orange-20) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.1;
+  z-index: 1;
+}
+
+/* 🌊 EFECTOS MATRIX */
+.matrix-rain {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.matrix-column {
+  position: absolute;
+  top: -100%;
+  height: 200%;
+  width: 20px;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  color: var(--intelimark-gray-medium);
+  animation: matrix-fall 3s linear infinite;
+}
+
+.matrix-column:nth-child(odd) {
+  animation-delay: -1s;
+}
+
+.matrix-column:nth-child(even) {
+  animation-delay: -2s;
+}
+
+.matrix-char {
+  display: block;
+  opacity: 0.8;
+  animation: matrix-fade 2s ease-in-out infinite;
+}
+
+.matrix-cursor {
+  display: inline-block;
+  animation: cursor-blink 1s step-end infinite;
+  color: var(--intelimark-gray-medium);
+}
+
 /* 🎯 BOTÓN DE CIERRE CON CURSOR CAD */
-.cinematic-credits-close-button {
+.cinematic-credits-close-button,
+.credits-close-btn {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -160,7 +305,8 @@
   cursor: crosshair !important;
 }
 
-.cinematic-credits-close-button:hover {
+.cinematic-credits-close-button:hover,
+.credits-close-btn:hover {
   background: var(--intelimark-orange);
   transform: scale(1.1);
   box-shadow: 0 0 20px var(--intelimark-orange-60);
@@ -210,6 +356,45 @@
   margin: 0.5rem 0;
   opacity: 0;
   animation: item-fade-in 0.8s ease-out forwards;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+/* 🎬 ESTILOS ESPECÍFICOS PARA ELEMENTOS DE CRÉDITOS */
+.credit-item {
+  margin: 0.5rem 0;
+  opacity: 0;
+  animation: item-fade-in 0.8s ease-out forwards;
+  padding: 0.75rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  background: var(--intelimark-orange-10);
+  border: 1px solid var(--intelimark-orange-20);
+}
+
+.credit-item.hologram-style {
+  background: var(--intelimark-orange-10);
+  border: 1px solid var(--intelimark-orange-30);
+  color: var(--intelimark-white);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.credit-item.matrix-style {
+  background: var(--intelimark-gray-20);
+  border: 1px solid var(--intelimark-gray-40);
+  color: var(--intelimark-white);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.credit-item.final-credit {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--intelimark-orange-30);
+  border: 2px solid var(--intelimark-orange);
+  border-radius: 10px;
+  font-size: 1.1em;
+  font-weight: bold;
 }
 
 .credits-item:nth-child(1) {
@@ -335,10 +520,50 @@
 
 @keyframes hologram-scan {
   0% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    transform: translateY(-100vh);
   }
   100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes interference-flicker {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes matrix-fall {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes matrix-fade {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
   }
 }
 

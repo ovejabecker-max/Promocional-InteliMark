@@ -373,14 +373,12 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
 
             {/* Contenido principal */}
             <div className="credits-screen-content">
-              <div className="credits-title">
-                <h2>
-                  {isMatrixMode
-                    ? "SYSTEM_CREDITS.EXE"
-                    : "CRÉDITOS DEL PROYECTO"}
-                </h2>
-                {isMatrixMode && <div className="matrix-cursor">█</div>}
-              </div>
+              {isMatrixMode && (
+                <div className="credits-title">
+                  <h2>SYSTEM_CREDITS.EXE</h2>
+                  <div className="matrix-cursor">█</div>
+                </div>
+              )}
 
               <div
                 ref={scrollContainerRef}
