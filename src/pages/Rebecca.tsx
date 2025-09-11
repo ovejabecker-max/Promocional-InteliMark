@@ -1,13 +1,13 @@
 // src/pages/Rebecca.tsx
 
 import { useEffect, useRef, useState, memo } from "react";
-import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import { usePortalTransition } from "../contexts/TransitionContext";
 import { VapiChatButton } from "../components/VapiChatButton";
 import { vapiConfig } from "../config/vapi.config";
 import FuenteCero from "../components/FuenteCero";
 import { NewsletterForm } from "../components/NewsletterForm";
+import CinematicCredits from "../components/CinematicCredits";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
@@ -494,87 +494,14 @@ const Rebecca = memo(() => {
         </footer>
       </div>
 
-      {uiState.showCreditsModal &&
-        createPortal(
-          <div
-            className="credits-modal-overlay"
-            onClick={() =>
-              setUiState((prev) => ({ ...prev, showCreditsModal: false }))
-            }
-          >
-            <div className="credits-modal-container">
-              <button
-                className="credits-close-button"
-                onClick={() =>
-                  setUiState((prev) => ({ ...prev, showCreditsModal: false }))
-                }
-              >
-                ✕
-              </button>
-              <div
-                className="credits-tech-frame"
-                style={{ backgroundImage: `url(${ContenedorCreditos})` }}
-              >
-                <div className="credits-screen-content">
-                  <div className="credits-title">
-                    <h2>CRÉDITOS DEL PROYECTO</h2>
-                  </div>
-                  <div className="credits-scroll-container">
-                    <div className="credits-scroll">
-                      <div className="credit-section">
-                        <div className="credit-item">
-                          <h3>DIRECTOR CREATIVO</h3>
-                          <p>Pablo Carrasco · Sandra Gangas</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>DISEÑADOR UX/UI</h3>
-                          <p>Pablo Carrasco</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>DESARROLLADOR FRONTEND</h3>
-                          <p>Pablo Carrasco</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>DESARROLLADOR BACKEND</h3>
-                          <p>Pablo Carrasco</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>ARTISTA 3D</h3>
-                          <p>Pablo Carrasco</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>DISEÑADOR DE SONIDO</h3>
-                          <p>Pablo Carrasco</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>DIRECTOR DE ARTE</h3>
-                          <p>Pablo Carrasco · Sandra Gangas</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>ESPECIALISTA SEO</h3>
-                          <p>Pablo Carrasco</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>ESTRATEGA DE IA</h3>
-                          <p>Pablo Carrasco</p>
-                        </div>
-                        <div className="credit-item">
-                          <h3>DISEÑADOR GRÁFICO</h3>
-                          <p>Sandra Gangas</p>
-                        </div>
-                        <div className="credit-item final-credit">
-                          <h3>INTELIMARK STUDIOS</h3>
-                          <p>© 2025 - Todos los derechos reservados</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
+      {/* 🎬 NUEVO SISTEMA DE CRÉDITOS CINEMATOGRÁFICOS */}
+      <CinematicCredits
+        isOpen={uiState.showCreditsModal}
+        onClose={() =>
+          setUiState((prev) => ({ ...prev, showCreditsModal: false }))
+        }
+        backgroundImage={ContenedorCreditos}
+      />
     </>
   );
 });

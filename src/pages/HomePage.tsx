@@ -8,7 +8,7 @@ import {
   memo,
 } from "react";
 import type { FC } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { useTexture, PerspectiveCamera, Text } from "@react-three/drei";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -18,6 +18,7 @@ import { useTransition } from "../contexts/TransitionContext";
 import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
 import AudioVisualizer from "../components/AudioVisualizer";
+import marDeDatosTexture from "../assets/mar_de_datos2.webp";
 import "./HomePage.css";
 
 // Configuración de audio
@@ -90,33 +91,25 @@ const ROUTES = {
 gsap.registerPlugin(ScrollTrigger);
 
 const LandscapeScene: FC = memo(() => {
-  const materialRef = useRef<THREE.ShaderMaterial | null>(null);
-  const texture = useTexture("https://i.imgur.com/kv7xqKt.png");
+  const texture = useTexture(marDeDatosTexture);
 
   // Optimizar textura una sola vez
   useMemo(() => {
     if (texture) {
-      texture.generateMipmaps = false;
-      texture.minFilter = THREE.LinearFilter;
+      texture.generateMipmaps = true; // ✅ Habilitado para mejor LOD
+      texture.minFilter = THREE.LinearMipmapLinearFilter; // ✅ Mejor filtrado con mipmaps
       texture.magFilter = THREE.LinearFilter;
+      texture.anisotropy = Math.min(4, 16); // ✅ Mejora calidad en ángulos
       texture.wrapS = THREE.ClampToEdgeWrapping;
       texture.wrapT = THREE.ClampToEdgeWrapping;
     }
   }, [texture]);
 
-  useFrame((_, delta) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value += delta;
-    }
-  });
-
   return (
     <mesh rotation-x={-Math.PI / 2} position-y={-5}>
       <planeGeometry args={[100, 100, 30, 30]} />
       <shaderMaterial
-        ref={materialRef}
         uniforms={{
-          uTime: { value: 0 },
           uTexture: { value: texture },
         }}
         vertexShader={`
@@ -127,7 +120,6 @@ const LandscapeScene: FC = memo(() => {
           }
         `}
         fragmentShader={`
-          uniform float uTime;
           uniform sampler2D uTexture;
           varying vec2 vUv;
 
