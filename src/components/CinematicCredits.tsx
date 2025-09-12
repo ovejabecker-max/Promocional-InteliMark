@@ -7,7 +7,6 @@ interface CreditItem {
   id: string;
   role: string;
   name: string;
-  isFinal?: boolean;
 }
 
 interface CinematicCreditsProps {
@@ -31,21 +30,12 @@ const CREDITS_DATA: CreditItem[] = [
   { id: "8", role: "ESPECIALISTA SEO", name: "Pablo Carrasco" },
   { id: "9", role: "ESTRATEGA DE IA", name: "Pablo Carrasco" },
   { id: "10", role: "DISEÑADOR GRÁFICO", name: "Sandra Gangas" },
-  {
-    id: "final",
-    role: "INTELIMARK STUDIOS",
-    name: "© 2025 - Todos los derechos reservados",
-    isFinal: true,
-  },
 ];
 
 export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
   ({ isOpen, onClose, backgroundImage }) => {
     // Estados principales - sin Matrix Mode
     const [_isAnimating, setIsAnimating] = useState(false);
-    const [visibleCredits, setVisibleCredits] = useState<Set<string>>(
-      new Set()
-    );
 
     // Referencias para animaciones
     const modalRef = useRef<HTMLDivElement>(null);
@@ -141,39 +131,24 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
       }
     }, [isOpen, animateModalEntrance]);
 
-    // Intersection Observer para lazy loading de créditos
+    // Activación automática inmediata de todos los créditos
     useEffect(() => {
       if (!isOpen) return;
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && entry.target instanceof HTMLElement) {
-              const creditId = entry.target.dataset.creditId;
-              if (creditId && !visibleCredits.has(creditId)) {
-                setVisibleCredits((prev) => new Set([...prev, creditId]));
-
-                // Animar entrada del crédito
-                setTimeout(() => {
-                  animateCreditItem(entry.target as HTMLElement);
-                }, 100);
-              }
-            }
-          });
-        },
-        {
-          threshold: 0.3,
-          rootMargin: "50px",
-        }
-      );
-
-      // Observar todos los elementos de crédito
-      const creditElements =
-        scrollContainerRef.current?.querySelectorAll(".credit-item");
-      creditElements?.forEach((element) => observer.observe(element));
-
-      return () => observer.disconnect();
-    }, [isOpen, visibleCredits, animateCreditItem]);
+      // Animar entrada de todos los créditos con delay escalonado
+      setTimeout(() => {
+        const creditElements =
+          scrollContainerRef.current?.querySelectorAll(".credit-item");
+        creditElements?.forEach((element, index) => {
+          if (element instanceof HTMLElement) {
+            // Delay escalonado para efecto cinematográfico
+            setTimeout(() => {
+              animateCreditItem(element, index * 50);
+            }, index * 100); // 100ms entre cada elemento (más rápido)
+          }
+        });
+      }, 200); // 200ms después de que el modal esté visible (más rápido)
+    }, [isOpen, animateCreditItem]);
 
     // Efecto de hologram scanning
     useEffect(() => {
@@ -197,7 +172,6 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
       if (!isOpen) {
         animationsRef.current.forEach((animation) => animation.cancel());
         animationsRef.current.clear();
-        setVisibleCredits(new Set());
       }
     }, [isOpen]);
 
@@ -269,11 +243,8 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
                       <div
                         key={credit.id}
                         data-credit-id={credit.id}
-                        className={`credit-item ${
-                          credit.isFinal ? "final-credit" : ""
-                        } hologram-style`}
+                        className="credit-item hologram-style"
                         style={{
-                          opacity: visibleCredits.has(credit.id) ? 1 : 0,
                           animationDelay: `${index * 0.1}s`,
                         }}
                       >

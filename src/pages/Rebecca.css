@@ -1759,7 +1759,7 @@ body,
   color: #ffffff;
 }
 
-/* 👤 ITEM INDIVIDUAL DE CRÉDITO */
+/* 👤 ITEM INDIVIDUAL DE CRÉDITO - RESTAURADO */
 .credit-item {
   margin-bottom: 40px;
   animation: creditItemGlow 3s ease-in-out infinite alternate;

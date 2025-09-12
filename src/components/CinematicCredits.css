@@ -79,7 +79,7 @@
   height: 100vh;
   position: relative;
   border-radius: 0;
-  overflow: hidden;
+  overflow: visible; /* 🚨 PERMITIR QUE LOS TEXTOS SE VEAN FUERA DEL MODAL */
   transform-style: preserve-3d;
   will-change: transform, opacity, filter;
 }
@@ -130,16 +130,15 @@
   position: relative;
   width: 100%;
   max-width: 800px;
-  max-height: 80vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  height: 100vh; /* Altura completa para ver la animación completa */
+  overflow: visible; /* Permitir que los textos se vean fuera del contenedor */
   z-index: 2;
   padding: 2rem;
   margin: 0 auto;
 
   /* 🌟 FONDO COMPLETAMENTE TRANSPARENTE */
-  background: transparent;
-  border: none;
+  background: transparent; /* Fondo transparente restaurado */
+  border: none; /* Sin borde */
   border-radius: 0;
   box-shadow: none;
 
@@ -160,13 +159,15 @@
   display: none;
 }
 
-.credits-scroll {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  background: transparent;
-  border: none;
-  box-shadow: none;
+.cinematic-credits-modal .credits-scroll {
+  width: 100% !important;
+  max-width: 700px !important;
+  margin: 0 auto !important;
+  background: transparent !important; /* Fondo transparente restaurado */
+  border: none !important; /* Sin borde */
+  box-shadow: none !important;
+  /* 🚨 ACTIVAR ANIMACIÓN PARA TESTING */
+  animation: credits-scroll-up 40s linear infinite !important;
 }
 
 .credit-section {
@@ -304,26 +305,38 @@
   transition: all 0.3s ease;
 }
 
-/* 🎬 ESTILOS ESPECÍFICOS PARA ELEMENTOS DE CRÉDITOS - TRANSPARENTES */
-.credit-item {
-  margin: 1rem 0;
-  opacity: 0;
-  animation: item-fade-in 0.8s ease-out forwards,
-    credits-scroll-up 20s linear infinite;
-  padding: 0.75rem;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  background: transparent;
-  border: none;
-  text-align: center;
+/* 🎬 MÁXIMA ESPECIFICIDAD PARA SOBRESCRIBIR REBECCA.CSS */
+.cinematic-credits-overlay
+  .cinematic-credits-modal
+  .credits-screen-content
+  .credits-scroll-container
+  .credits-scroll
+  .credit-section
+  .credit-item {
+  margin: 1rem 0 !important;
+  opacity: 1 !important;
+  animation: none !important; /* Los items individuales no necesitan animación */
+  padding: 0.75rem !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  background: transparent !important; /* Fondo transparente */
+  border: none !important; /* Sin borde */
+  text-align: center !important;
+  color: var(--intelimark-orange) !important; /* Color naranja original */
+  margin-bottom: 1rem !important;
+  font-size: 18px !important; /* Tamaño de texto normal */
+  text-shadow: 0 0 10px rgba(218, 128, 35, 0.7) !important; /* Efecto holográfico */
+}
 }
 
 .credit-item.hologram-style {
-  background: transparent;
-  border: none;
-  color: var(--intelimark-orange);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-  font-weight: bold;
+  background: transparent !important;
+  border: none !important;
+  color: var(--intelimark-orange) !important;
+  text-shadow: 0 0 10px rgba(218, 128, 35, 0.7) !important;
+  font-weight: bold !important;
+  font-size: 18px !important;
+  padding: 0.75rem !important;
 }
 
 .credit-item.matrix-style {
@@ -332,17 +345,6 @@
   color: var(--intelimark-gray-medium);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
   font-weight: bold;
-}
-
-.credit-item.final-credit {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background: transparent;
-  border: none;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: var(--intelimark-orange);
-  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
 }
 
 .credits-item:nth-child(1) {
@@ -506,10 +508,10 @@
 
 @keyframes credits-scroll-up {
   0% {
-    transform: translateY(100vh);
+    transform: translateY(50vh);
   }
   100% {
-    transform: translateY(-100vh);
+    transform: translateY(-200vh);
   }
 }
 
