@@ -1,6 +1,6 @@
 // src/components/CinematicCredits.tsx
 
-import React, { useEffect, useRef, useState, useCallback, memo } from "react";
+import React, { useEffect, useRef, useCallback, memo } from "react";
 import "./CinematicCredits.css";
 
 interface CreditItem {
@@ -34,121 +34,27 @@ const CREDITS_DATA: CreditItem[] = [
 
 export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
   ({ isOpen, onClose, backgroundImage }) => {
-    // Estados principales - sin Matrix Mode
-    const [_isAnimating, setIsAnimating] = useState(false);
-
-    // Referencias para animaciones
+    // Referencias para elementos
     const modalRef = useRef<HTMLDivElement>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const hologramScanRef = useRef<HTMLDivElement>(null);
-    const animationsRef = useRef<Map<string, Animation>>(new Map());
-
-    // Web Animations API - Animación de entrada del modal
-    const animateModalEntrance = useCallback(() => {
-      if (!modalRef.current) return;
-
-      const modal = modalRef.current;
-
-      // Limpiar animaciones previas
-      modal.getAnimations().forEach((animation) => animation.cancel());
-
-      // Animación de entrada cinematográfica
-      const entranceAnimation = modal.animate(
-        [
-          {
-            opacity: "0",
-            transform: "scale(0.8) translateY(50px)",
-            filter: "blur(10px) brightness(0.5)",
-          },
-          {
-            opacity: "0.7",
-            transform: "scale(0.95) translateY(20px)",
-            filter: "blur(5px) brightness(0.8)",
-            offset: 0.6,
-          },
-          {
-            opacity: "1",
-            transform: "scale(1) translateY(0)",
-            filter: "blur(0) brightness(1)",
-          },
-        ],
-        {
-          duration: 1200,
-          easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-          fill: "forwards",
-        }
-      );
-
-      return entranceAnimation;
-    }, []);
-
-    // Web Animations API - Animación de créditos individuales
-    const animateCreditItem = useCallback(
-      (element: HTMLElement, delay: number = 0) => {
-        const animation = element.animate(
-          [
-            {
-              opacity: "0",
-              transform: "translateY(50px) translateZ(0)",
-              filter: "blur(5px)",
-            },
-            {
-              opacity: "1",
-              transform: "translateY(0) translateZ(0)",
-              filter: "blur(0)",
-            },
-          ],
-          {
-            duration: 800,
-            delay,
-            easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-            fill: "forwards",
-          }
-        );
-
-        // Almacenar referencia para control posterior
-        animationsRef.current.set(element.id, animation);
-
-        return animation;
-      },
-      []
-    );
-
-    // Detección de secuencia Konami - ELIMINADA
-    // useEffect(() => {
-    //   // Código Konami eliminado
-    // }, [isOpen]);
-
-    // Animación de entrada cuando se abre el modal
-    useEffect(() => {
-      if (isOpen) {
-        setIsAnimating(true);
-        const animation = animateModalEntrance();
-
-        animation?.addEventListener("finish", () => {
-          setIsAnimating(false);
-        });
-      }
-    }, [isOpen, animateModalEntrance]);
 
     // Activación automática inmediata de todos los créditos
     useEffect(() => {
       if (!isOpen) return;
 
-      // Animar entrada de todos los créditos con delay escalonado
-      setTimeout(() => {
-        const creditElements =
-          scrollContainerRef.current?.querySelectorAll(".credit-item");
-        creditElements?.forEach((element, index) => {
-          if (element instanceof HTMLElement) {
-            // Delay escalonado para efecto cinematográfico
-            setTimeout(() => {
-              animateCreditItem(element, index * 50);
-            }, index * 100); // 100ms entre cada elemento (más rápido)
-          }
-        });
-      }, 200); // 200ms después de que el modal esté visible (más rápido)
-    }, [isOpen, animateCreditItem]);
+      // Los créditos aparecen inmediatamente sin delays
+      const creditElements =
+        scrollContainerRef.current?.querySelectorAll(".credit-item");
+      creditElements?.forEach((element) => {
+        if (element instanceof HTMLElement) {
+          // Sin animación de entrada - aparición inmediata
+          element.style.opacity = "1";
+          element.style.transform = "translateY(0)";
+          element.style.filter = "blur(0)";
+        }
+      });
+    }, [isOpen]);
 
     // Efecto de hologram scanning
     useEffect(() => {
@@ -167,12 +73,9 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
       return () => clearInterval(scanInterval);
     }, [isOpen]);
 
-    // Cleanup de animaciones al cerrar
+    // Cleanup al cerrar - simplificado
     useEffect(() => {
-      if (!isOpen) {
-        animationsRef.current.forEach((animation) => animation.cancel());
-        animationsRef.current.clear();
-      }
+      // No necesitamos cleanup de animaciones ya que no las estamos usando
     }, [isOpen]);
 
     const handleClose = useCallback(() => {
@@ -181,23 +84,35 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
         return;
       }
 
-      // Animación de salida
+      // Animación de salida elegante y suave
       const exitAnimation = modalRef.current.animate(
         [
           {
             opacity: "1",
-            transform: "scale(1)",
-            filter: "blur(0)",
+            transform: "scale(1) translateY(0)",
+            filter: "blur(0) brightness(1)",
+          },
+          {
+            opacity: "0.7",
+            transform: "scale(0.98) translateY(10px)",
+            filter: "blur(2px) brightness(0.8)",
+            offset: 0.3,
+          },
+          {
+            opacity: "0.3",
+            transform: "scale(0.95) translateY(20px)",
+            filter: "blur(4px) brightness(0.5)",
+            offset: 0.7,
           },
           {
             opacity: "0",
-            transform: "scale(0.9)",
-            filter: "blur(5px)",
+            transform: "scale(0.9) translateY(30px)",
+            filter: "blur(8px) brightness(0.2)",
           },
         ],
         {
-          duration: 400,
-          easing: "cubic-bezier(0.4, 0, 1, 1)",
+          duration: 800, // Más tiempo para fade suave
+          easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Easing más suave
           fill: "forwards",
         }
       );
@@ -208,17 +123,12 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
     if (!isOpen) return null;
 
     return (
-      <div className="cinematic-credits-overlay">
+      <div
+        className="cinematic-credits-overlay"
+        onClick={handleClose}
+        style={{ cursor: "pointer" }}
+      >
         <div ref={modalRef} className="cinematic-credits-modal hologram-theme">
-          {/* Botón de cierre */}
-          <button
-            className="credits-close-btn"
-            onClick={handleClose}
-            aria-label="Cerrar créditos"
-          >
-            ✕
-          </button>
-
           {/* Marco tecnológico con imagen de fondo */}
           <div
             className="credits-tech-frame"
@@ -239,14 +149,11 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
               >
                 <div className="credits-scroll">
                   <div className="credit-section">
-                    {CREDITS_DATA.map((credit, index) => (
+                    {CREDITS_DATA.map((credit) => (
                       <div
                         key={credit.id}
                         data-credit-id={credit.id}
                         className="credit-item hologram-style"
-                        style={{
-                          animationDelay: `${index * 0.1}s`,
-                        }}
                       >
                         <h3>{credit.role}</h3>
                         <p>{credit.name}</p>

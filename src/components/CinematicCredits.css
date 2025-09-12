@@ -1,7 +1,7 @@
 /* src/components/CinematicCredits.css */
 
 /* ============================================================================
-   CINEMATIC CREDITS - SISTEMA AVANZADO DE EFECTOS VISUALES
+   CINEMATIC CREDITS - SISTEMA SIMPLIFICADO DE EFECTOS HOLOGRÁFICOS
    Paleta de colores InteliMark: Naranjo, Gris, Negro, Blanco
    ============================================================================ */
 
@@ -35,12 +35,6 @@
   --intelimark-gray-60: rgba(179, 180, 176, 0.6);
   --intelimark-gray-40: rgba(179, 180, 176, 0.4);
   --intelimark-gray-20: rgba(179, 180, 176, 0.2);
-
-  /* Variables adicionales para compatibilidad */
-  --intelimark-gray-medium-alpha: rgba(179, 180, 176, 0.7);
-  --intelimark-gray-light-alpha: rgba(128, 128, 128, 0.5);
-  --intelimark-orange-alpha: rgba(218, 128, 35, 0.7);
-  --intelimark-orange-light-alpha: rgba(218, 128, 35, 0.2);
 }
 
 /* 🎬 OVERLAY PRINCIPAL - COMPLETAMENTE TRANSPARENTE */
@@ -48,63 +42,53 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background: transparent;
-  backdrop-filter: none;
+  z-index: 9999;
+  pointer-events: auto; /* Permitir eventos de mouse */
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 1000;
-  overflow: hidden;
-
-  /* 🎯 CURSOR CAD PARA TODA LA INTERFAZ DE CRÉDITOS */
-  cursor: crosshair !important;
+  align-items: center;
+  cursor: pointer; /* Indicar que es clickeable */
+  transition: backdrop-filter 0.3s ease; /* Transición suave para efectos */
 }
 
-/* Aplicar cursor CAD a todos los elementos dentro del overlay */
-.cinematic-credits-overlay * {
-  cursor: crosshair !important;
+.cinematic-credits-overlay:hover {
+  backdrop-filter: brightness(0.95); /* Sutil efecto hover */
 }
 
-/* 🌟 MODO ALTERNATIVO - OVERLAY COMPLETAMENTE TRANSPARENTE */
-.cinematic-credits-overlay.matrix-mode {
-  background: transparent;
-  backdrop-filter: none;
-}
-
-/* 🎭 MODAL PRINCIPAL - TAMAÑO COMPLETO PARA LA IMAGEN PNG */
+/* 🎭 MODAL PRINCIPAL - TAMAÑO COMPLETO */
 .cinematic-credits-modal {
   width: 100vw;
   height: 100vh;
   position: relative;
   border-radius: 0;
-  overflow: visible; /* 🚨 PERMITIR QUE LOS TEXTOS SE VEAN FUERA DEL MODAL */
+  overflow: visible;
   transform-style: preserve-3d;
   will-change: transform, opacity, filter;
-}
-
-/* 🔥 TEMA PRINCIPAL (NARANJO) - TRANSPARENTE */
-.cinematic-credits-modal.hologram-theme {
   background: transparent;
   border: none;
   animation: none;
+  cursor: auto; /* Asegurar que el cursor sea visible */
+  pointer-events: auto; /* Permitir eventos de mouse */
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Transición suave */
 }
 
-/* ⚡ TEMA ALTERNATIVO (MATRIX) - TRANSPARENTE */
-.cinematic-credits-modal.matrix-theme {
-  background: transparent;
-  border: none;
-  animation: none;
-}
-
-/* 🖼️ MARCO TECNOLÓGICO - COMPLETAMENTE TRANSPARENTE */
+/* 🖼️ MARCO TECNOLÓGICO CON IMAGEN PNG */
 .credits-tech-frame {
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: auto;
 }
 
 /* 📜 CONTENEDOR DE TEXTO FLOTANTE - COMPLETAMENTE TRANSPARENTE */
-.cinematic-credits-content,
 .credits-screen-content {
   position: relative;
   z-index: 2;
@@ -117,32 +101,26 @@
   padding: 2rem;
   text-align: center;
   font-family: "Arial", sans-serif;
-
-  /* 🌟 TRANSPARENCIA TOTAL */
   background: transparent;
   border: none;
   box-shadow: none;
   outline: none;
 }
 
-/* 🎬 CONTENEDOR DE SCROLL DE CRÉDITOS - SOLO TEXTOS TRANSPARENTES */
+/* 🎬 CONTENEDOR DE SCROLL DE CRÉDITOS */
 .credits-scroll-container {
   position: relative;
   width: 100%;
   max-width: 800px;
-  height: 100vh; /* Altura completa para ver la animación completa */
-  overflow: visible; /* Permitir que los textos se vean fuera del contenedor */
+  height: 100vh;
+  overflow: visible;
   z-index: 2;
   padding: 2rem;
   margin: 0 auto;
-
-  /* 🌟 FONDO COMPLETAMENTE TRANSPARENTE */
-  background: transparent; /* Fondo transparente restaurado */
-  border: none; /* Sin borde */
+  background: transparent;
+  border: none;
   border-radius: 0;
   box-shadow: none;
-
-  /* 🚫 OCULTAR SCROLLBARS */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -151,25 +129,18 @@
   display: none;
 }
 
-.credits-scroll-container::-webkit-scrollbar-track {
-  display: none;
+/* 📋 CONTENEDOR DE ANIMACIÓN DE CRÉDITOS */
+.credits-scroll {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  animation: credits-scroll-up 40s linear infinite;
 }
 
-.credits-scroll-container::-webkit-scrollbar-thumb {
-  display: none;
-}
-
-.cinematic-credits-modal .credits-scroll {
-  width: 100% !important;
-  max-width: 700px !important;
-  margin: 0 auto !important;
-  background: transparent !important; /* Fondo transparente restaurado */
-  border: none !important; /* Sin borde */
-  box-shadow: none !important;
-  /* 🚨 ACTIVAR ANIMACIÓN PARA TESTING */
-  animation: credits-scroll-up 40s linear infinite !important;
-}
-
+/* 📋 SECCIÓN DE CRÉDITOS */
 .credit-section {
   width: 100%;
   padding: 1rem 0;
@@ -178,459 +149,188 @@
   box-shadow: none;
 }
 
-/* 🌟 EFECTOS HOLOGRÁFICOS - DESHABILITADOS PARA TRANSPARENCIA */
-.hologram-scan-line {
-  display: none;
-}
-
-.hologram-interference {
-  display: none;
-}
-
-.hologram-grid {
-  display: none;
-}
-
-/* 🌊 EFECTOS MATRIX - DESHABILITADOS PARA TRANSPARENCIA */
-.matrix-rain {
-  display: none;
-}
-
-.matrix-column {
-  position: absolute;
-  top: -100%;
-  height: 200%;
-  width: 20px;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-  color: var(--intelimark-gray-medium);
-  animation: matrix-fall 3s linear infinite;
-}
-
-.matrix-column:nth-child(odd) {
-  animation-delay: -1s;
-}
-
-.matrix-column:nth-child(even) {
-  animation-delay: -2s;
-}
-
-.matrix-char {
-  display: block;
-  opacity: 0.8;
-  animation: matrix-fade 2s ease-in-out infinite;
-}
-
-.matrix-cursor {
-  display: inline-block;
-  animation: cursor-blink 1s step-end infinite;
-  color: var(--intelimark-gray-medium);
-}
-
-/* 🎯 BOTÓN DE CIERRE CON CURSOR CAD */
-.cinematic-credits-close-button,
-.credits-close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: var(--intelimark-orange-60);
-  color: var(--intelimark-white);
-  border: 2px solid var(--intelimark-orange);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: bold;
-  z-index: 3;
+/* 👤 ITEM INDIVIDUAL DE CRÉDITO */
+.credit-item {
+  margin: 1rem 0;
+  opacity: 1;
+  padding: 0.75rem;
+  border-radius: 6px;
   transition: all 0.3s ease;
-  cursor: crosshair !important;
-}
-
-.cinematic-credits-close-button:hover,
-.credits-close-btn:hover {
-  background: var(--intelimark-orange);
-  transform: scale(1.1);
-  box-shadow: 0 0 20px var(--intelimark-orange-60);
-}
-
-/* 🎬 TÍTULOS DE CRÉDITOS */
-.credits-title {
-  font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: bold;
-  margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  animation: title-glow 3s ease-in-out infinite alternate;
-}
-
-.credits-title.hologram-theme {
+  background: transparent;
+  border: none;
+  text-align: center;
   color: var(--intelimark-orange);
-  text-shadow: 0 0 10px var(--intelimark-orange-60),
-    0 0 20px var(--intelimark-orange-40), 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.credits-title.matrix-theme {
-  color: var(--intelimark-gray-medium);
-  text-shadow: 0 0 10px var(--intelimark-gray-60),
-    0 0 20px var(--intelimark-gray-40), 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* 📝 LISTA DE CRÉDITOS */
-.credits-list {
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
-  line-height: 1.8;
-  max-width: 800px;
-  margin: 0 auto;
-  animation: credits-float 4s ease-in-out infinite;
-}
-
-.credits-list.hologram-theme {
-  color: var(--intelimark-white);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-.credits-list.matrix-theme {
-  color: var(--intelimark-white);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-.credits-item {
-  margin: 0.5rem 0;
-  opacity: 0;
-  animation: item-fade-in 0.8s ease-out forwards;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-/* 🎬 MÁXIMA ESPECIFICIDAD PARA SOBRESCRIBIR REBECCA.CSS */
-.cinematic-credits-overlay
-  .cinematic-credits-modal
-  .credits-screen-content
-  .credits-scroll-container
-  .credits-scroll
-  .credit-section
-  .credit-item {
-  margin: 1rem 0 !important;
-  opacity: 1 !important;
-  animation: none !important; /* Los items individuales no necesitan animación */
-  padding: 0.75rem !important;
-  border-radius: 6px !important;
-  transition: all 0.3s ease !important;
-  background: transparent !important; /* Fondo transparente */
-  border: none !important; /* Sin borde */
-  text-align: center !important;
-  color: var(--intelimark-orange) !important; /* Color naranja original */
-  margin-bottom: 1rem !important;
-  font-size: 18px !important; /* Tamaño de texto normal */
-  text-shadow: 0 0 10px rgba(218, 128, 35, 0.7) !important; /* Efecto holográfico */
-}
+  margin-bottom: 1rem;
+  font-size: 18px;
+  text-shadow: 0 0 10px rgba(218, 128, 35, 0.7);
 }
 
 .credit-item.hologram-style {
-  background: transparent !important;
-  border: none !important;
-  color: var(--intelimark-orange) !important;
-  text-shadow: 0 0 10px rgba(218, 128, 35, 0.7) !important;
-  font-weight: bold !important;
-  font-size: 18px !important;
-  padding: 0.75rem !important;
-}
-
-.credit-item.matrix-style {
   background: transparent;
   border: none;
-  color: var(--intelimark-gray-medium);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-  font-weight: bold;
-}
-
-.credits-item:nth-child(1) {
-  animation-delay: 0.2s;
-}
-.credits-item:nth-child(2) {
-  animation-delay: 0.4s;
-}
-.credits-item:nth-child(3) {
-  animation-delay: 0.6s;
-}
-.credits-item:nth-child(4) {
-  animation-delay: 0.8s;
-}
-.credits-item:nth-child(5) {
-  animation-delay: 1s;
-}
-.credits-item:nth-child(6) {
-  animation-delay: 1.2s;
-}
-
-.credits-role {
-  font-weight: bold;
-  display: inline-block;
-  margin-right: 0.5rem;
-}
-
-.credits-role.hologram-theme {
   color: var(--intelimark-orange);
+  text-shadow: 0 0 10px rgba(218, 128, 35, 0.7);
+  font-weight: bold;
+  font-size: 18px;
+  padding: 0.75rem;
 }
 
-.credits-role.matrix-theme {
-  color: var(--intelimark-gray-medium);
+.credit-item h3 {
+  color: var(--intelimark-orange);
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(218, 128, 35, 0.7);
+  font-family: "Courier New", monospace;
 }
 
-/* ⚡ ANIMACIONES HOLOGRÁFICAS */
-@keyframes hologram-flicker {
-  0%,
-  100% {
-    filter: hue-rotate(0deg) brightness(1) contrast(1);
-    transform: scale(1);
-  }
-  25% {
-    filter: hue-rotate(5deg) brightness(1.1) contrast(1.1);
-    transform: scale(1.001);
-  }
-  50% {
-    filter: hue-rotate(-3deg) brightness(0.95) contrast(0.95);
-    transform: scale(0.999);
-  }
-  75% {
-    filter: hue-rotate(2deg) brightness(1.05) contrast(1.05);
-    transform: scale(1.001);
-  }
+.credit-item p {
+  color: var(--intelimark-white);
+  font-size: 16px;
+  margin: 0;
+  font-weight: 300;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
-@keyframes matrix-pulse {
-  0%,
-  100% {
-    filter: brightness(1) contrast(1);
-    transform: scale(1);
-  }
-  50% {
-    filter: brightness(1.1) contrast(1.1);
-    transform: scale(1.002);
-  }
-}
-
-@keyframes title-glow {
-  0% {
-    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor,
-      2px 2px 4px rgba(0, 0, 0, 0.5);
-  }
-  100% {
-    text-shadow: 0 0 20px currentColor, 0 0 30px currentColor,
-      0 0 40px currentColor, 2px 2px 4px rgba(0, 0, 0, 0.5);
-  }
-}
-
-@keyframes credits-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes item-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 🌟 EFECTOS ESPECIALES */
-.hologram-effect {
-  position: relative;
-  overflow: hidden;
-}
-
-.hologram-effect::before {
-  content: "";
+/* 🔥 EFECTOS HOLOGRÁFICOS */
+.hologram-scan-line {
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
   background: linear-gradient(
-    45deg,
-    transparent 40%,
-    var(--intelimark-orange-10) 50%,
-    transparent 60%
+    90deg,
+    transparent,
+    var(--intelimark-orange),
+    transparent
   );
   animation: hologram-scan 3s linear infinite;
+  z-index: 3;
+  pointer-events: none; /* No bloquear eventos de mouse */
+}
+
+.hologram-interference {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--intelimark-orange-10) 2px,
+    var(--intelimark-orange-10) 4px
+  );
+  animation: hologram-flicker 0.15s linear infinite;
+  z-index: 1;
   pointer-events: none;
 }
 
-@keyframes hologram-scan {
-  0% {
-    transform: translateY(-100vh);
-  }
-  100% {
-    transform: translateY(100vh);
-  }
+.hologram-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+      var(--intelimark-orange-10) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, var(--intelimark-orange-10) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: hologram-grid-move 8s linear infinite;
+  z-index: 1;
+  pointer-events: none;
 }
 
-@keyframes interference-flicker {
-  0%,
-  100% {
-    opacity: 0.1;
-  }
-  50% {
-    opacity: 0.3;
-  }
+.hologram-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    var(--intelimark-orange-20),
+    transparent 70%
+  );
+  animation: hologram-pulse 2s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
-@keyframes matrix-fall {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
-}
-
-@keyframes matrix-fade {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
+/* 🎭 ANIMACIONES */
 @keyframes credits-scroll-up {
   0% {
-    transform: translateY(50vh);
+    transform: translateY(0); /* Empezar en posición visible */
   }
   100% {
     transform: translateY(-200vh);
   }
 }
 
-@keyframes cursor-blink {
-  0%,
-  50% {
+@keyframes hologram-scan {
+  0% {
+    top: 0;
     opacity: 1;
   }
-  51%,
+  50% {
+    opacity: 0.8;
+  }
   100% {
+    top: 100%;
     opacity: 0;
   }
 }
 
-.matrix-effect {
-  position: relative;
-  overflow: hidden;
+@keyframes hologram-flicker {
+  0%,
+  98% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 0.98;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-.matrix-effect::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-      90deg,
-      transparent 50%,
-      var(--intelimark-gray-10) 50%
-    ),
-    linear-gradient(0deg, transparent 50%, var(--intelimark-gray-10) 50%);
-  background-size: 4px 4px;
-  animation: matrix-grid 2s linear infinite;
-  pointer-events: none;
-  opacity: 0.3;
-}
-
-@keyframes matrix-grid {
+@keyframes hologram-grid-move {
   0% {
     transform: translate(0, 0);
   }
   100% {
-    transform: translate(4px, 4px);
+    transform: translate(50px, 50px);
   }
 }
 
-/* 📱 RESPONSIVE DESIGN */
+@keyframes hologram-pulse {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* 📱 RESPONSIVE */
 @media (max-width: 768px) {
-  .cinematic-credits-modal {
+  .credits-scroll-container {
     padding: 1rem;
+    max-width: 100%;
   }
 
-  /* ✨ CONTENIDO TRANSPARENTE RESPONSIVO */
-  .cinematic-credits-content {
-    padding: 1rem;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  .credits-title {
-    font-size: clamp(1.5rem, 6vw, 2.5rem);
-    margin-bottom: 0.5rem;
-  }
-
-  .credits-list {
-    font-size: clamp(0.9rem, 3vw, 1.2rem);
-    line-height: 1.6;
-  }
-
-  .cinematic-credits-close-button {
-    width: 35px;
-    height: 35px;
+  .credit-item h3 {
     font-size: 16px;
-    top: 15px;
-    right: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .credits-title {
-    font-size: clamp(1.2rem, 7vw, 2rem);
   }
 
-  .credits-list {
-    font-size: clamp(0.8rem, 3.5vw, 1rem);
-    line-height: 1.5;
+  .credit-item p {
+    font-size: 14px;
   }
-}
-
-/* 🎯 ACCESIBILIDAD */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* ⚡ OPTIMIZACIONES DE RENDIMIENTO */
-/* 🌟 OPTIMIZACIÓN DE RENDERIZADO - SOLO PARA OVERLAY Y MODAL */
-.cinematic-credits-overlay,
-.cinematic-credits-modal {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
-
-/* ✨ CONTENIDO TRANSPARENTE SIN OPTIMIZACIONES QUE INTERFIERAN */
-.cinematic-credits-content {
-  /* Solo propiedades de transparencia sin conflictos de renderizado */
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-
-/* 🎬 ESTADO INICIAL OCULTO */
-.cinematic-credits-overlay.hidden {
-  display: none;
 }
