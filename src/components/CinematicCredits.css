@@ -563,8 +563,12 @@
     padding: 1rem;
   }
 
+  /* ✨ CONTENIDO TRANSPARENTE RESPONSIVO */
   .cinematic-credits-content {
     padding: 1rem;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .credits-title {
@@ -607,12 +611,21 @@
 }
 
 /* ⚡ OPTIMIZACIONES DE RENDIMIENTO */
+/* 🌟 OPTIMIZACIÓN DE RENDERIZADO - SOLO PARA OVERLAY Y MODAL */
 .cinematic-credits-overlay,
-.cinematic-credits-modal,
-.cinematic-credits-content {
+.cinematic-credits-modal {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
+}
+
+/* ✨ CONTENIDO TRANSPARENTE SIN OPTIMIZACIONES QUE INTERFIERAN */
+.cinematic-credits-content {
+  /* Solo propiedades de transparencia sin conflictos de renderizado */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
 
 /* 🎬 ESTADO INICIAL OCULTO */

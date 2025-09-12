@@ -1684,7 +1684,7 @@ body,
   }
 }
 
-/* 📺 ÁREA DE CONTENIDO DENTRO DEL MARCO */
+/* 📺 ÁREA DE CONTENIDO DENTRO DEL MARCO - TRANSPARENTE */
 .credits-screen-content {
   width: 75%;
   height: 70%;
@@ -1693,8 +1693,10 @@ body,
   flex-direction: column;
   overflow: hidden;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(218, 128, 35, 0.3);
+  /* ✨ TRANSPARENCIA TOTAL */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* 🎯 TÍTULO DE CRÉDITOS */
