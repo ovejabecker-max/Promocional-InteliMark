@@ -84,45 +84,26 @@
   will-change: transform, opacity, filter;
 }
 
-/* 🔥 TEMA PRINCIPAL (NARANJO) */
+/* 🔥 TEMA PRINCIPAL (NARANJO) - TRANSPARENTE */
 .cinematic-credits-modal.hologram-theme {
-  background: linear-gradient(
-    135deg,
-    var(--intelimark-orange-10) 0%,
-    var(--intelimark-white-20) 50%,
-    var(--intelimark-orange-10) 100%
-  );
-  border: 2px solid var(--intelimark-orange-40);
-  animation: hologram-flicker 3s ease-in-out infinite;
+  background: transparent;
+  border: none;
+  animation: none;
 }
 
-/* ⚡ TEMA ALTERNATIVO (MATRIX) */
+/* ⚡ TEMA ALTERNATIVO (MATRIX) - TRANSPARENTE */
 .cinematic-credits-modal.matrix-theme {
-  background: linear-gradient(
-    135deg,
-    var(--intelimark-gray-20) 0%,
-    var(--intelimark-white-10) 50%,
-    var(--intelimark-gray-20) 100%
-  );
-  border: 2px solid var(--intelimark-gray-40);
-  animation: matrix-pulse 2s ease-in-out infinite;
+  background: transparent;
+  border: none;
+  animation: none;
 }
 
-/* 🖼️ MARCO TECNOLÓGICO CON IMAGEN DE FONDO */
+/* 🖼️ MARCO TECNOLÓGICO - COMPLETAMENTE TRANSPARENTE */
 .credits-tech-frame {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 1;
-  pointer-events: none;
+  display: none;
 }
 
-/* 📜 CONTENEDOR DE TEXTO FLOTANTE */
+/* 📜 CONTENEDOR DE TEXTO FLOTANTE - COMPLETAMENTE TRANSPARENTE */
 .cinematic-credits-content,
 .credits-screen-content {
   position: relative;
@@ -136,120 +117,82 @@
   padding: 2rem;
   text-align: center;
   font-family: "Arial", sans-serif;
+
+  /* 🌟 TRANSPARENCIA TOTAL */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
 }
 
-/* 🎬 CONTENEDOR DE SCROLL DE CRÉDITOS */
+/* 🎬 CONTENEDOR DE SCROLL DE CRÉDITOS - SOLO TEXTOS TRANSPARENTES */
 .credits-scroll-container {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  max-height: 60vh;
+  max-width: 800px;
+  max-height: 80vh;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 2;
-  padding: 1.5rem;
+  padding: 2rem;
   margin: 0 auto;
 
-  /* 🖤 FONDO NEGRO CON GRADIENTE Y BORDE NARANJA */
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.9) 0%,
-    rgba(20, 20, 20, 0.95) 50%,
-    rgba(0, 0, 0, 0.9) 100%
-  );
-  border: 2px solid var(--intelimark-orange);
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(218, 128, 35, 0.3),
-    inset 0 0 20px rgba(0, 0, 0, 0.5);
+  /* 🌟 FONDO COMPLETAMENTE TRANSPARENTE */
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 
-  scrollbar-width: thin;
-  scrollbar-color: var(--intelimark-orange-40) transparent;
+  /* 🚫 OCULTAR SCROLLBARS */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .credits-scroll-container::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
 
 .credits-scroll-container::-webkit-scrollbar-track {
-  background: transparent;
+  display: none;
 }
 
 .credits-scroll-container::-webkit-scrollbar-thumb {
-  background: var(--intelimark-orange-40);
-  border-radius: 4px;
+  display: none;
 }
 
 .credits-scroll {
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .credit-section {
   width: 100%;
   padding: 1rem 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
-/* 🌟 EFECTOS HOLOGRÁFICOS */
+/* 🌟 EFECTOS HOLOGRÁFICOS - DESHABILITADOS PARA TRANSPARENCIA */
 .hologram-scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--intelimark-orange),
-    transparent
-  );
-  animation: hologram-scan 4s linear infinite;
-  z-index: 3;
+  display: none;
 }
 
 .hologram-interference {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    var(--intelimark-orange-10) 2px,
-    var(--intelimark-orange-10) 4px
-  );
-  opacity: 0.1;
-  animation: interference-flicker 3s ease-in-out infinite;
-  z-index: 1;
+  display: none;
 }
 
 .hologram-grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: linear-gradient(
-      var(--intelimark-orange-20) 1px,
-      transparent 1px
-    ),
-    linear-gradient(90deg, var(--intelimark-orange-20) 1px, transparent 1px);
-  background-size: 20px 20px;
-  opacity: 0.1;
-  z-index: 1;
+  display: none;
 }
 
-/* 🌊 EFECTOS MATRIX */
+/* 🌊 EFECTOS MATRIX - DESHABILITADOS PARA TRANSPARENCIA */
 .matrix-rain {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  z-index: 1;
+  display: none;
 }
 
 .matrix-column {
@@ -361,40 +304,45 @@
   transition: all 0.3s ease;
 }
 
-/* 🎬 ESTILOS ESPECÍFICOS PARA ELEMENTOS DE CRÉDITOS */
+/* 🎬 ESTILOS ESPECÍFICOS PARA ELEMENTOS DE CRÉDITOS - TRANSPARENTES */
 .credit-item {
-  margin: 0.5rem 0;
+  margin: 1rem 0;
   opacity: 0;
-  animation: item-fade-in 0.8s ease-out forwards;
+  animation: item-fade-in 0.8s ease-out forwards,
+    credits-scroll-up 20s linear infinite;
   padding: 0.75rem;
   border-radius: 6px;
   transition: all 0.3s ease;
-  background: var(--intelimark-orange-10);
-  border: 1px solid var(--intelimark-orange-20);
+  background: transparent;
+  border: none;
+  text-align: center;
 }
 
 .credit-item.hologram-style {
-  background: var(--intelimark-orange-10);
-  border: 1px solid var(--intelimark-orange-30);
-  color: var(--intelimark-white);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  background: transparent;
+  border: none;
+  color: var(--intelimark-orange);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  font-weight: bold;
 }
 
 .credit-item.matrix-style {
-  background: var(--intelimark-gray-20);
-  border: 1px solid var(--intelimark-gray-40);
-  color: var(--intelimark-white);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  background: transparent;
+  border: none;
+  color: var(--intelimark-gray-medium);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  font-weight: bold;
 }
 
 .credit-item.final-credit {
   margin-top: 2rem;
   padding: 1.5rem;
-  background: var(--intelimark-orange-30);
-  border: 2px solid var(--intelimark-orange);
-  border-radius: 10px;
-  font-size: 1.1em;
+  background: transparent;
+  border: none;
+  font-size: 1.2em;
   font-weight: bold;
+  color: var(--intelimark-orange);
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
 }
 
 .credits-item:nth-child(1) {
@@ -553,6 +501,15 @@
   }
   50% {
     opacity: 1;
+  }
+}
+
+@keyframes credits-scroll-up {
+  0% {
+    transform: translateY(100vh);
+  }
+  100% {
+    transform: translateY(-100vh);
   }
 }
 
