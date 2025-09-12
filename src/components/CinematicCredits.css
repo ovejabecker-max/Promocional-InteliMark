@@ -137,7 +137,7 @@
   background: transparent;
   border: none;
   box-shadow: none;
-  animation: credits-scroll-up 40s linear infinite;
+  animation: credits-scroll-up 18s ease-in-out infinite;
 }
 
 /* 📋 SECCIÓN DE CRÉDITOS */
@@ -265,10 +265,16 @@
 /* 🎭 ANIMACIONES */
 @keyframes credits-scroll-up {
   0% {
-    transform: translateY(0); /* Empezar en posición visible */
+    transform: translateY(100vh); /* Empezar desde abajo de la pantalla */
+  }
+  15% {
+    transform: translateY(50vh); /* Rápida aparición inicial */
+  }
+  85% {
+    transform: translateY(-80vh); /* Movimiento principal */
   }
   100% {
-    transform: translateY(-200vh);
+    transform: translateY(-120vh); /* Salida optimizada */
   }
 }
 
