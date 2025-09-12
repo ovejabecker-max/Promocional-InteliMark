@@ -39,25 +39,9 @@ const CREDITS_DATA: CreditItem[] = [
   },
 ];
 
-// Secuencia Konami para activar Matrix Mode
-const KONAMI_CODE = [
-  "ArrowUp",
-  "ArrowUp",
-  "ArrowDown",
-  "ArrowDown",
-  "ArrowLeft",
-  "ArrowRight",
-  "ArrowLeft",
-  "ArrowRight",
-  "KeyB",
-  "KeyA",
-];
-
 export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
   ({ isOpen, onClose, backgroundImage }) => {
-    // Estados principales
-    const [isMatrixMode, setIsMatrixMode] = useState(false);
-    const [_konamiSequence, setKonamiSequence] = useState<string[]>([]);
+    // Estados principales - sin Matrix Mode
     const [_isAnimating, setIsAnimating] = useState(false);
     const [visibleCredits, setVisibleCredits] = useState<Set<string>>(
       new Set()
@@ -140,77 +124,10 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
       []
     );
 
-    // Animación de transición Matrix Mode
-    const animateMatrixTransition = useCallback(() => {
-      if (!scrollContainerRef.current) return;
-
-      const container = scrollContainerRef.current;
-
-      // Efecto de glitch antes de cambiar
-      const glitchAnimation = container.animate(
-        [
-          { filter: "hue-rotate(0deg) contrast(1) brightness(1)" },
-          {
-            filter: "hue-rotate(180deg) contrast(1.5) brightness(1.2)",
-            offset: 0.2,
-          },
-          {
-            filter: "hue-rotate(360deg) contrast(1) brightness(0.8)",
-            offset: 0.4,
-          },
-          {
-            filter: "hue-rotate(90deg) contrast(2) brightness(1.5)",
-            offset: 0.6,
-          },
-          { filter: "hue-rotate(0deg) contrast(1) brightness(1)" },
-        ],
-        {
-          duration: 1000,
-          iterations: 2,
-          easing: "steps(5, end)",
-        }
-      );
-
-      glitchAnimation.addEventListener("finish", () => {
-        setIsMatrixMode((prev) => !prev);
-      });
-
-      return glitchAnimation;
-    }, []);
-
-    // Detección de secuencia Konami
-    useEffect(() => {
-      const handleKeyPress = (event: KeyboardEvent) => {
-        if (!isOpen) return;
-
-        setKonamiSequence((prev) => {
-          const newSequence = [...prev, event.code];
-
-          // Mantener solo los últimos 10 inputs
-          if (newSequence.length > 10) {
-            newSequence.shift();
-          }
-
-          // Verificar si coincide con el código Konami
-          if (newSequence.length === 10) {
-            const isKonamiMatch = newSequence.every(
-              (key, index) => key === KONAMI_CODE[index]
-            );
-
-            if (isKonamiMatch) {
-              animateMatrixTransition();
-              setKonamiSequence([]); // Reset
-              return [];
-            }
-          }
-
-          return newSequence;
-        });
-      };
-
-      document.addEventListener("keydown", handleKeyPress);
-      return () => document.removeEventListener("keydown", handleKeyPress);
-    }, [isOpen, animateMatrixTransition]);
+    // Detección de secuencia Konami - ELIMINADA
+    // useEffect(() => {
+    //   // Código Konami eliminado
+    // }, [isOpen]);
 
     // Animación de entrada cuando se abre el modal
     useEffect(() => {
@@ -260,7 +177,7 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
 
     // Efecto de hologram scanning
     useEffect(() => {
-      if (!isOpen || isMatrixMode) return;
+      if (!isOpen) return;
 
       const scanInterval = setInterval(() => {
         if (hologramScanRef.current) {
@@ -273,7 +190,7 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
       }, 4000);
 
       return () => clearInterval(scanInterval);
-    }, [isOpen, isMatrixMode]);
+    }, [isOpen]);
 
     // Cleanup de animaciones al cerrar
     useEffect(() => {
@@ -281,7 +198,6 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
         animationsRef.current.forEach((animation) => animation.cancel());
         animationsRef.current.clear();
         setVisibleCredits(new Set());
-        setKonamiSequence([]);
       }
     }, [isOpen]);
 
@@ -318,24 +234,15 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
     if (!isOpen) return null;
 
     return (
-      <div
-        className={`cinematic-credits-overlay ${
-          isMatrixMode ? "matrix-mode" : ""
-        }`}
-      >
-        <div
-          ref={modalRef}
-          className={`cinematic-credits-modal ${
-            isMatrixMode ? "matrix-theme" : "hologram-theme"
-          }`}
-        >
+      <div className="cinematic-credits-overlay">
+        <div ref={modalRef} className="cinematic-credits-modal hologram-theme">
           {/* Botón de cierre */}
           <button
             className="credits-close-btn"
             onClick={handleClose}
             aria-label="Cerrar créditos"
           >
-            {isMatrixMode ? "[EXIT]" : "✕"}
+            ✕
           </button>
 
           {/* Marco tecnológico con imagen de fondo */}
@@ -344,42 +251,14 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
             style={{ backgroundImage: `url(${backgroundImage})` }}
           >
             {/* Efectos de holografía */}
-            {!isMatrixMode && (
-              <>
-                <div ref={hologramScanRef} className="hologram-scan-line" />
-                <div className="hologram-interference" />
-                <div className="hologram-grid" />
-              </>
-            )}
-
-            {/* Efectos Matrix */}
-            {isMatrixMode && (
-              <div className="matrix-rain">
-                {Array.from({ length: 20 }, (_, i) => (
-                  <div
-                    key={i}
-                    className="matrix-column"
-                    style={{ left: `${i * 5}%` }}
-                  >
-                    {Array.from({ length: 10 }, (_, j) => (
-                      <span key={j} className="matrix-char">
-                        {String.fromCharCode(0x30a0 + Math.random() * 96)}
-                      </span>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
+            <>
+              <div ref={hologramScanRef} className="hologram-scan-line" />
+              <div className="hologram-interference" />
+              <div className="hologram-grid" />
+            </>
 
             {/* Contenido principal */}
             <div className="credits-screen-content">
-              {isMatrixMode && (
-                <div className="credits-title">
-                  <h2>SYSTEM_CREDITS.EXE</h2>
-                  <div className="matrix-cursor">█</div>
-                </div>
-              )}
-
               <div
                 ref={scrollContainerRef}
                 className="credits-scroll-container"
@@ -392,38 +271,22 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
                         data-credit-id={credit.id}
                         className={`credit-item ${
                           credit.isFinal ? "final-credit" : ""
-                        } ${isMatrixMode ? "matrix-style" : "hologram-style"}`}
+                        } hologram-style`}
                         style={{
                           opacity: visibleCredits.has(credit.id) ? 1 : 0,
                           animationDelay: `${index * 0.1}s`,
                         }}
                       >
-                        <h3>
-                          {isMatrixMode ? `> ${credit.role}.EXE` : credit.role}
-                          {isMatrixMode && (
-                            <span className="matrix-loading">[■■■■■■■■■■]</span>
-                          )}
-                        </h3>
-                        <p>{isMatrixMode ? `$ ${credit.name}` : credit.name}</p>
-                        {!isMatrixMode && <div className="hologram-glow" />}
+                        <h3>{credit.role}</h3>
+                        <p>{credit.name}</p>
+                        <div className="hologram-glow" />
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Instrucciones Easter Egg */}
-              <div className="easter-egg-hint">
-                {isMatrixMode ? (
-                  <span className="matrix-hint">
-                    PRESS_KONAMI_TO_EXIT_MATRIX
-                  </span>
-                ) : (
-                  <span className="hologram-hint">
-                    ↑↑↓↓←→←→BA para acceder al MATRIX
-                  </span>
-                )}
-              </div>
+              {/* Nota: Easter Egg Konami eliminado */}
             </div>
           </div>
         </div>

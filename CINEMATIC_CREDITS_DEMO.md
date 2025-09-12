@@ -12,16 +12,7 @@
 - **Resplandor cian**: Efectos de glow azul en textos y bordes
 - **Parpadeo holográfico**: Texto que flickers como hologramas reales
 
-#### 🟢 **2. MODO MATRIX ALTERNATIVO**
-
-- **Activación**: Código Konami (↑↑↓↓←→←→BA)
-- **Lluvia de código**: 20 columnas con caracteres japoneses cayendo
-- **Tema verde**: Colores #00ff00 sobre fondo negro
-- **Texto tipo terminal**: Fuente Courier New con prefijos .EXE
-- **Barras de carga**: Cada crédito simula "loading" como un programa
-- **Cursor parpadeante**: █ que simula terminal activo
-
-#### ⚡ **3. WEB ANIMATIONS API**
+#### ⚡ **2. WEB ANIMATIONS API**
 
 - **Animaciones fluidas a 60fps**: Sin lag ni stuttering
 - **Control preciso**: Pause, resume, reverse en tiempo real
@@ -41,17 +32,6 @@
 3. Scroll automático con máscara fade-in/fade-out
 4. Líneas de escaneo láser cada 4 segundos
 5. Interferencia holográfica constante
-
-### **🟢 Activar Modo Matrix:**
-
-1. Con el modal abierto, presiona secuencia Konami:
-   ```
-   ↑ ↑ ↓ ↓ ← → ← → B A
-   ```
-2. Transición automática con efecto glitch
-3. Lluvia de código Matrix en el fondo
-4. Todos los créditos cambian a estilo terminal
-5. Hint en la parte inferior para salir
 
 ### **🎯 Efectos Automáticos:**
 
@@ -80,24 +60,6 @@
 │    ⚡ DESARROLLADOR FRONTEND ⚡  │
 │      Pablo Carrasco            │
 └─────────────────────────────────┘
-```
-
-### **🟢 MATRIX:**
-
-```
-████████████████████████████████████
-█ ▓▓▓ SYSTEM_CREDITS.EXE ▓▓▓ █ █
-████████████████████████████████████
-█ 雨 雨 雨 雨 雨 雨 雨 雨 雨 █ ← Lluvia de código
-█                              █
-█ > DIRECTOR_CREATIVO.exe      █
-█ $ Pablo_Carrasco             █
-█ [■■■■■■■■■■] COMPLETE         █
-█                              █
-█ > DESARROLLADOR_FRONTEND.dll █
-█ $ Pablo_Carrasco             █
-█ [■■■■■■■□□□] LOADING...       █
-████████████████████████████████████
 ```
 
 ---
@@ -133,17 +95,15 @@
 
 1. **Entrada**: Modal aparece con animación de escala + blur
 2. **Holografía**: Efectos visuales inmersivos automáticos
-3. **Easter Egg**: Secuencia Konami activa modo Matrix
-4. **Transición**: Glitch effect antes del cambio de tema
-5. **Matrix Mode**: Experiencia completamente diferente
-6. **Salida**: Animación suave de cierre
+3. **Scroll Automático**: Navegación fluida por los créditos
+4. **Interactividad**: Lazy loading de elementos
+5. **Salida**: Animación suave de cierre
 
 ### **🎮 Interactividad:**
 
-- **Código Konami**: ↑↑↓↓←→←→BA
 - **Lazy Loading**: Contenido aparece progresivamente
-- **Hints visuales**: Instrucciones sutiles en pantalla
 - **Feedback inmediato**: Respuesta visual a cada acción
+- **Animaciones fluidas**: Transiciones suaves entre estados
 
 ---
 
@@ -158,10 +118,10 @@
 ## 🏆 **RESULTADO FINAL:**
 
 ✅ **Sistema cinematográfico completo**  
-✅ **Dual-mode**: Holográfico + Matrix  
-✅ **Easter eggs interactivos**  
+✅ **Efectos holográficos avanzados**  
 ✅ **Performance optimizada**  
 ✅ **Responsive design**  
+✅ **Animaciones fluidas**  
 ✅ **Accessibility compliant**  
 ✅ **60fps animations**  
 ✅ **Zero memory leaks**
