@@ -1843,7 +1843,7 @@ body,
   margin: 0;
   margin-top: 12px; /* 🎯 AJUSTE: Separación adicional del formulario de los textos */
   position: relative;
-  transform: translateY(20px); /* 🎯 MOVER FORMULARIO HACIA ABAJO */
+  transform: translateY(25px); /* 🎯 MOVER FORMULARIO HACIA ABAJO */
   z-index: 1; /* 🎯 Z-INDEX BAJO PARA NO INTERFERIR CON EL BOTÓN AI */
 }
 
