@@ -140,7 +140,10 @@
   background: transparent;
   border: none;
   box-shadow: none;
-  /* Animación removida para aparición inmediata */
+  /* Asegurar visibilidad inmediata */
+  transform: translateY(0) !important;
+  animation: none !important;
+  opacity: 1 !important;
 }
 
 /* 📋 SECCIÓN DE CRÉDITOS */
@@ -266,20 +269,7 @@
 }
 
 /* 🎭 ANIMACIONES */
-@keyframes credits-scroll-up {
-  0% {
-    transform: translateY(30vh); /* Empezar más cerca de la pantalla */
-  }
-  10% {
-    transform: translateY(0vh); /* Aparecer mucho antes - en 1.2s */
-  }
-  90% {
-    transform: translateY(-80vh); /* Movimiento principal */
-  }
-  100% {
-    transform: translateY(-120vh); /* Salida optimizada */
-  }
-}
+/* Animación credits-scroll-up removida - los créditos aparecen inmediatamente */
 
 @keyframes hologram-scan {
   0% {

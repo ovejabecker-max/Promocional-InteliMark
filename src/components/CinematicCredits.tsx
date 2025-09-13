@@ -43,6 +43,17 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
     useEffect(() => {
       if (!isOpen) return;
 
+      // Asegurar que el contenedor principal sea visible inmediatamente
+      if (scrollContainerRef.current) {
+        const scrollContainer = scrollContainerRef.current.querySelector(
+          ".credits-scroll"
+        ) as HTMLElement;
+        if (scrollContainer) {
+          scrollContainer.style.transform = "translateY(0)";
+          scrollContainer.style.animation = "none";
+        }
+      }
+
       // Los créditos aparecen inmediatamente sin delays
       const creditElements =
         scrollContainerRef.current?.querySelectorAll(".credit-item");
