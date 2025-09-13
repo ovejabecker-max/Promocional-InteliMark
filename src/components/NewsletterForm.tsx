@@ -41,7 +41,11 @@ export const NewsletterForm: React.FC = () => {
         increíbles descuentos y regalos que tenemos para ti.
       </p>
 
-      <form className="newsletter-form" onSubmit={handleSubmit}>
+      <form
+        className="newsletter-form"
+        onSubmit={handleSubmit}
+        style={{ marginTop: "24px" }} // 🎯 MOVER FORMULARIO HACIA ABAJO
+      >
         <input
           type="email"
           value={email}
