@@ -1809,7 +1809,7 @@ body,
   padding-bottom: 8px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   font-family: "Oxanium", sans-serif;
-  transform: translateY(-45px) !important; /* 🎯 AJUSTE AUMENTADO: Mover título más hacia arriba para mejor alineación */
+  transform: translateY(-55px) !important; /* 🎯 AJUSTE AUMENTADO: Mover título más hacia arriba para mejor alineación */
 }
 
 .footer-info h3 {
