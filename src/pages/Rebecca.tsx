@@ -7,7 +7,7 @@ import { VapiChatButton } from "../components/VapiChatButton";
 import { vapiConfig } from "../config/vapi.config";
 import FuenteCero from "../components/FuenteCero";
 import { NewsletterForm } from "../components/NewsletterForm";
-import CinematicCredits from "../components/CinematicCredits";
+import SimpleCreditsModal from "../components/SimpleCreditsModal";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
@@ -494,8 +494,8 @@ const Rebecca = memo(() => {
         </footer>
       </div>
 
-      {/* 🎬 NUEVO SISTEMA DE CRÉDITOS CINEMATOGRÁFICOS */}
-      <CinematicCredits
+      {/* 🖼️ MODAL SIMPLE DE CRÉDITOS - SOLO IMAGEN */}
+      <SimpleCreditsModal
         isOpen={uiState.showCreditsModal}
         onClose={() =>
           setUiState((prev) => ({ ...prev, showCreditsModal: false }))

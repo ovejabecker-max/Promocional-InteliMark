@@ -1,0 +1,77 @@
+/* src/components/SimpleCreditsModal.css */
+
+.simple-credits-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.simple-credits-modal {
+  position: relative;
+  max-width: 95vw;
+  max-height: 95vh;
+  width: fit-content;
+  height: fit-content;
+  cursor: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.credits-image {
+  max-width: 95vw;
+  max-height: 95vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: block;
+  margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .simple-credits-overlay {
+    padding: 10px;
+  }
+
+  .simple-credits-modal {
+    max-width: 90vw;
+    max-height: 90vh;
+  }
+
+  .credits-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .simple-credits-overlay {
+    padding: 5px;
+  }
+
+  .simple-credits-modal {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+
+  .credits-image {
+    max-width: 95vw;
+    max-height: 95vh;
+    border-radius: 4px;
+  }
+}

@@ -1597,6 +1597,7 @@ body,
    ============================================================================ */
 
 /* 🎬 OVERLAY PRINCIPAL */
+.credits-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -1621,6 +1622,7 @@ body,
 }
 
 /* 🎭 CONTENEDOR PRINCIPAL DEL MODAL */
+.credits-modal-container {
   position: relative;
   width: 90vw;
   max-width: 1000px;
@@ -1660,6 +1662,7 @@ body,
 }
 
 /* 🖼️ MARCO TECNOLÓGICO CON IMAGEN PNG */
+.credits-tech-frame {
   width: 100%;
   height: 100%;
   background-size: contain;
@@ -1682,6 +1685,7 @@ body,
 }
 
 /* 📺 ÁREA DE CONTENIDO DENTRO DEL MARCO - TRANSPARENTE */
+.credits-screen-content {
   width: 75%;
   height: 70%;
   position: relative;
@@ -1696,6 +1700,7 @@ body,
 }
 
 /* 🎯 TÍTULO DE CRÉDITOS */
+.credits-title {
   text-align: center;
   padding: 20px;
   background: linear-gradient(
@@ -1707,6 +1712,7 @@ body,
   border-bottom: 1px solid rgba(218, 128, 35, 0.3);
 }
 
+.credits-title h2 {
   color: #da8023;
   font-size: 24px;
   font-weight: bold;
@@ -1717,6 +1723,7 @@ body,
 }
 
 /* 🎬 CONTENEDOR DE SCROLL TIPO PELÍCULA */
+.credits-scroll-container {
   flex: 1;
   overflow: hidden;
   position: relative;
@@ -1730,11 +1737,14 @@ body,
 }
 
 /* 📜 SCROLL ANIMADO DE CRÉDITOS */
+.credits-scroll {
   position: absolute;
   width: 100%;
+  animation: creditsScroll 25s linear infinite;
   padding: 40px 20px;
 }
 
+@keyframes creditsScroll {
   from {
     transform: translateY(100%);
   }
@@ -1744,14 +1754,18 @@ body,
 }
 
 /* 🎭 SECCIÓN DE CRÉDITOS */
+.credit-section {
   text-align: center;
   color: #ffffff;
 }
 
 /* 👤 ITEM INDIVIDUAL DE CRÉDITO - RESTAURADO */
+.credit-item {
   margin-bottom: 40px;
+  animation: creditItemGlow 3s ease-in-out infinite alternate;
 }
 
+.credit-item h3 {
   color: #da8023;
   font-size: 18px;
   font-weight: bold;
@@ -1762,6 +1776,7 @@ body,
   font-family: "Courier New", monospace;
 }
 
+.credit-item p {
   color: #ffffff;
   font-size: 16px;
   margin: 0;
@@ -1769,6 +1784,7 @@ body,
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
+@keyframes creditItemGlow {
   0% {
     text-shadow: 0 0 10px rgba(218, 128, 35, 0.3);
   }
@@ -1778,6 +1794,7 @@ body,
 }
 
 /* 🏆 CRÉDITO FINAL ESPECIAL */
+.credit-item.final-credit {
   margin-top: 60px;
   padding: 30px;
   border: 2px solid rgba(218, 128, 35, 0.5);
@@ -1785,11 +1802,13 @@ body,
   background: rgba(218, 128, 35, 0.1);
 }
 
+.credit-item.final-credit h3 {
   font-size: 22px;
   color: #ffffff;
   margin-bottom: 15px;
 }
 
+.credit-item.final-credit p {
   color: #da8023;
   font-size: 14px;
 }
