@@ -1049,7 +1049,7 @@ body,
   align-items: flex-start;
   justify-content: flex-start;
   width: 100%;
-  max-width: 320px;
+  max-width: 410px; /* 🎯 AUMENTADO: para permitir newsletter más ancho */
 }
 
 /* ======== SECCIÓN NEWSLETTER REMOVIDA - CONSOLIDADA MÁS ABAJO ======== */
@@ -1850,6 +1850,7 @@ body,
 /* 📧 CAMPO DE INPUT DEL EMAIL */
 .newsletter-input {
   flex: 1;
+  min-width: 250px; /* 🎯 ANCHO MÍNIMO PARA ASEGURAR QUE SE VEA MÁS LARGO */
   padding: 16px 24px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50px;
