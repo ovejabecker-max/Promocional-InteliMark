@@ -1794,7 +1794,7 @@ body,
   gap: 16px;
   position: relative;
   z-index: 1; /* 🎯 Z-INDEX BAJO PARA NO INTERFERIR CON EL BOTÓN AI */
-  transform: translateY(10px);
+  transform: translateY(-10px); /* 🎯 AJUSTADO: Mover hacia arriba para alinear títulos */
   max-width: 280px; /* 🎯 ANCHO REDUCIDO para input más corto */
 }
 
