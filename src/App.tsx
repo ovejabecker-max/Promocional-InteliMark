@@ -11,7 +11,6 @@ const Rebecca = lazy(() => import("./pages/Rebecca"));
 import { AnimationProvider } from "./contexts/AnimationContext";
 import { TransitionProvider } from "./contexts/TransitionContext";
 import { useOptimizedTabAnimations } from "./hooks/useOptimizedTabAnimations";
-import { useFrameRateLimiter } from "./hooks/useFrameRateLimiter";
 import { PageLoader } from "./components/PageLoader";
 import "./App.css";
 
@@ -48,9 +47,6 @@ function ScrollToTop() {
 function AppContent() {
   // 🎯 EFECTOS UNIFICADOS DE PESTAÑA - Sistema optimizado
   useOptimizedTabAnimations();
-
-  // 🔧 LIMITADOR DE FRAME RATE - Prevenir violations
-  useFrameRateLimiter();
 
   return (
     <Router

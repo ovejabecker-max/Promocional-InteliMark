@@ -34,7 +34,6 @@ const useArchitectAura = (
     y: 0,
   });
   const animationFrameId = useRef<number>(0);
-  const lastFrameRef = useRef<number>(0); // 🔧 Usar ref para persistir entre renders
 
   useEffect(() => {
     // 🔧 OPTIMIZACIÓN: Un solo mouse listener con coordenadas relativas al CTA
@@ -62,15 +61,6 @@ const useArchitectAura = (
     window.addEventListener("mousemove", handleMouseMove);
 
     const animate = () => {
-      // 🔧 OPTIMIZACIÓN: Throttling mejorado para prevenir violations
-      const now = performance.now();
-      if (now - lastFrameRef.current < 16.67) {
-        // ~60fps max
-        animationFrameId.current = requestAnimationFrame(animate);
-        return;
-      }
-      lastFrameRef.current = now;
-
       const dx = mouse.current.x - aura.current.x;
       const dy = mouse.current.y - aura.current.y;
       aura.current.x += dx * easingFactor;
@@ -247,20 +237,7 @@ const MatrixCanvas: React.FC<{
       animationFrameId = requestAnimationFrame(draw);
     };
 
-    // 🔧 OPTIMIZACIÓN: Throttling mejorado para canvas
-    const lastCanvasFrameRef = { current: 0 };
-    const throttledDraw = () => {
-      const now = performance.now();
-      if (now - lastCanvasFrameRef.current >= 16.67) {
-        // Máximo 60fps
-        lastCanvasFrameRef.current = now;
-        draw();
-      } else {
-        animationFrameId = requestAnimationFrame(throttledDraw);
-      }
-    };
-
-    throttledDraw();
+    draw();
 
     return () => {
       cancelAnimationFrame(animationFrameId);
