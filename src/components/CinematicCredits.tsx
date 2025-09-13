@@ -39,29 +39,16 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const hologramScanRef = useRef<HTMLDivElement>(null);
 
-    // Activación automática inmediata de todos los créditos
+    // Configuración inicial limpia - sin interferencias de animación
     useEffect(() => {
       if (!isOpen) return;
 
-      // Asegurar que el contenedor principal sea visible inmediatamente
-      if (scrollContainerRef.current) {
-        const scrollContainer = scrollContainerRef.current.querySelector(
-          ".credits-scroll"
-        ) as HTMLElement;
-        if (scrollContainer) {
-          scrollContainer.style.transform = "translateY(0)";
-          scrollContainer.style.animation = "none";
-        }
-      }
-
-      // Los créditos aparecen inmediatamente sin delays
+      // Solo asegurar que los elementos sean visibles
       const creditElements =
         scrollContainerRef.current?.querySelectorAll(".credit-item");
       creditElements?.forEach((element) => {
         if (element instanceof HTMLElement) {
-          // Sin animación de entrada - aparición inmediata
           element.style.opacity = "1";
-          element.style.transform = "translateY(0)";
           element.style.filter = "blur(0)";
         }
       });
@@ -160,6 +147,11 @@ export const CinematicCredits: React.FC<CinematicCreditsProps> = memo(
               >
                 <div className="credits-scroll">
                   <div className="credit-section">
+                    {/* Título principal de créditos */}
+                    <div className="credits-main-title">
+                      <h1>CRÉDITOS</h1>
+                    </div>
+
                     {CREDITS_DATA.map((credit) => (
                       <div
                         key={credit.id}

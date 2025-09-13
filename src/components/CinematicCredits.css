@@ -107,13 +107,13 @@
   outline: none;
 }
 
-/* 🎬 CONTENEDOR DE SCROLL DE CRÉDITOS */
+/* 🎬 CONTENEDOR DE SCROLL DE CRÉDITOS - VENTANA DEL ÁREA NEGRA */
 .credits-scroll-container {
   position: relative;
   width: 100%;
   max-width: 800px;
-  height: 100vh;
-  overflow: visible;
+  height: 60vh; /* Altura del área negra visible */
+  overflow: hidden; /* IMPORTANTE: Ocultar contenido fuera del área */
   z-index: 2;
   padding: 2rem;
   margin: 0 auto;
@@ -140,24 +140,40 @@
   background: transparent;
   border: none;
   box-shadow: none;
-  /* Asegurar visibilidad inmediata */
-  transform: translateY(0) !important;
-  animation: none !important;
-  opacity: 1 !important;
+  /* Animación más rápida para aparición inmediata */
+  animation: credits-movie-scroll 12s linear infinite;
 }
 
 /* 📋 SECCIÓN DE CRÉDITOS */
 .credit-section {
   width: 100%;
-  padding: 1rem 0;
+  padding: 0; /* Eliminar padding innecesario */
   background: transparent;
   border: none;
   box-shadow: none;
+  padding-bottom: 200px; /* Espacio al final para que el último crédito desaparezca completamente */
+}
+
+/* 🎬 TÍTULO PRINCIPAL DE CRÉDITOS */
+.credits-main-title {
+  text-align: center;
+  margin-bottom: 4rem; /* Más espacio después del título */
+}
+
+.credits-main-title h1 {
+  color: var(--intelimark-orange);
+  font-size: 3rem; /* Título más grande para efecto cinematográfico */
+  font-weight: bold;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 0 0 25px rgba(218, 128, 35, 0.9);
+  font-family: "Courier New", monospace;
 }
 
 /* 👤 ITEM INDIVIDUAL DE CRÉDITO */
 .credit-item {
-  margin: 1rem 0;
+  margin: 2rem 0; /* Más espacio entre créditos para efecto cinematográfico */
   opacity: 1;
   padding: 0.75rem;
   border-radius: 6px;
@@ -166,7 +182,6 @@
   border: none;
   text-align: center;
   color: var(--intelimark-orange);
-  margin-bottom: 1rem;
   font-size: 18px;
   text-shadow: 0 0 10px rgba(218, 128, 35, 0.7);
 }
@@ -268,8 +283,19 @@
   pointer-events: none;
 }
 
-/* 🎭 ANIMACIONES */
-/* Animación credits-scroll-up removida - los créditos aparecen inmediatamente */
+/* 🎭 SECCIÓN DE ANIMACIONES - LIMPIA Y NUEVA */
+
+/* 🎬 NUEVA ANIMACIÓN DE CRÉDITOS CINEMATOGRÁFICOS */
+@keyframes credits-movie-scroll {
+  0% {
+    /* Empezar inmediatamente visible en el centro del área negra */
+    transform: translateY(0);
+  }
+  100% {
+    /* Terminar arriba, fuera del área visible */
+    transform: translateY(-100vh);
+  }
+}
 
 @keyframes hologram-scan {
   0% {
