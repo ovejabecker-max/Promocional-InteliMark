@@ -853,6 +853,7 @@ body,
   align-items: center;
   justify-content: center;
   z-index: 10;
+  overflow: hidden; /* Evitar que el texto se salga del contenedor */
 }
 
 /* 🧡 TEXTO PRINCIPAL SIMPLIFICADO */
@@ -868,21 +869,18 @@ body,
 
   /* Estado inicial - oculto por defecto */
   opacity: 0;
-  width: 0;
-  /* overflow: hidden; ❌ REMOVIDO - Redundante: el contenedor padre ya maneja overflow */
+  width: auto; /* Mantener ancho fijo */
   white-space: nowrap;
-  transition: opacity 0.2s ease, width 0.2s ease;
+  transition: opacity 0.2s ease; /* Solo transición de opacidad */
 }
 
 /* 🎯 ESTADOS DE VISIBILIDAD DEL TEXTO WHATSAPP */
 .cta-button-text-overlay.text-visible .cta-button-text-display {
   opacity: 1;
-  width: auto;
 }
 
 .cta-button-text-overlay.text-hidden .cta-button-text-display {
   opacity: 0;
-  width: 0;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
