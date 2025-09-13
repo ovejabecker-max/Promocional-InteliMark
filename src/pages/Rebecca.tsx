@@ -33,8 +33,7 @@ const Rebecca = memo(() => {
     clickProcessing: false,
     effectsActivated: {
       typewriter: false,
-      button: false,
-      matrix: false,
+      ctaSection: false, // 🎯 UNIFICADO: matrix + button container
     },
   });
 
@@ -46,6 +45,12 @@ const Rebecca = memo(() => {
   // Referencias
   const containerRef = useRef<HTMLDivElement>(null);
   const ctaSectionRef = useRef<HTMLElement>(null);
+  const ctaStateRef = useRef(ctaState); // 🎯 Ref para acceso actual del estado
+
+  // 🎯 OPTIMIZACIÓN: Mantener ref actualizada
+  useEffect(() => {
+    ctaStateRef.current = ctaState;
+  }, [ctaState]);
 
   // Controlador de scroll CTA
   useEffect(() => {
@@ -53,23 +58,28 @@ const Rebecca = memo(() => {
       (entries) => {
         entries.forEach((entry) => {
           const ratio = entry.intersectionRatio;
+          const currentState = ctaStateRef.current; // 🎯 Usar ref para estado actual
+
           setCtaState((prev) => ({ ...prev, scrollPercent: ratio }));
 
-          // Matrix Rain activation at 30%
-          if (ratio >= 0.3 && !ctaState.effectsActivated.matrix) {
+          // 🎯 OPTIMIZADO: CTA Section (Matrix + Button Container) activation at 30%
+          if (ratio >= 0.3 && !currentState.effectsActivated.ctaSection) {
             setCtaState((prev) => ({
               ...prev,
-              effectsActivated: { ...prev.effectsActivated, matrix: true },
+              effectsActivated: { ...prev.effectsActivated, ctaSection: true },
+              buttonVisible: true, // 🎯 Aparece junto con Matrix
             }));
-          } else if (ratio < 0.3 && ctaState.effectsActivated.matrix) {
+          } else if (ratio < 0.3 && currentState.effectsActivated.ctaSection) {
             setCtaState((prev) => ({
               ...prev,
-              effectsActivated: { ...prev.effectsActivated, matrix: false },
+              effectsActivated: { ...prev.effectsActivated, ctaSection: false },
+              buttonVisible: false,
+              textVisible: false,
             }));
           }
 
-          // Typewriter activation at 90%
-          if (ratio >= 0.9 && !ctaState.effectsActivated.typewriter) {
+          // Typewriter + WhatsApp text activation at 95%
+          if (ratio >= 0.95 && !currentState.effectsActivated.typewriter) {
             setCtaState((prev) => ({
               ...prev,
               effectsActivated: { ...prev.effectsActivated, typewriter: true },
@@ -84,40 +94,25 @@ const Rebecca = memo(() => {
 
             if (line1) line1.classList.add("typewriter-active");
             if (line2) line2.classList.add("typewriter-active");
-          }
 
-          // WhatsApp button activation at 95%
-          if (ratio >= 0.95 && !ctaState.effectsActivated.button) {
-            setCtaState((prev) => ({
-              ...prev,
-              effectsActivated: { ...prev.effectsActivated, button: true },
-              buttonVisible: true,
-            }));
+            // 🎯 Activar texto WhatsApp con delay de 600ms
             setTimeout(
               () => setCtaState((prev) => ({ ...prev, textVisible: true })),
               600
             );
-          } else if (ratio < 0.3 && ctaState.effectsActivated.button) {
-            setCtaState((prev) => ({
-              ...prev,
-              effectsActivated: { ...prev.effectsActivated, button: false },
-              buttonVisible: false,
-              textVisible: false,
-            }));
           }
 
           // Reset all effects at 10%
           if (
             ratio < 0.1 &&
-            (ctaState.effectsActivated.typewriter ||
-              ctaState.effectsActivated.button)
+            (currentState.effectsActivated.typewriter ||
+              currentState.effectsActivated.ctaSection)
           ) {
             setCtaState((prev) => ({
               ...prev,
               effectsActivated: {
                 typewriter: false,
-                button: false,
-                matrix: false,
+                ctaSection: false,
               },
               buttonVisible: false,
               textVisible: false,
@@ -136,20 +131,21 @@ const Rebecca = memo(() => {
         });
       },
       {
-        threshold: [0, 0.1, 0.3, 0.9, 0.95, 1],
+        threshold: [0, 0.1, 0.3, 0.95, 1], // 🎯 OPTIMIZADO: Reducido de 6 a 5 thresholds
       }
     );
 
-    if (ctaSectionRef.current) {
-      observer.observe(ctaSectionRef.current);
+    const sectionElement = ctaSectionRef.current;
+    if (sectionElement) {
+      observer.observe(sectionElement);
     }
 
     return () => {
-      if (ctaSectionRef.current) {
-        observer.unobserve(ctaSectionRef.current);
+      if (sectionElement) {
+        observer.unobserve(sectionElement);
       }
     };
-  }, [ctaState]);
+  }, []); // 🎯 OPTIMIZADO: Sin dependencias para evitar re-creación del observer
 
   // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones
   useEffect(() => {
@@ -258,11 +254,11 @@ const Rebecca = memo(() => {
         <section
           ref={ctaSectionRef}
           className={`call-to-action-section ${
-            ctaState.effectsActivated.matrix ? "active-effect" : ""
+            ctaState.effectsActivated.ctaSection ? "active-effect" : ""
           }`}
           id="cta-section"
         >
-          {ctaState.effectsActivated.matrix && (
+          {ctaState.effectsActivated.ctaSection && (
             <FuenteCero parentRef={ctaSectionRef} />
           )}
 
