@@ -867,20 +867,11 @@ body,
   position: relative;
   z-index: 3;
 
-  /* Estado inicial - oculto por defecto */
-  opacity: 0;
-  width: auto; /* Mantener ancho fijo */
-  white-space: nowrap;
-  transition: opacity 0.2s ease; /* Solo transición de opacidad */
-}
-
-/* 🎯 ESTADOS DE VISIBILIDAD DEL TEXTO WHATSAPP */
-.cta-button-text-overlay.text-visible .cta-button-text-display {
+  /* 🎯 SIEMPRE VISIBLE - Ya no se controla por clases CSS separadas */
   opacity: 1;
-}
-
-.cta-button-text-overlay.text-hidden .cta-button-text-display {
-  opacity: 0;
+  width: auto;
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

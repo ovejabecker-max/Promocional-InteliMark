@@ -29,11 +29,10 @@ const Rebecca = memo(() => {
   const [ctaState, setCtaState] = useState({
     scrollPercent: 0,
     buttonVisible: false,
-    textVisible: false,
     clickProcessing: false,
     effectsActivated: {
       typewriter: false,
-      ctaSection: false, // 🎯 UNIFICADO: matrix + button container
+      ctaSection: false, // 🎯 UNIFICADO: matrix + button container + text
     },
   });
 
@@ -62,23 +61,22 @@ const Rebecca = memo(() => {
 
           setCtaState((prev) => ({ ...prev, scrollPercent: ratio }));
 
-          // 🎯 OPTIMIZADO: CTA Section (Matrix + Button Container) activation at 30%
+          // 🎯 OPTIMIZADO: CTA Section (Matrix + Button + Text) activation at 30%
           if (ratio >= 0.3 && !currentState.effectsActivated.ctaSection) {
             setCtaState((prev) => ({
               ...prev,
               effectsActivated: { ...prev.effectsActivated, ctaSection: true },
-              buttonVisible: true, // 🎯 Aparece junto con Matrix
+              buttonVisible: true, // 🎯 Aparece junto con Matrix y texto
             }));
           } else if (ratio < 0.3 && currentState.effectsActivated.ctaSection) {
             setCtaState((prev) => ({
               ...prev,
               effectsActivated: { ...prev.effectsActivated, ctaSection: false },
               buttonVisible: false,
-              textVisible: false,
             }));
           }
 
-          // Typewriter + WhatsApp text activation at 95%
+          // Typewriter activation at 95%
           if (ratio >= 0.95 && !currentState.effectsActivated.typewriter) {
             setCtaState((prev) => ({
               ...prev,
@@ -94,12 +92,6 @@ const Rebecca = memo(() => {
 
             if (line1) line1.classList.add("typewriter-active");
             if (line2) line2.classList.add("typewriter-active");
-
-            // 🎯 Activar texto WhatsApp con delay de 600ms
-            setTimeout(
-              () => setCtaState((prev) => ({ ...prev, textVisible: true })),
-              600
-            );
           }
 
           // Reset all effects at 10%
@@ -115,7 +107,6 @@ const Rebecca = memo(() => {
                 ctaSection: false,
               },
               buttonVisible: false,
-              textVisible: false,
             }));
 
             const line1 = document.querySelector(
@@ -352,11 +343,7 @@ const Rebecca = memo(() => {
                   decoding="async"
                 />
 
-                <div
-                  className={`cta-button-text-overlay center-absolute flex-center ${
-                    ctaState.textVisible ? "text-visible" : "text-hidden"
-                  }`}
-                >
+                <div className="cta-button-text-overlay center-absolute flex-center">
                   <span className="cta-button-text-display">WHATSAPP</span>
                 </div>
               </div>
