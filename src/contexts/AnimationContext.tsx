@@ -16,14 +16,19 @@ const ANIMATION_CONFIG = {
   FAVICON_LAZY_DELAY: 3000, // ✅ NUEVO: Delay antes de pre-renderizar favicon
 } as const;
 
-// 🔧 LOGGING INTELIGENTE - Solo en desarrollo
+// 🔧 LOGGING INTELIGENTE - Solo logs esenciales
 const isDevelopment = import.meta.env.DEV;
+
+// ✅ LOGS ESENCIALES: Inicializaciones, errores, completaciones importantes
 const debugLog = (message: string, ...args: unknown[]) => {
   if (isDevelopment) {
     // eslint-disable-next-line no-console
     console.log(message, ...args);
   }
 };
+
+// 🚫 LOGS DE VERIFICACIÓN: Eliminados para mantener consola limpia
+// No se muestran logs de "ya activo", "saltando", "en progreso", etc.
 
 const TITLE_CONFIG = {
   STATIC_PART: "InteliMark || ",
@@ -84,7 +89,7 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
     img.onload = () => {
       const frames: string[] = [];
 
-      debugLog("🎨 Pre-renderizando frames del favicon...");
+      // 🚫 LOG ELIMINADO: "Pre-renderizando frames" - progreso innecesario
 
       for (let i = 0; i < ANIMATION_CONFIG.FAVICON_FRAME_COUNT; i++) {
         const progress = i / ANIMATION_CONFIG.FAVICON_FRAME_COUNT;
@@ -167,9 +172,7 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
   const startAnimations = useCallback(() => {
     // ✅ GUARD: Evitar re-inicialización si ya están activas
     if (isActive || isMobile) {
-      if (isActive) {
-        debugLog("⚡ Animaciones ya activas - saltando re-inicialización");
-      }
+      // 🚫 LOG ELIMINADO: "Animaciones ya activas" - verificación innecesaria
       return;
     }
 
@@ -200,18 +203,14 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!isMobile) {
       // ✅ GUARD: Evitar múltiples lazy loading simultáneos
       if (faviconLazyLoadingRef.current) {
-        debugLog("⚡ Lazy loading del favicon ya en progreso - saltando");
+        // 🚫 LOG ELIMINADO: "Lazy loading ya en progreso" - verificación innecesaria
         return;
       }
 
-      faviconLazyLoadingRef.current = true;
-
-      // ✅ LAZY LOADING: Esperar 3 segundos antes de pre-renderizar
+      faviconLazyLoadingRef.current = true; // ✅ LAZY LOADING: Esperar 3 segundos antes de pre-renderizar
       // Esto evita desperdiciar recursos en usuarios que salen rápido
       const lazyFaviconTimeout = setTimeout(() => {
-        debugLog(
-          "⏰ Usuario permanece >3s, iniciando pre-renderizado del favicon..."
-        );
+        // 🚫 LOG ELIMINADO: "Usuario permanece >3s" - verificación innecesaria
 
         preRenderFaviconFrames();
 

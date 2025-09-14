@@ -162,13 +162,8 @@ const Rebecca = memo(() => {
     // ✅ GUARD: Solo ejecutar si no se ha inicializado
     if (entryState.hasInitialized) return;
 
-    // ✅ LOG MOVIDO: Solo cuando realmente se inicializa
-    console.log("🎯 Rebecca initialized - Portal detection:", {
-      isFromPortalNavigation: portalDetectionData.isFromPortal,
-      portalTransitionActive: portalDetectionData.isTransitioning,
-      transitionType: portalDetectionData.transitionType,
-      hasTransitionData: !!portalDetectionData.transitionData,
-    });
+    // 🚫 LOG ELIMINADO: Portal detection - verificación innecesaria para usuario final
+    // Solo mantenemos logs esenciales en desarrollo
 
     if (portalDetectionData.isFromPortal) {
       setEntryState((prev) => ({
@@ -192,8 +187,8 @@ const Rebecca = memo(() => {
   }, [portalDetectionData, entryState.hasInitialized]);
 
   // 🎬 FUNCIÓN: Inicializar continuidad desde portal
-  const initializePortalContinuity = (transitionData: any) => {
-    console.log("🌀 Initializing portal continuity with data:", transitionData);
+  const initializePortalContinuity = (_transitionData: any) => {
+    // 🚫 LOG ELIMINADO: Portal continuity - proceso interno innecesario para usuario
 
     // ✅ SIN ANIMACIÓN: Rebecca aparece directamente
     const container = containerRef.current;
@@ -214,7 +209,7 @@ const Rebecca = memo(() => {
 
   // 🎬 FUNCIÓN: Inicializar entrada normal
   const initializeNormalEntry = () => {
-    console.log("🎯 Initializing normal entry");
+    // 🚫 LOG ELIMINADO: Normal entry - proceso interno innecesario para usuario
 
     const container = containerRef.current;
     if (container) {
