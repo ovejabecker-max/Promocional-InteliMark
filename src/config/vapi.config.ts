@@ -16,14 +16,10 @@ export const vapiConfigProd: VapiConfig = {
   },
 };
 
-// Configuración para desarrollo (mantiene fallbacks para facilitar desarrollo)
+// Configuración para desarrollo - requiere variables de entorno
 export const vapiConfigDev: VapiConfig = {
-  publicKey:
-    import.meta.env.VITE_VAPI_PUBLIC_KEY ||
-    "8da5a082-ebd4-4894-8c60-625beb1aa32c",
-  assistantId:
-    import.meta.env.VITE_VAPI_ASSISTANT_ID ||
-    "8a540a3e-e5f2-43c9-a398-723516f8bf80",
+  publicKey: import.meta.env.VITE_VAPI_PUBLIC_KEY!,
+  assistantId: import.meta.env.VITE_VAPI_ASSISTANT_ID!,
   // Configuración de reconexión más agresiva para desarrollo
   autoReconnect: {
     enabled: true,
@@ -34,16 +30,30 @@ export const vapiConfigDev: VapiConfig = {
   },
 };
 
-// Función para validar configuración de producción
-const validateProdConfig = (config: VapiConfig): boolean => {
+// Función para validar configuración
+const validateConfig = (config: VapiConfig, environment: string): boolean => {
+  const missingVars: string[] = [];
+
   if (!config.publicKey) {
-    logger.error("VITE_VAPI_PUBLIC_KEY no está definida");
-    return false;
+    missingVars.push("VITE_VAPI_PUBLIC_KEY");
   }
   if (!config.assistantId) {
-    logger.error("VITE_VAPI_ASSISTANT_ID no está definida");
+    missingVars.push("VITE_VAPI_ASSISTANT_ID");
+  }
+
+  if (missingVars.length > 0) {
+    logger.error(
+      `Variables de entorno faltantes para ${environment}: ${missingVars.join(
+        ", "
+      )}`
+    );
+    logger.error(
+      "Por favor, crea un archivo .env con las variables necesarias o configúralas en tu entorno"
+    );
     return false;
   }
+
+  logger.info(`Configuración de ${environment} validada correctamente`);
   return true;
 };
 
@@ -53,14 +63,18 @@ const selectConfig = (): VapiConfig => {
 
   if (isDevelopment) {
     logger.debug("Usando configuración de desarrollo");
+    if (!validateConfig(vapiConfigDev, "desarrollo")) {
+      throw new Error(
+        "Configuración de desarrollo inválida: faltan variables de entorno requeridas"
+      );
+    }
     return vapiConfigDev;
   } else {
     logger.info("Usando configuración de producción");
-    if (!validateProdConfig(vapiConfigProd)) {
-      logger.warn(
-        "Configuración de producción inválida, usando desarrollo como fallback"
+    if (!validateConfig(vapiConfigProd, "producción")) {
+      throw new Error(
+        "Configuración de producción inválida: faltan variables de entorno requeridas"
       );
-      return vapiConfigDev;
     }
     return vapiConfigProd;
   }

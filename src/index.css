@@ -1,9 +1,7 @@
-/* Fuente SOHO */
+/* Fuente InteliMark */
 @font-face {
-  font-family: "SohoPro";
-  src: url("./assets/fonts/SohoPro-UltraItalic.woff2") format("woff2"),
-    url("./assets/fonts/SohoPro-UltraItalic.woff") format("woff"),
-    url("./assets/fonts/SohoPro-UltraItalic.ttf") format("truetype");
+  font-family: "InteliMark";
+  src: url("./assets/fonts/InteliMark_font.woff2") format("woff2");
   font-weight: 900;
   font-style: italic;
   font-display: swap;

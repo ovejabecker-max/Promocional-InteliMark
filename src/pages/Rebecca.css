@@ -610,7 +610,7 @@ body,
   color: var(--color-white);
   margin-bottom: 30px !important;
   text-shadow: 2px 2px 8px var(--color-black-alpha-70);
-  font-family: "SohoPro", "SF Pro Display", "Helvetica Neue", sans-serif;
+  font-family: "InteliMark", "SF Pro Display", "Helvetica Neue", sans-serif;
   line-height: 0.95 !important;
   letter-spacing: 0.04em;
   white-space: nowrap !important;
@@ -645,7 +645,7 @@ body,
   display: inline-block;
   opacity: 0;
   transition: transform 0.1s linear, opacity 0.2s;
-  font-family: SohoPro, Montserrat, Arial, sans-serif;
+  font-family: InteliMark, Montserrat, Arial, sans-serif;
   font-weight: 900;
   font-style: italic;
   font-variation-settings: "wght" 900;
