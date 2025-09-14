@@ -6,6 +6,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
+import { Toaster } from "react-hot-toast";
 // 🚀 LAZY LOADING: Ambas páginas se cargan solo cuando son necesarias
 const HomePage = lazy(() => import("./pages/HomePage"));
 const Rebecca = lazy(() => import("./pages/Rebecca"));
@@ -95,6 +96,41 @@ function App() {
     <AnimationProvider>
       <TransitionProvider>
         <AppContent />
+        {/* 🔔 Sistema de notificaciones unificado */}
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          gutter={8}
+          containerClassName=""
+          containerStyle={{}}
+          toastOptions={{
+            // Configuración por defecto para todos los toasts
+            duration: 4000,
+            style: {
+              background: "#363636",
+              color: "#fff",
+              fontSize: "14px",
+              borderRadius: "8px",
+              boxShadow:
+                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+            },
+            // Configuraciones específicas por tipo
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: "#10b981",
+                secondary: "#ffffff",
+              },
+            },
+            error: {
+              duration: 6000,
+              iconTheme: {
+                primary: "#ef4444",
+                secondary: "#ffffff",
+              },
+            },
+          }}
+        />
       </TransitionProvider>
     </AnimationProvider>
   );

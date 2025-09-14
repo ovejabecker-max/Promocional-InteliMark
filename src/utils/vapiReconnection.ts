@@ -1,5 +1,5 @@
 // src/utils/vapiReconnection.ts
-import { vapiLogger } from "./vapiErrorHandler";
+import { vapiLogger } from "./logger";
 
 export interface ReconnectionConfig {
   enabled: boolean;

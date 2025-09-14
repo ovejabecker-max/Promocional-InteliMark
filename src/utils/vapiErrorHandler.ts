@@ -1,74 +1,7 @@
 // src/utils/vapiErrorHandler.ts
 import type { VapiError, VapiErrorType } from "../types/vapi";
-
-interface ErrorLogger {
-  error: (
-    message: string,
-    error?: Error,
-    context?: Record<string, unknown>
-  ) => void;
-  warn: (message: string, context?: Record<string, unknown>) => void;
-  info: (message: string, context?: Record<string, unknown>) => void;
-  debug: (message: string, context?: Record<string, unknown>) => void;
-}
-
-// Logger simple que en producción podría integrarse con servicios como Sentry
-class VapiLogger implements ErrorLogger {
-  private isDevelopment = import.meta.env.DEV;
-
-  error(message: string, error?: Error, context?: Record<string, unknown>) {
-    if (this.isDevelopment) {
-      console.error(`[VAPI ERROR] ${message}`, { error, context });
-    }
-    // En producción, aquí se enviaría a un servicio de logging
-    this.sendToLoggingService("error", message, error, context);
-  }
-
-  warn(message: string, context?: Record<string, unknown>) {
-    if (this.isDevelopment) {
-      console.warn(`[VAPI WARN] ${message}`, { context });
-    }
-    this.sendToLoggingService("warn", message, undefined, context);
-  }
-
-  info(message: string, context?: Record<string, unknown>) {
-    if (this.isDevelopment) {
-      console.info(`[VAPI INFO] ${message}`, { context });
-    }
-    this.sendToLoggingService("info", message, undefined, context);
-  }
-
-  debug(message: string, context?: Record<string, unknown>) {
-    if (this.isDevelopment) {
-      console.debug(`[VAPI DEBUG] ${message}`, { context });
-    }
-  }
-
-  private sendToLoggingService(
-    level: string,
-    _message: string,
-    _error?: Error,
-    _context?: Record<string, unknown>
-  ) {
-    // TODO: Integrar con servicio de logging como Sentry, LogRocket, etc.
-    // Por ahora, solo en desarrollo
-    if (this.isDevelopment && level === "error") {
-      // Simular envío a servicio de logging
-      // console.log(`📡 Would send to logging service:`, {
-      //   level,
-      //   message,
-      //   error: error?.message,
-      //   stack: error?.stack,
-      //   context,
-      //   timestamp: new Date().toISOString(),
-      //   userAgent: navigator.userAgent,
-      //   url: window.location.href,
-      // });
-    }
-  }
-}
-
-export const vapiLogger = new VapiLogger();
+import { vapiLogger } from "./logger";
+import { NotificationManager } from "./notifications";
 
 // Clasificador de errores para determinar el tipo y recuperabilidad
 export const classifyVapiError = (error: Error): VapiErrorType => {
@@ -170,33 +103,16 @@ export const createVapiError = (
   };
 };
 
-// Función para mostrar notificaciones al usuario (puede integrarse con toast libraries)
+// Función para mostrar notificaciones al usuario usando el sistema unificado
 export const notifyUser = (error: VapiError) => {
-  // Por ahora, usar console, pero en producción sería un toast/notification
-  if (import.meta.env.DEV) {
-    console.warn(`🔔 User Notification: ${error.message}`);
-  }
+  // Usar el sistema de notificaciones unificado
+  NotificationManager.handleVapiError(error);
 
-  // TODO: Integrar con biblioteca de notificaciones como react-hot-toast
-  // toast.error(error.message);
-
-  // Para errores no recuperables, mostrar instrucciones adicionales
-  if (!error.isRecoverable) {
-    const instructions: Record<VapiErrorType, string> = {
-      authentication_failed:
-        "Contacta al administrador para verificar la configuración.",
-      assistant_not_found: "Contacta al soporte técnico.",
-      microphone_access_denied:
-        "Ve a configuración del navegador y permite el acceso al micrófono.",
-      connection_failed: "",
-      network_error: "",
-      timeout_error: "",
-      unknown_error: "",
-    };
-
-    const instruction = instructions[error.type];
-    if (instruction && import.meta.env.DEV) {
-      console.info(`💡 Instruction: ${instruction}`);
-    }
-  }
+  // Log del error para debugging
+  vapiLogger.error("Error notificado al usuario", undefined, {
+    errorType: error.type,
+    message: error.message,
+    isRecoverable: error.isRecoverable,
+    timestamp: error.timestamp,
+  });
 };

@@ -1,15 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Vapi from "@vapi-ai/web";
 import type { VapiConfig, VapiCallStatus, VapiHookReturn } from "../types/vapi";
-import {
-  vapiLogger,
-  createVapiError,
-  notifyUser,
-} from "../utils/vapiErrorHandler";
+import { createVapiError, notifyUser } from "../utils/vapiErrorHandler";
 import {
   VapiReconnectionManager,
   DEFAULT_RECONNECTION_CONFIG,
 } from "../utils/vapiReconnection";
+import { vapiLogger } from "../utils/logger";
+import { NotificationManager } from "../utils/notifications";
 
 interface VapiMessage {
   type?: string;
@@ -51,6 +49,11 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       {
         onReconnectAttempt: (attempt, delay) => {
           vapiLogger.info(`Intento de reconexión ${attempt}`, { delay });
+          NotificationManager.vapiReconnecting(
+            attempt,
+            config.autoReconnect?.maxAttempts ||
+              DEFAULT_RECONNECTION_CONFIG.maxAttempts
+          );
           setCallStatus((prev) => ({
             ...prev,
             status: "reconnecting",
@@ -64,6 +67,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         },
         onReconnectSuccess: () => {
           vapiLogger.info("Reconexión exitosa");
+          NotificationManager.vapiConnected();
           setCallStatus((prev) => ({
             ...prev,
             error: null,
@@ -96,6 +100,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
     vapi.on("call-start", () => {
       setCallStatus((prev) => ({ ...prev, status: "active" }));
+      NotificationManager.vapiConnected();
     });
 
     vapi.on("call-end", () => {
@@ -105,6 +110,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         activeTranscript: "",
       }));
       setAssistantVolume(0); // Reset volume when call ends
+      NotificationManager.vapiDisconnected();
     });
 
     vapi.on("speech-start", () => {
@@ -231,6 +237,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
   }, [config.publicKey, config.assistantId, config.autoReconnect]);
 
   const start = useCallback(async () => {
+    let loadingToast: string | undefined;
     try {
       vapiLogger.info("Iniciando llamada Vapi", {
         assistantId: config.assistantId,
@@ -238,6 +245,9 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
       // Limpiar errores previos
       setCallStatus((prev) => ({ ...prev, status: "loading", error: null }));
+
+      // Mostrar notificación de carga
+      loadingToast = NotificationManager.vapiConnecting();
 
       const assistantId =
         config.assistantId ||
@@ -247,8 +257,18 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       // Starting call with Assistant ID
       await vapiRef.current?.start(assistantId);
 
+      // Cerrar notificación de carga si la conexión es exitosa
+      if (loadingToast) {
+        NotificationManager.dismiss(loadingToast);
+      }
+
       vapiLogger.info("Llamada Vapi iniciada exitosamente");
     } catch (error) {
+      // Cerrar notificación de carga en caso de error
+      if (loadingToast) {
+        NotificationManager.dismiss(loadingToast);
+      }
+
       const vapiError = createVapiError(
         error as Error,
         "Error al iniciar la llamada"
@@ -308,6 +328,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
   const cancelReconnection = useCallback(() => {
     if (reconnectionManagerRef.current) {
       reconnectionManagerRef.current.cancelReconnection();
+      NotificationManager.vapiReconnectionCancelled();
       setCallStatus((prev) => ({
         ...prev,
         status: prev.error ? "error" : "inactive",
