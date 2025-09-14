@@ -48,12 +48,15 @@ export const NewsletterForm: React.FC = () => {
       >
         <input
           type="email"
+          id="newsletter-email"
+          name="newsletter-email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="newsletter-input"
           placeholder="Tu correo electrónico"
           disabled={isSubmitting}
           required
+          autoComplete="email"
         />
         <button
           type="submit"
