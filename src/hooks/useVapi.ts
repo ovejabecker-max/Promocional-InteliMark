@@ -15,10 +15,10 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     status: "inactive",
     messages: [],
     activeTranscript: "",
+    isUserSpeaking: false,
   });
 
   const vapiRef = useRef<Vapi | null>(null);
-  const volumeTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     vapiRef.current = new Vapi(config.publicKey);
@@ -36,15 +36,25 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       }));
     });
 
-    vapi.on("message", (_message: VapiMessage) => {
-      // User started speaking
+    vapi.on("speech-start", () => {
+      // User started speaking - evento específico para cuando el usuario habla
+      setCallStatus((prev) => ({
+        ...prev,
+        isUserSpeaking: true,
+      }));
     });
 
     vapi.on("speech-end", () => {
-      // User stopped speaking
+      // User stopped speaking - evento específico para cuando el usuario para de hablar
+      setCallStatus((prev) => ({
+        ...prev,
+        isUserSpeaking: false,
+      }));
     });
 
+    // Consolidado: Un solo handler para todos los mensajes de Vapi
     vapi.on("message", (message: VapiMessage) => {
+      // Manejar mensajes del asistente
       if (
         message.type === "assistant-message" ||
         (message.role === "assistant" && message.content)
@@ -63,6 +73,8 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
           }));
         }
       }
+
+      // Manejar transcripciones parciales
       if (
         message.type === "transcript" &&
         message.transcriptType === "partial"
@@ -84,9 +96,6 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     return () => {
       if (vapi) {
         vapi.stop();
-        if (volumeTimeoutRef.current) {
-          clearTimeout(volumeTimeoutRef.current);
-        }
       }
     };
   }, [config.publicKey]);
@@ -126,6 +135,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
   return {
     isSessionActive: callStatus.status === "active",
     isLoading: callStatus.status === "loading",
+    isUserSpeaking: callStatus.isUserSpeaking || false,
     start,
     stop,
     toggleCall,

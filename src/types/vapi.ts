@@ -20,9 +20,10 @@ export interface VapiConfig {
 }
 
 export interface VapiCallStatus {
-  status: 'inactive' | 'loading' | 'active' | 'ended';
-  call?: any;
+  status: "inactive" | "loading" | "active" | "ended";
+  call?: unknown; // Tipo más seguro que 'any'
   activeTranscript?: string;
+  isUserSpeaking?: boolean;
   messages?: Array<{
     role: string;
     content: string;
@@ -33,9 +34,10 @@ export interface VapiCallStatus {
 export interface VapiHookReturn {
   isSessionActive: boolean;
   isLoading: boolean;
+  isUserSpeaking: boolean;
   start: () => Promise<void>;
   stop: () => void;
   toggleCall: () => void;
-  messages: VapiCallStatus['messages'];
+  messages: VapiCallStatus["messages"];
   activeTranscript: string;
 }
