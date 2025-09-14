@@ -1,6 +1,6 @@
 // src/pages/Rebecca.tsx
 
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState, memo, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { usePortalTransition } from "../contexts/TransitionContext";
 import { VapiChatButton } from "../components/VapiChatButton";
@@ -138,21 +138,39 @@ const Rebecca = memo(() => {
     };
   }, []); // 🎯 OPTIMIZADO: Sin dependencias para evitar re-creación del observer
 
+  // � OPTIMIZACIÓN: Estabilizar dependencias del portal para evitar re-ejecuciones
+  const portalDetectionData = useMemo(
+    () => ({
+      isFromPortal: location.state?.fromPortal || portalTransition.isFromPortal,
+      transitionData:
+        location.state?.transitionData || portalTransition.portalData,
+      isTransitioning: portalTransition.isTransitioning,
+      transitionType: portalTransition.transitionType,
+    }),
+    [
+      location.state?.fromPortal,
+      location.state?.transitionData,
+      portalTransition.isFromPortal,
+      portalTransition.portalData,
+      portalTransition.isTransitioning,
+      portalTransition.transitionType,
+    ]
+  );
+
   // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones
   useEffect(() => {
-    const isFromPortalNavigation =
-      location.state?.fromPortal || portalTransition.isFromPortal;
-    const transitionData =
-      location.state?.transitionData || portalTransition.portalData;
+    // ✅ GUARD: Solo ejecutar si no se ha inicializado
+    if (entryState.hasInitialized) return;
 
+    // ✅ LOG MOVIDO: Solo cuando realmente se inicializa
     console.log("🎯 Rebecca initialized - Portal detection:", {
-      isFromPortalNavigation,
-      portalTransitionActive: portalTransition.isTransitioning,
-      transitionType: portalTransition.transitionType,
-      hasTransitionData: !!transitionData,
+      isFromPortalNavigation: portalDetectionData.isFromPortal,
+      portalTransitionActive: portalDetectionData.isTransitioning,
+      transitionType: portalDetectionData.transitionType,
+      hasTransitionData: !!portalDetectionData.transitionData,
     });
 
-    if (isFromPortalNavigation && !entryState.hasInitialized) {
+    if (portalDetectionData.isFromPortal) {
       setEntryState((prev) => ({
         ...prev,
         fromPortal: true,
@@ -160,8 +178,8 @@ const Rebecca = memo(() => {
       }));
 
       // 🎬 INICIAR ANIMACIÓN DE CONTINUIDAD PORTAL
-      initializePortalContinuity(transitionData);
-    } else if (!entryState.hasInitialized) {
+      initializePortalContinuity(portalDetectionData.transitionData);
+    } else {
       setEntryState((prev) => ({
         ...prev,
         fromPortal: false,
@@ -171,7 +189,7 @@ const Rebecca = memo(() => {
       // 🎬 INICIAR ANIMACIÓN NORMAL
       initializeNormalEntry();
     }
-  }, [location.state, portalTransition, entryState.hasInitialized]);
+  }, [portalDetectionData, entryState.hasInitialized]);
 
   // 🎬 FUNCIÓN: Inicializar continuidad desde portal
   const initializePortalContinuity = (transitionData: any) => {

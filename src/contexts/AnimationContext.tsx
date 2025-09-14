@@ -64,6 +64,7 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
   const titleFramesRef = useRef<string[]>([]);
   const currentTitleIndexRef = useRef(0);
   const cleanupFunctionsRef = useRef<(() => void)[]>([]);
+  const faviconLazyLoadingRef = useRef(false); // ✅ GUARD: Evita múltiples lazy loading
 
   // 🎨 PRE-RENDERIZAR FAVICON FRAMES (UNA SOLA VEZ)
   const preRenderFaviconFrames = useCallback(() => {
@@ -164,7 +165,13 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // 🚀 INICIAR ANIMACIONES
   const startAnimations = useCallback(() => {
-    if (isActive) return; // Ya están activas
+    // ✅ GUARD: Evitar re-inicialización si ya están activas
+    if (isActive || isMobile) {
+      if (isActive) {
+        debugLog("⚡ Animaciones ya activas - saltando re-inicialización");
+      }
+      return;
+    }
 
     debugLog("🚀 Iniciando animaciones de pestaña...");
     setIsActive(true);
@@ -191,6 +198,14 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // 🎨 ANIMACIÓN DEL FAVICON (solo en desktop) - LAZY LOADING
     if (!isMobile) {
+      // ✅ GUARD: Evitar múltiples lazy loading simultáneos
+      if (faviconLazyLoadingRef.current) {
+        debugLog("⚡ Lazy loading del favicon ya en progreso - saltando");
+        return;
+      }
+
+      faviconLazyLoadingRef.current = true;
+
       // ✅ LAZY LOADING: Esperar 3 segundos antes de pre-renderizar
       // Esto evita desperdiciar recursos en usuarios que salen rápido
       const lazyFaviconTimeout = setTimeout(() => {
@@ -253,6 +268,7 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
       // ✅ CLEANUP: Cancelar timeout si animaciones se detienen antes
       cleanupFunctionsRef.current.push(() => {
         clearTimeout(lazyFaviconTimeout);
+        faviconLazyLoadingRef.current = false; // ✅ RESET: Permitir nueva inicialización
       });
     }
   }, [isActive, isMobile, preRenderFaviconFrames, preCalculateTitleFrames]);
@@ -274,6 +290,9 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
     // Reset índices
     currentFrameIndexRef.current = 0;
     currentTitleIndexRef.current = 0;
+
+    // ✅ RESET: Flag de lazy loading para permitir nueva inicialización
+    faviconLazyLoadingRef.current = false;
 
     debugLog("✅ Animaciones detenidas y recursos limpiados");
   }, [isActive]);
