@@ -20,11 +20,15 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       assistantVolume,
       error,
       hasError,
+      isReconnecting,
+      reconnectionAttempt,
+      maxReconnectionAttempts,
+      nextRetryIn,
       toggleCall,
       retry,
       clearError,
+      cancelReconnection,
     } = useVapi(config);
-
     const getButtonClass = useCallback(() => {
       const baseClass = "vapi-chat-button";
       const sizeClass = `vapi-chat-button--${size}`;
@@ -32,6 +36,8 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
 
       const statusClass = hasError
         ? "vapi-chat-button--error"
+        : isReconnecting
+        ? "vapi-chat-button--reconnecting"
         : isUserSpeaking
         ? "vapi-chat-button--listening"
         : isSessionActive
@@ -48,11 +54,15 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       isLoading,
       isUserSpeaking,
       hasError,
+      isReconnecting,
       className,
     ]);
 
     const handleClick = useCallback(() => {
-      if (hasError && error?.isRecoverable) {
+      if (isReconnecting) {
+        // Si está reconectando, cancelar reconexión
+        cancelReconnection();
+      } else if (hasError && error?.isRecoverable) {
         // Si hay un error recuperable, intentar retry
         retry();
       } else if (hasError) {
@@ -63,7 +73,15 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
         // Comportamiento normal
         toggleCall();
       }
-    }, [hasError, error, retry, clearError, toggleCall]);
+    }, [
+      isReconnecting,
+      hasError,
+      error,
+      cancelReconnection,
+      retry,
+      clearError,
+      toggleCall,
+    ]);
 
     return (
       <div
@@ -77,7 +95,9 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
           disabled={isLoading}
           className={getButtonClass()}
           aria-label={
-            hasError
+            isReconnecting
+              ? `Reconectando (${reconnectionAttempt}/${maxReconnectionAttempts}) - Próximo intento en ${nextRetryIn}s - Click para cancelar`
+              : hasError
               ? error?.isRecoverable
                 ? "Reintentar conexión"
                 : "Limpiar error e intentar de nuevo"
@@ -85,7 +105,15 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
               ? "Terminar llamada"
               : "Iniciar llamada"
           }
-          title={hasError ? error?.message : undefined}
+          title={
+            isReconnecting
+              ? `Reconectando... Intento ${reconnectionAttempt} de ${maxReconnectionAttempts}${
+                  nextRetryIn > 0 ? ` - Próximo intento en ${nextRetryIn}s` : ""
+                }`
+              : hasError
+              ? error?.message
+              : undefined
+          }
         >
           <VapiIcon />
         </button>

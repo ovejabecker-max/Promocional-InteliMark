@@ -17,6 +17,14 @@ export interface VapiConfig {
       voiceId: string;
     };
   };
+  // Configuraciones de reconexión automática
+  autoReconnect?: {
+    enabled?: boolean;
+    maxAttempts?: number;
+    initialDelay?: number;
+    maxDelay?: number;
+    backoffFactor?: number;
+  };
 }
 
 // Tipos de errores específicos de Vapi
@@ -38,11 +46,23 @@ export interface VapiError {
 }
 
 export interface VapiCallStatus {
-  status: "inactive" | "loading" | "active" | "ended" | "error";
+  status:
+    | "inactive"
+    | "loading"
+    | "active"
+    | "ended"
+    | "error"
+    | "reconnecting";
   call?: unknown; // Tipo más seguro que 'any'
   activeTranscript?: string;
   isUserSpeaking?: boolean;
   error?: VapiError | null;
+  reconnection?: {
+    isReconnecting: boolean;
+    attempt: number;
+    maxAttempts: number;
+    nextRetryIn: number; // milliseconds
+  };
   messages?: Array<{
     role: string;
     content: string;
@@ -57,11 +77,16 @@ export interface VapiHookReturn {
   assistantVolume: number;
   error: VapiError | null;
   hasError: boolean;
+  isReconnecting: boolean;
+  reconnectionAttempt: number;
+  maxReconnectionAttempts: number;
+  nextRetryIn: number;
   start: () => Promise<void>;
   stop: () => void;
   toggleCall: () => void;
   retry: () => Promise<void>;
   clearError: () => void;
+  cancelReconnection: () => void;
   messages: VapiCallStatus["messages"];
   activeTranscript: string;
 }

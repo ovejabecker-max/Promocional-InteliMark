@@ -6,6 +6,10 @@ import {
   createVapiError,
   notifyUser,
 } from "../utils/vapiErrorHandler";
+import {
+  VapiReconnectionManager,
+  DEFAULT_RECONNECTION_CONFIG,
+} from "../utils/vapiReconnection";
 
 interface VapiMessage {
   type?: string;
@@ -22,15 +26,73 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     activeTranscript: "",
     isUserSpeaking: false,
     error: null,
+    reconnection: {
+      isReconnecting: false,
+      attempt: 0,
+      maxAttempts:
+        config.autoReconnect?.maxAttempts ||
+        DEFAULT_RECONNECTION_CONFIG.maxAttempts,
+      nextRetryIn: 0,
+    },
   });
 
   const [assistantVolume, setAssistantVolume] = useState<number>(0);
 
   const vapiRef = useRef<Vapi | null>(null);
+  const reconnectionManagerRef = useRef<VapiReconnectionManager | null>(null);
 
   useEffect(() => {
     vapiRef.current = new Vapi(config.publicKey);
     const vapi = vapiRef.current;
+
+    // Inicializar manager de reconexión
+    reconnectionManagerRef.current = new VapiReconnectionManager(
+      config.autoReconnect || {},
+      {
+        onReconnectAttempt: (attempt, delay) => {
+          vapiLogger.info(`Intento de reconexión ${attempt}`, { delay });
+          setCallStatus((prev) => ({
+            ...prev,
+            status: "reconnecting",
+            reconnection: {
+              ...prev.reconnection!,
+              isReconnecting: true,
+              attempt,
+              nextRetryIn: delay,
+            },
+          }));
+        },
+        onReconnectSuccess: () => {
+          vapiLogger.info("Reconexión exitosa");
+          setCallStatus((prev) => ({
+            ...prev,
+            error: null,
+            reconnection: {
+              ...prev.reconnection!,
+              isReconnecting: false,
+              attempt: 0,
+              nextRetryIn: 0,
+            },
+          }));
+        },
+        onReconnectFailure: (finalAttempt) => {
+          vapiLogger.error(
+            `Fallo en reconexión, intento final: ${finalAttempt}`
+          );
+          if (finalAttempt) {
+            setCallStatus((prev) => ({
+              ...prev,
+              status: "error",
+              reconnection: {
+                ...prev.reconnection!,
+                isReconnecting: false,
+                nextRetryIn: 0,
+              },
+            }));
+          }
+        },
+      }
+    );
 
     vapi.on("call-start", () => {
       setCallStatus((prev) => ({ ...prev, status: "active" }));
@@ -109,7 +171,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       }
     });
 
-    vapi.on("error", (originalError: Error) => {
+    vapi.on("error", async (originalError: Error) => {
       const vapiError = createVapiError(originalError);
 
       vapiLogger.error("Vapi connection error", originalError, {
@@ -128,6 +190,37 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
       // Notificar al usuario sobre el error
       notifyUser(vapiError);
+
+      // Intentar reconexión automática si es apropiado
+      const reconnectionManager = reconnectionManagerRef.current;
+      if (
+        reconnectionManager &&
+        vapiError.isRecoverable &&
+        reconnectionManager.shouldAttemptReconnection(vapiError.type)
+      ) {
+        vapiLogger.info("Iniciando reconexión automática", {
+          errorType: vapiError.type,
+          attempt: reconnectionManager.currentAttemptNumber + 1,
+        });
+
+        try {
+          await reconnectionManager.startReconnection(async () => {
+            // Función de reconexión que reutiliza la lógica de start
+            const assistantId =
+              config.assistantId ||
+              import.meta.env.VITE_VAPI_ASSISTANT_ID ||
+              "8a540a3e-e5f2-43c9-a398-723516f8bf80";
+
+            await vapi.start(assistantId);
+          });
+        } catch (reconnectionError) {
+          vapiLogger.error(
+            "Reconexión automática fallida",
+            reconnectionError as Error
+          );
+          // El error ya se maneja en el manager, no necesitamos hacer más aquí
+        }
+      }
     });
 
     return () => {
@@ -135,7 +228,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         vapi.stop();
       }
     };
-  }, [config.publicKey, config.assistantId]);
+  }, [config.publicKey, config.assistantId, config.autoReconnect]);
 
   const start = useCallback(async () => {
     try {
@@ -211,6 +304,23 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     setCallStatus((prev) => ({ ...prev, error: null }));
   }, []);
 
+  // Función para cancelar reconexión automática
+  const cancelReconnection = useCallback(() => {
+    if (reconnectionManagerRef.current) {
+      reconnectionManagerRef.current.cancelReconnection();
+      setCallStatus((prev) => ({
+        ...prev,
+        status: prev.error ? "error" : "inactive",
+        reconnection: {
+          ...prev.reconnection!,
+          isReconnecting: false,
+          attempt: 0,
+          nextRetryIn: 0,
+        },
+      }));
+    }
+  }, []);
+
   const toggleCall = useCallback(() => {
     if (callStatus.status === "active") {
       stop();
@@ -229,11 +339,16 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     assistantVolume,
     error: callStatus.error || null,
     hasError: !!callStatus.error,
+    isReconnecting: callStatus.reconnection?.isReconnecting || false,
+    reconnectionAttempt: callStatus.reconnection?.attempt || 0,
+    maxReconnectionAttempts: callStatus.reconnection?.maxAttempts || 0,
+    nextRetryIn: callStatus.reconnection?.nextRetryIn || 0,
     start,
     stop,
     toggleCall,
     retry,
     clearError,
+    cancelReconnection,
     messages: callStatus.messages,
     activeTranscript: callStatus.activeTranscript || "",
   };

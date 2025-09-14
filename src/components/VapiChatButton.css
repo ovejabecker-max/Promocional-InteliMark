@@ -22,6 +22,139 @@
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+/* 🔄 ESTADO RECONNECTING - SISTEMA DE RECONEXIÓN AUTOMÁTICA */
+.vapi-chat-button--reconnecting {
+  animation: reconnect-pulse 1.5s ease-in-out infinite;
+  cursor: pointer; /* Indica que se puede hacer clic para cancelar */
+}
+
+.vapi-chat-button--reconnecting .vapi-button-container::before {
+  opacity: 0.9;
+  animation: reconnect-spinner 2s linear infinite;
+}
+
+.vapi-chat-button--reconnecting .vapi-button-container::after {
+  opacity: 0.7;
+  animation: reconnect-waves 3s ease-in-out infinite;
+}
+
+.vapi-chat-button--reconnecting .cls-1 {
+  fill: #ff9500;
+  animation: reconnect-breath 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 149, 0, 0.8))
+    drop-shadow(0 0 40px rgba(255, 149, 0, 0.5));
+}
+
+.vapi-chat-button--reconnecting .cls-2 {
+  fill: #ffaa00;
+  animation: reconnect-rotate 1.5s linear infinite;
+  filter: drop-shadow(0 0 15px rgba(255, 170, 0, 1))
+    drop-shadow(0 0 30px rgba(255, 149, 0, 0.8));
+}
+
+/* Hover en estado de reconexión - indica cancelación disponible */
+.vapi-chat-button--reconnecting:hover {
+  transform: scale(1.05);
+}
+
+.vapi-chat-button--reconnecting:hover .cls-1 {
+  fill: #ffaa33;
+  filter: drop-shadow(0 0 25px rgba(255, 170, 51, 1));
+}
+
+.vapi-chat-button--reconnecting:hover .cls-2 {
+  fill: #ffbb22;
+  filter: drop-shadow(0 0 20px rgba(255, 187, 34, 1));
+}
+
+/* Animaciones para estado de reconexión */
+@keyframes reconnect-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 0.95;
+  }
+}
+
+@keyframes reconnect-spinner {
+  0% {
+    background: radial-gradient(
+      circle,
+      rgba(255, 149, 0, 0.1) 0%,
+      transparent 70%
+    );
+    transform: rotate(0deg);
+  }
+  100% {
+    background: radial-gradient(
+      circle,
+      rgba(255, 149, 0, 0.2) 0%,
+      transparent 70%
+    );
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reconnect-waves {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  33% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+  66% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes reconnect-breath {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 20px rgba(255, 149, 0, 0.8))
+      drop-shadow(0 0 40px rgba(255, 149, 0, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(255, 149, 0, 1))
+      drop-shadow(0 0 60px rgba(255, 149, 0, 0.7));
+  }
+}
+
+@keyframes reconnect-rotate {
+  0% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(180deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 1;
+  }
+}
+
+/* 📱 RESPONSIVE ULTRA TECH */
+@media (max-width: 768px) {
+  .vapi-button-container {
+    width: 80px; /* 🎯 REDUCIDO: de 110px a 80px */
+    height: 80px; /* 🎯 REDUCIDO: de 110px a 80px */
+  }
+
+  .vapi-chat-button {
+    width: 70px; /* 🎯 REDUCIDO: de 100px a 70px */
+    height: 70px; /* 🎯 REDUCIDO: de 100px a 70px */
+  }
+}
+
 /* 🎯 BOTÓN PRINCIPAL - NÚCLEO TECNOLÓGICO */
 .vapi-chat-button {
   all: unset;

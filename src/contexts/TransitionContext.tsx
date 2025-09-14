@@ -6,8 +6,8 @@ import React, {
   useState,
   useCallback,
   useMemo,
-  ReactNode,
 } from "react";
+import type { ReactNode } from "react";
 
 // 🎯 TIPOS DE TRANSICIÓN
 export type TransitionType = "portal" | "normal" | "direct";

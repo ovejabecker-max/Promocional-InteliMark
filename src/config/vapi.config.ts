@@ -9,6 +9,14 @@ export const vapiConfig: VapiConfig = {
   assistantId:
     import.meta.env.VITE_VAPI_ASSISTANT_ID ||
     "8a540a3e-e5f2-43c9-a398-723516f8bf80",
+  // Configuración de reconexión automática
+  autoReconnect: {
+    enabled: true,
+    maxAttempts: 3,
+    initialDelay: 2000, // 2 segundos
+    maxDelay: 8000, // 8 segundos
+    backoffFactor: 2, // Duplicar delay en cada intento
+  },
 };
 
 // Configuración para desarrollo (usa el mismo asistente)
@@ -19,4 +27,12 @@ export const vapiConfigDev: VapiConfig = {
   assistantId:
     import.meta.env.VITE_VAPI_ASSISTANT_ID ||
     "8a540a3e-e5f2-43c9-a398-723516f8bf80",
+  // Configuración de reconexión más agresiva para desarrollo
+  autoReconnect: {
+    enabled: true,
+    maxAttempts: 5,
+    initialDelay: 1000, // 1 segundo
+    maxDelay: 5000, // 5 segundos
+    backoffFactor: 1.5, // Crecimiento más gradual
+  },
 };
