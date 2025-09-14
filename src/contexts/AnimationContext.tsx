@@ -7,12 +7,13 @@ import React, {
   useState,
 } from "react";
 
-// 🎯 CONFIGURACIÓN OPTIMIZADA
+// 🎯 CONFIGURACIÓN OPTIMIZADA CON LAZY LOADING
 const ANIMATION_CONFIG = {
   TITLE_UPDATE_INTERVAL: 600,
   FAVICON_ROTATION_DURATION: 2400, // Aumentado de 3000ms a 2400ms
   FAVICON_FRAME_COUNT: 16, // Reducido de 60 a 16 frames (75% menos memoria)
   FAVICON_SIZE: 32,
+  FAVICON_LAZY_DELAY: 3000, // ✅ NUEVO: Delay antes de pre-renderizar favicon
 } as const;
 
 // 🔧 LOGGING INTELIGENTE - Solo en desarrollo
@@ -188,58 +189,71 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
       });
     }
 
-    // 🎨 ANIMACIÓN DEL FAVICON (solo en desktop)
+    // 🎨 ANIMACIÓN DEL FAVICON (solo en desktop) - LAZY LOADING
     if (!isMobile) {
-      preRenderFaviconFrames();
+      // ✅ LAZY LOADING: Esperar 3 segundos antes de pre-renderizar
+      // Esto evita desperdiciar recursos en usuarios que salen rápido
+      const lazyFaviconTimeout = setTimeout(() => {
+        debugLog(
+          "⏰ Usuario permanece >3s, iniciando pre-renderizado del favicon..."
+        );
 
-      // Esperar a que se pre-rendericen los frames con límite de reintentos
-      const startFaviconAnimation = (retries = 0) => {
-        const MAX_RETRIES = 50; // Máximo 5 segundos de espera (50 * 100ms)
+        preRenderFaviconFrames();
 
-        if (preRenderedFramesRef.current.length === 0) {
-          if (retries < MAX_RETRIES) {
-            setTimeout(() => startFaviconAnimation(retries + 1), 100);
-          } else {
-            debugLog(
-              "⚠️ Timeout esperando frames del favicon, cancelando animación"
-            );
-          }
-          return;
-        }
+        // Esperar a que se pre-rendericen los frames con límite de reintentos
+        const startFaviconAnimation = (retries = 0) => {
+          const MAX_RETRIES = 50; // Máximo 5 segundos de espera (50 * 100ms)
 
-        const favicon = document.querySelector(
-          'link[rel~="icon"]'
-        ) as HTMLLinkElement;
-        if (!favicon) {
-          const newFavicon = document.createElement("link");
-          newFavicon.rel = "icon";
-          document.head.appendChild(newFavicon);
-        }
-
-        faviconIntervalRef.current = setInterval(() => {
-          if (!document.hidden && preRenderedFramesRef.current.length > 0) {
-            const faviconElement = document.querySelector(
-              'link[rel~="icon"]'
-            ) as HTMLLinkElement;
-            if (faviconElement) {
-              faviconElement.href =
-                preRenderedFramesRef.current[currentFrameIndexRef.current];
-              currentFrameIndexRef.current =
-                (currentFrameIndexRef.current + 1) %
-                preRenderedFramesRef.current.length;
+          if (preRenderedFramesRef.current.length === 0) {
+            if (retries < MAX_RETRIES) {
+              setTimeout(() => startFaviconAnimation(retries + 1), 100);
+            } else {
+              debugLog(
+                "⚠️ Timeout esperando frames del favicon, cancelando animación"
+              );
             }
+            return;
           }
-        }, ANIMATION_CONFIG.FAVICON_ROTATION_DURATION / ANIMATION_CONFIG.FAVICON_FRAME_COUNT); // ~150ms por frame = 6.7fps EFICIENTE
 
-        cleanupFunctionsRef.current.push(() => {
-          if (faviconIntervalRef.current) {
-            clearInterval(faviconIntervalRef.current);
-            faviconIntervalRef.current = null;
+          const favicon = document.querySelector(
+            'link[rel~="icon"]'
+          ) as HTMLLinkElement;
+          if (!favicon) {
+            const newFavicon = document.createElement("link");
+            newFavicon.rel = "icon";
+            document.head.appendChild(newFavicon);
           }
-        });
-      };
 
-      startFaviconAnimation();
+          faviconIntervalRef.current = setInterval(() => {
+            if (!document.hidden && preRenderedFramesRef.current.length > 0) {
+              const faviconElement = document.querySelector(
+                'link[rel~="icon"]'
+              ) as HTMLLinkElement;
+              if (faviconElement) {
+                faviconElement.href =
+                  preRenderedFramesRef.current[currentFrameIndexRef.current];
+                currentFrameIndexRef.current =
+                  (currentFrameIndexRef.current + 1) %
+                  preRenderedFramesRef.current.length;
+              }
+            }
+          }, ANIMATION_CONFIG.FAVICON_ROTATION_DURATION / ANIMATION_CONFIG.FAVICON_FRAME_COUNT); // ~150ms por frame = 6.7fps EFICIENTE
+
+          cleanupFunctionsRef.current.push(() => {
+            if (faviconIntervalRef.current) {
+              clearInterval(faviconIntervalRef.current);
+              faviconIntervalRef.current = null;
+            }
+          });
+        };
+
+        startFaviconAnimation();
+      }, ANIMATION_CONFIG.FAVICON_LAZY_DELAY); // ✅ DELAY: 3 segundos para verificar intención del usuario
+
+      // ✅ CLEANUP: Cancelar timeout si animaciones se detienen antes
+      cleanupFunctionsRef.current.push(() => {
+        clearTimeout(lazyFaviconTimeout);
+      });
     }
   }, [isActive, isMobile, preRenderFaviconFrames, preCalculateTitleFrames]);
 
