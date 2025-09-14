@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Vapi from "@vapi-ai/web";
 import type { VapiConfig, VapiCallStatus, VapiHookReturn } from "../types/vapi";
+import {
+  vapiLogger,
+  createVapiError,
+  notifyUser,
+} from "../utils/vapiErrorHandler";
 
 interface VapiMessage {
   type?: string;
@@ -16,6 +21,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     messages: [],
     activeTranscript: "",
     isUserSpeaking: false,
+    error: null,
   });
 
   const [assistantVolume, setAssistantVolume] = useState<number>(0);
@@ -103,12 +109,25 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       }
     });
 
-    vapi.on("error", (_error: Error) => {
+    vapi.on("error", (originalError: Error) => {
+      const vapiError = createVapiError(originalError);
+
+      vapiLogger.error("Vapi connection error", originalError, {
+        errorType: vapiError.type,
+        isRecoverable: vapiError.isRecoverable,
+        config: { assistantId: config.assistantId },
+      });
+
       setCallStatus((prev) => ({
         ...prev,
-        status: "inactive",
+        status: "error",
+        error: vapiError,
       }));
+
       setAssistantVolume(0); // Reset volume on error
+
+      // Notificar al usuario sobre el error
+      notifyUser(vapiError);
     });
 
     return () => {
@@ -116,36 +135,89 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         vapi.stop();
       }
     };
-  }, [config.publicKey]);
+  }, [config.publicKey, config.assistantId]);
 
   const start = useCallback(async () => {
     try {
-      setCallStatus((prev) => ({ ...prev, status: "loading" }));
+      vapiLogger.info("Iniciando llamada Vapi", {
+        assistantId: config.assistantId,
+      });
+
+      // Limpiar errores previos
+      setCallStatus((prev) => ({ ...prev, status: "loading", error: null }));
+
       const assistantId =
         config.assistantId ||
         import.meta.env.VITE_VAPI_ASSISTANT_ID ||
         "8a540a3e-e5f2-43c9-a398-723516f8bf80";
+
       // Starting call with Assistant ID
       await vapiRef.current?.start(assistantId);
+
+      vapiLogger.info("Llamada Vapi iniciada exitosamente");
     } catch (error) {
-      // Handle error by setting status to inactive
-      setCallStatus((prev) => ({ ...prev, status: "inactive" }));
+      const vapiError = createVapiError(
+        error as Error,
+        "Error al iniciar la llamada"
+      );
+
+      vapiLogger.error("Error al iniciar llamada Vapi", error as Error, {
+        assistantId: config.assistantId,
+        errorType: vapiError.type,
+      });
+
+      setCallStatus((prev) => ({
+        ...prev,
+        status: "error",
+        error: vapiError,
+      }));
+
+      notifyUser(vapiError);
     }
   }, [config.assistantId]);
 
   const stop = useCallback(() => {
     try {
+      vapiLogger.info("Deteniendo llamada Vapi");
       // Stopping call manually
       vapiRef.current?.stop();
     } catch (error) {
-      setCallStatus((prev) => ({ ...prev, status: "inactive" }));
+      const vapiError = createVapiError(
+        error as Error,
+        "Error al detener la llamada"
+      );
+
+      vapiLogger.error("Error al detener llamada Vapi", error as Error);
+
+      setCallStatus((prev) => ({
+        ...prev,
+        status: "error",
+        error: vapiError,
+      }));
+
+      notifyUser(vapiError);
     }
+  }, []);
+
+  // Función para reintentar la conexión
+  const retry = useCallback(async () => {
+    vapiLogger.info("Reintentando conexión Vapi");
+    await start();
+  }, [start]);
+
+  // Función para limpiar errores
+  const clearError = useCallback(() => {
+    vapiLogger.debug("Limpiando errores Vapi");
+    setCallStatus((prev) => ({ ...prev, error: null }));
   }, []);
 
   const toggleCall = useCallback(() => {
     if (callStatus.status === "active") {
       stop();
-    } else if (callStatus.status === "inactive") {
+    } else if (
+      callStatus.status === "inactive" ||
+      callStatus.status === "error"
+    ) {
       start();
     }
   }, [callStatus.status, start, stop]);
@@ -155,9 +227,13 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     isLoading: callStatus.status === "loading",
     isUserSpeaking: callStatus.isUserSpeaking || false,
     assistantVolume,
+    error: callStatus.error || null,
+    hasError: !!callStatus.error,
     start,
     stop,
     toggleCall,
+    retry,
+    clearError,
     messages: callStatus.messages,
     activeTranscript: callStatus.activeTranscript || "",
   };

@@ -154,7 +154,128 @@
   transform-origin: center;
 }
 
-/* 📱 RESPONSIVE ULTRA TECH */
+/* � ESTADO ERROR - SISTEMA DE ALERTA VISUAL */
+.vapi-chat-button--error {
+  animation: error-pulse 2s ease-in-out infinite;
+  cursor: pointer; /* Indica que se puede hacer clic para retry */
+}
+
+.vapi-chat-button--error .vapi-button-container::before {
+  opacity: 0.8;
+  animation: error-warning 1.5s ease-in-out infinite;
+}
+
+.vapi-chat-button--error .vapi-button-container::after {
+  opacity: 0.6;
+  animation: error-sparkle 2.5s linear infinite;
+}
+
+.vapi-chat-button--error .cls-1 {
+  fill: #ff4444;
+  animation: error-glow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 68, 68, 0.8))
+    drop-shadow(0 0 40px rgba(255, 68, 68, 0.5));
+}
+
+.vapi-chat-button--error .cls-2 {
+  fill: #ff0000;
+  animation: error-flash 1s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(255, 0, 0, 1))
+    drop-shadow(0 0 30px rgba(255, 68, 68, 0.8))
+    drop-shadow(0 0 60px rgba(255, 68, 68, 0.4));
+}
+
+/* Hover en estado de error - indica retry disponible */
+.vapi-chat-button--error:hover {
+  transform: scale(1.05);
+}
+
+.vapi-chat-button--error:hover .cls-1 {
+  fill: #ff6666;
+  filter: drop-shadow(0 0 25px rgba(255, 102, 102, 1));
+}
+
+.vapi-chat-button--error:hover .cls-2 {
+  fill: #ff3333;
+  filter: drop-shadow(0 0 20px rgba(255, 51, 51, 1));
+}
+
+/* Animaciones para estado de error */
+@keyframes error-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+@keyframes error-warning {
+  0%,
+  100% {
+    background: radial-gradient(
+      circle,
+      rgba(255, 68, 68, 0.1) 0%,
+      transparent 70%
+    );
+    transform: rotate(0deg);
+  }
+  50% {
+    background: radial-gradient(
+      circle,
+      rgba(255, 68, 68, 0.2) 0%,
+      transparent 70%
+    );
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes error-sparkle {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(90deg);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.9) rotate(180deg);
+  }
+  75% {
+    opacity: 0.9;
+    transform: scale(1.05) rotate(270deg);
+  }
+}
+
+@keyframes error-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 20px rgba(255, 68, 68, 0.8))
+      drop-shadow(0 0 40px rgba(255, 68, 68, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(255, 68, 68, 1))
+      drop-shadow(0 0 60px rgba(255, 68, 68, 0.7));
+  }
+}
+
+@keyframes error-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* �📱 RESPONSIVE ULTRA TECH */
 @media (max-width: 768px) {
   .vapi-button-container {
     width: 80px; /* 🎯 REDUCIDO: de 110px a 80px */
