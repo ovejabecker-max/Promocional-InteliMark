@@ -20,10 +20,10 @@ const ANIMATION_CONFIG = {
 const isDevelopment = import.meta.env.DEV;
 
 // ✅ LOGS ESENCIALES: Inicializaciones, errores, completaciones importantes
-const debugLog = (message: string, ...args: unknown[]) => {
+const debugLog = (_message: string, ..._args: unknown[]) => {
   if (isDevelopment) {
     // eslint-disable-next-line no-console
-    console.log(message, ...args);
+    // console.log(_message, ..._args);
   }
 };
 

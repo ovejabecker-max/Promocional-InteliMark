@@ -386,7 +386,7 @@ const HomePage: FC<HomePageProps> = () => {
   const mouseStoppedTimeoutRef = useRef<number | null>(null);
 
   const triggerPortalTransition = useCallback(() => {
-    console.log("🚀 triggerPortalTransition INICIADO");
+    // console.log("🚀 triggerPortalTransition INICIADO");
 
     const canvas = canvasRef.current;
     const scene = sceneRef.current;
@@ -401,7 +401,7 @@ const HomePage: FC<HomePageProps> = () => {
       return;
     }
 
-    console.log("✅ Elementos encontrados, iniciando transición...");
+    // console.log("✅ Elementos encontrados, iniciando transición...");
 
     if (transitionAudioRef.current && areSoundsEnabled) {
       transitionAudioRef.current.currentTime = 0;
@@ -440,7 +440,7 @@ const HomePage: FC<HomePageProps> = () => {
         if (import.meta.env.DEV) {
           if (progress % 25 === 0) {
             // Log cada 25%
-            console.log(`Portal transition progress: ${progress}%`);
+            // console.log(`Portal transition progress: ${progress}%`);
           }
         }
       },
@@ -543,7 +543,7 @@ const HomePage: FC<HomePageProps> = () => {
         // ✅ COMPLETAR TRANSICIÓN EN CONTEXT
         transitionContext.completeTransition();
 
-        console.log("Portal animation completed, navigating to Rebecca...");
+        // console.log("Portal animation completed, navigating to Rebecca...");
 
         // 🚀 NAVEGAR CON ESTADO DE TRANSICIÓN
         navigate(ROUTES.REBECCA, {
@@ -811,7 +811,7 @@ const HomePage: FC<HomePageProps> = () => {
             !portalTriggeredRef.current &&
             !isTransitioning
           ) {
-            console.log(`🌀 Portal trigger activado a ${progress}%`);
+            // console.log(`🌀 Portal trigger activado a ${progress}%`);
             portalTriggeredRef.current = true;
             setIsTransitioning(true);
 
@@ -843,7 +843,7 @@ const HomePage: FC<HomePageProps> = () => {
 
             // 🚫 BLOQUEAR SCROLL: Deshabilitar interacción durante transición
             document.body.style.overflow = "hidden";
-            console.log("🚫 Scroll bloqueado");
+            // console.log("🚫 Scroll bloqueado");
 
             triggerPortalTransition();
           }

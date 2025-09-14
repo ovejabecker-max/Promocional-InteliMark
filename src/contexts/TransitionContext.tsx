@@ -79,7 +79,7 @@ export const TransitionProvider: React.FC<{ children: ReactNode }> = ({
       toPage: string;
       portalData?: TransitionState["portalEffectsData"];
     }) => {
-      console.log("🌀 Transition Context: Starting transition", config);
+      // console.log("🌀 Transition Context: Starting transition", config);
 
       setState({
         isTransitioning: true,
@@ -104,7 +104,7 @@ export const TransitionProvider: React.FC<{ children: ReactNode }> = ({
 
   // ✅ COMPLETAR TRANSICIÓN
   const completeTransition = useCallback(() => {
-    console.log("✅ Transition Context: Transition completed");
+    // console.log("✅ Transition Context: Transition completed");
 
     setState((prev) => ({
       ...prev,
@@ -115,7 +115,7 @@ export const TransitionProvider: React.FC<{ children: ReactNode }> = ({
 
   // 🔄 RESET TRANSICIÓN
   const resetTransition = useCallback(() => {
-    console.log("🔄 Transition Context: Resetting transition state");
+    // console.log("🔄 Transition Context: Resetting transition state");
     setState(initialState);
   }, []);
 

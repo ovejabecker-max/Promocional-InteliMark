@@ -46,24 +46,24 @@ class VapiLogger implements ErrorLogger {
 
   private sendToLoggingService(
     level: string,
-    message: string,
-    error?: Error,
-    context?: Record<string, unknown>
+    _message: string,
+    _error?: Error,
+    _context?: Record<string, unknown>
   ) {
     // TODO: Integrar con servicio de logging como Sentry, LogRocket, etc.
     // Por ahora, solo en desarrollo
     if (this.isDevelopment && level === "error") {
       // Simular envío a servicio de logging
-      console.log(`📡 Would send to logging service:`, {
-        level,
-        message,
-        error: error?.message,
-        stack: error?.stack,
-        context,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-      });
+      // console.log(`📡 Would send to logging service:`, {
+      //   level,
+      //   message,
+      //   error: error?.message,
+      //   stack: error?.stack,
+      //   context,
+      //   timestamp: new Date().toISOString(),
+      //   userAgent: navigator.userAgent,
+      //   url: window.location.href,
+      // });
     }
   }
 }
