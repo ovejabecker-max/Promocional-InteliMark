@@ -10,10 +10,19 @@ import React, {
 // 🎯 CONFIGURACIÓN OPTIMIZADA
 const ANIMATION_CONFIG = {
   TITLE_UPDATE_INTERVAL: 600,
-  FAVICON_ROTATION_DURATION: 3000,
-  FAVICON_FRAME_COUNT: 60, // 60 frames pre-renderizados para rotación suave
+  FAVICON_ROTATION_DURATION: 2400, // Aumentado de 3000ms a 2400ms
+  FAVICON_FRAME_COUNT: 16, // Reducido de 60 a 16 frames (75% menos memoria)
   FAVICON_SIZE: 32,
 } as const;
+
+// 🔧 LOGGING INTELIGENTE - Solo en desarrollo
+const isDevelopment = import.meta.env.DEV;
+const debugLog = (message: string, ...args: unknown[]) => {
+  if (isDevelopment) {
+    // eslint-disable-next-line no-console
+    console.log(message, ...args);
+  }
+};
 
 const TITLE_CONFIG = {
   STATIC_PART: "InteliMark || ",
@@ -73,7 +82,7 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
     img.onload = () => {
       const frames: string[] = [];
 
-      console.log("🎨 Pre-renderizando frames del favicon...");
+      debugLog("🎨 Pre-renderizando frames del favicon...");
 
       for (let i = 0; i < ANIMATION_CONFIG.FAVICON_FRAME_COUNT; i++) {
         const progress = i / ANIMATION_CONFIG.FAVICON_FRAME_COUNT;
@@ -114,11 +123,18 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       preRenderedFramesRef.current = frames;
-      console.log(`✅ ${frames.length} frames del favicon pre-renderizados`);
+      debugLog(`✅ ${frames.length} frames del favicon pre-renderizados`);
+
+      // 🧹 CLEANUP: Limpiar canvas temporal para evitar memory leaks
+      canvas.width = 0;
+      canvas.height = 0;
     };
 
     img.onerror = () => {
-      console.warn("⚠️ Error al cargar favicon, intentando fallback...");
+      if (isDevelopment) {
+        // eslint-disable-next-line no-console
+        console.warn("⚠️ Error al cargar favicon, intentando fallback...");
+      }
       img.src = "/favicon.ico";
     };
 
@@ -142,14 +158,14 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     titleFramesRef.current = frames;
-    console.log(`✅ ${frames.length} frames del título pre-calculados`);
+    debugLog(`✅ ${frames.length} frames del título pre-calculados`);
   }, []);
 
   // 🚀 INICIAR ANIMACIONES
   const startAnimations = useCallback(() => {
     if (isActive) return; // Ya están activas
 
-    console.log("🚀 Iniciando animaciones de pestaña...");
+    debugLog("🚀 Iniciando animaciones de pestaña...");
     setIsActive(true);
 
     // 📝 ANIMACIÓN DEL TÍTULO (siempre activa)
@@ -176,10 +192,18 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!isMobile) {
       preRenderFaviconFrames();
 
-      // Esperar a que se pre-rendericen los frames
-      const startFaviconAnimation = () => {
+      // Esperar a que se pre-rendericen los frames con límite de reintentos
+      const startFaviconAnimation = (retries = 0) => {
+        const MAX_RETRIES = 50; // Máximo 5 segundos de espera (50 * 100ms)
+
         if (preRenderedFramesRef.current.length === 0) {
-          setTimeout(startFaviconAnimation, 100);
+          if (retries < MAX_RETRIES) {
+            setTimeout(() => startFaviconAnimation(retries + 1), 100);
+          } else {
+            debugLog(
+              "⚠️ Timeout esperando frames del favicon, cancelando animación"
+            );
+          }
           return;
         }
 
@@ -205,7 +229,7 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
                 preRenderedFramesRef.current.length;
             }
           }
-        }, ANIMATION_CONFIG.FAVICON_ROTATION_DURATION / ANIMATION_CONFIG.FAVICON_FRAME_COUNT); // ~50ms por frame = 20fps SEGURO
+        }, ANIMATION_CONFIG.FAVICON_ROTATION_DURATION / ANIMATION_CONFIG.FAVICON_FRAME_COUNT); // ~150ms por frame = 6.7fps EFICIENTE
 
         cleanupFunctionsRef.current.push(() => {
           if (faviconIntervalRef.current) {
@@ -223,7 +247,7 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
   const stopAnimations = useCallback(() => {
     if (!isActive) return;
 
-    console.log("🛑 Deteniendo animaciones de pestaña...");
+    debugLog("🛑 Deteniendo animaciones de pestaña...");
     setIsActive(false);
 
     // Ejecutar todas las funciones de limpieza
@@ -237,21 +261,14 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
     currentFrameIndexRef.current = 0;
     currentTitleIndexRef.current = 0;
 
-    console.log("✅ Animaciones detenidas y recursos limpiados");
+    debugLog("✅ Animaciones detenidas y recursos limpiados");
   }, [isActive]);
 
   // 👁️ MANEJO DE VISIBILIDAD DE PÁGINA
   useEffect(() => {
     const handleVisibilityChange = () => {
       // Las animaciones se pausan automáticamente con document.hidden checks
-      // No necesitamos detenerlas completamente
-      if (document.hidden) {
-        console.log("🔲 Pestaña oculta - animaciones pausadas automáticamente");
-      } else {
-        console.log(
-          "👁️ Pestaña visible - animaciones reanudadas automáticamente"
-        );
-      }
+      // No necesitamos detenerlas completamente ni loggear cada cambio
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange, {
