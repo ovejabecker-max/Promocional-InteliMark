@@ -35,6 +35,7 @@ export interface VapiHookReturn {
   isSessionActive: boolean;
   isLoading: boolean;
   isUserSpeaking: boolean;
+  assistantVolume: number;
   start: () => Promise<void>;
   stop: () => void;
   toggleCall: () => void;

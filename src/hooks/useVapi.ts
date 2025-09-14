@@ -18,6 +18,8 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     isUserSpeaking: false,
   });
 
+  const [assistantVolume, setAssistantVolume] = useState<number>(0);
+
   const vapiRef = useRef<Vapi | null>(null);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         status: "inactive",
         activeTranscript: "",
       }));
+      setAssistantVolume(0); // Reset volume when call ends
     });
 
     vapi.on("speech-start", () => {
@@ -72,6 +75,8 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
             ],
           }));
         }
+        // Simular volumen cuando el asistente habla
+        setAssistantVolume(0.8); // Volume spike when assistant speaks
       }
 
       // Manejar transcripciones parciales
@@ -84,6 +89,18 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
           activeTranscript: message.transcript,
         }));
       }
+
+      // Si es una transcripción final del asistente, reducir volumen gradualmente
+      if (
+        message.type === "transcript" &&
+        message.transcriptType === "final" &&
+        message.role === "assistant"
+      ) {
+        // Gradual volume fade after assistant finishes speaking
+        setTimeout(() => setAssistantVolume(0.3), 500);
+        setTimeout(() => setAssistantVolume(0.1), 1000);
+        setTimeout(() => setAssistantVolume(0), 1500);
+      }
     });
 
     vapi.on("error", (_error: Error) => {
@@ -91,6 +108,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         ...prev,
         status: "inactive",
       }));
+      setAssistantVolume(0); // Reset volume on error
     });
 
     return () => {
@@ -136,6 +154,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     isSessionActive: callStatus.status === "active",
     isLoading: callStatus.status === "loading",
     isUserSpeaking: callStatus.isUserSpeaking || false,
+    assistantVolume,
     start,
     stop,
     toggleCall,
