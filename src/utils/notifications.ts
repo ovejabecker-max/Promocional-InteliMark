@@ -213,4 +213,4 @@ export class NotificationManager {
 }
 
 // Alias para facilidad de uso
-export const notify = NotificationManager;
+// Alias eliminado por no uso

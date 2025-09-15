@@ -7,17 +7,13 @@ import "./VapiChatButton.css";
 interface VapiChatButtonProps {
   config: VapiConfig;
   className?: string;
-  size?: "small" | "medium" | "large";
-  variant?: "floating" | "center";
 }
 
 export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
-  ({ config, className = "", size = "large", variant = "center" }) => {
+  ({ config, className = "" }) => {
     const {
       isSessionActive,
       isLoading,
-      isUserSpeaking,
-      assistantVolume,
       error,
       hasError,
       isReconnecting,
@@ -33,10 +29,14 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       requestMicrophonePermission,
     } = useVapi(config);
 
+    // Convertir ms -> segundos para mostrar al usuario
+    const nextRetrySeconds = useMemo(
+      () => Math.ceil((nextRetryIn || 0) / 1000),
+      [nextRetryIn]
+    );
+
     const getButtonClass = useCallback(() => {
       const baseClass = "vapi-chat-button";
-      const sizeClass = `vapi-chat-button--${size}`;
-      const variantClass = `vapi-chat-button--${variant}`;
 
       const statusClass = hasError
         ? "vapi-chat-button--error"
@@ -46,21 +46,16 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
         ? "vapi-chat-button--permission-required"
         : isReconnecting
         ? "vapi-chat-button--reconnecting"
-        : isUserSpeaking
-        ? "vapi-chat-button--listening"
         : isSessionActive
         ? "vapi-chat-button--active"
         : isLoading
         ? "vapi-chat-button--loading"
         : "vapi-chat-button--inactive";
 
-      return `${baseClass} ${sizeClass} ${variantClass} ${statusClass} ${className}`;
+      return `${baseClass} ${statusClass} ${className}`;
     }, [
-      size,
-      variant,
       isSessionActive,
       isLoading,
-      isUserSpeaking,
       hasError,
       isReconnecting,
       needsPermission,
@@ -68,19 +63,13 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       className,
     ]);
 
-    // Memoizar el cálculo del estilo para evitar re-renders innecesarios por cambios de volumen
-    const containerStyle = useMemo(
-      () =>
-        ({
-          "--assistant-volume-level": assistantVolume,
-        } as React.CSSProperties),
-      [assistantVolume]
-    );
+    // Contenedor sin estilos dinámicos actualmente
+    const containerStyle = undefined;
 
     // Memoizar las etiquetas de accesibilidad para mejorar performance
     const ariaLabel = useMemo(() => {
       if (isReconnecting) {
-        return `Reconectando (${reconnectionAttempt}/${maxReconnectionAttempts}) - Próximo intento en ${nextRetryIn}s - Click para cancelar`;
+        return `Reconectando (${reconnectionAttempt}/${maxReconnectionAttempts}) - Próximo intento en ${nextRetrySeconds}s - Click para cancelar`;
       }
       if (needsPermission || isPermissionDenied) {
         return "Configurar permisos de micrófono";
@@ -95,7 +84,7 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       isReconnecting,
       reconnectionAttempt,
       maxReconnectionAttempts,
-      nextRetryIn,
+      nextRetrySeconds,
       needsPermission,
       isPermissionDenied,
       hasError,
@@ -106,7 +95,9 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
     const title = useMemo(() => {
       if (isReconnecting) {
         return `Reconectando... Intento ${reconnectionAttempt} de ${maxReconnectionAttempts}${
-          nextRetryIn > 0 ? ` - Próximo intento en ${nextRetryIn}s` : ""
+          nextRetrySeconds > 0
+            ? ` - Próximo intento en ${nextRetrySeconds}s`
+            : ""
         }`;
       }
       if (needsPermission) {
@@ -123,7 +114,7 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       isReconnecting,
       reconnectionAttempt,
       maxReconnectionAttempts,
-      nextRetryIn,
+      nextRetrySeconds,
       needsPermission,
       isPermissionDenied,
       hasError,
@@ -190,8 +181,8 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
                 <span className="reconnection-text">
                   {reconnectionAttempt}/{maxReconnectionAttempts}
                 </span>
-                {nextRetryIn > 0 && (
-                  <span className="retry-countdown">{nextRetryIn}s</span>
+                {nextRetrySeconds > 0 && (
+                  <span className="retry-countdown">{nextRetrySeconds}s</span>
                 )}
               </div>
             )}

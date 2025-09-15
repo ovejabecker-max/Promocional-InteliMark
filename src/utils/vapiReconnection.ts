@@ -210,13 +210,4 @@ export class VapiReconnectionManager {
 /**
  * Función helper para crear un manager de reconexión con configuración por defecto
  */
-export const createReconnectionManager = (
-  customConfig?: Partial<ReconnectionConfig>,
-  callbacks?: {
-    onReconnectAttempt?: (attempt: number, delay: number) => void;
-    onReconnectSuccess?: () => void;
-    onReconnectFailure?: (finalAttempt: boolean) => void;
-  }
-): VapiReconnectionManager => {
-  return new VapiReconnectionManager(customConfig, callbacks);
-};
+// Nota: Helper createReconnectionManager eliminado por no uso

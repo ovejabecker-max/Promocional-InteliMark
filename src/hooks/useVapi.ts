@@ -10,13 +10,7 @@ import { vapiLogger } from "../utils/logger";
 import { NotificationManager } from "../utils/notifications";
 import { useMicrophonePermission } from "./useMicrophonePermission";
 
-interface VapiMessage {
-  type?: string;
-  role?: string;
-  content?: string;
-  transcriptType?: string;
-  transcript?: string;
-}
+// Nota: eventos de mensaje no se usan actualmente para UI (transcripción/historial)
 
 export const useVapi = (config: VapiConfig): VapiHookReturn => {
   // Hook para manejo de permisos de micrófono
@@ -25,8 +19,6 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
   const [callStatus, setCallStatus] = useState<VapiCallStatus>({
     status: "inactive",
-    messages: [],
-    activeTranscript: "",
     isUserSpeaking: false,
     error: null,
     reconnection: {
@@ -39,18 +31,11 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     },
   });
 
-  const [assistantVolume, setAssistantVolume] = useState<number>(0);
-
   const vapiRef = useRef<Vapi | null>(null);
   const reconnectionManagerRef = useRef<VapiReconnectionManager | null>(null);
-  const volumeFadeTimeoutsRef = useRef<number[]>([]);
   const eventListenersSetupRef = useRef(false);
-
-  // Limpiar timers de volumen para evitar memory leaks
-  const clearVolumeTimeouts = useCallback(() => {
-    volumeFadeTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
-    volumeFadeTimeoutsRef.current = [];
-  }, []);
+  // Intervalo para countdown del próximo reintento (ms)
+  const reconnectionCountdownIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Evitar configurar múltiples listeners
@@ -79,13 +64,37 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
               ...prev.reconnection!,
               isReconnecting: true,
               attempt,
-              nextRetryIn: delay,
+              nextRetryIn: delay, // almacenado en milisegundos
             },
           }));
+
+          // Reiniciar intervalo de countdown
+          if (reconnectionCountdownIntervalRef.current) {
+            clearInterval(reconnectionCountdownIntervalRef.current);
+            reconnectionCountdownIntervalRef.current = null;
+          }
+          reconnectionCountdownIntervalRef.current = window.setInterval(() => {
+            setCallStatus((prev) => {
+              const current = prev.reconnection?.nextRetryIn || 0;
+              const next = Math.max(0, current - 1000);
+              return {
+                ...prev,
+                reconnection: {
+                  ...prev.reconnection!,
+                  nextRetryIn: next,
+                },
+              };
+            });
+          }, 1000);
         },
         onReconnectSuccess: () => {
           vapiLogger.info("Reconexión exitosa");
           NotificationManager.vapiConnected();
+          // Detener countdown
+          if (reconnectionCountdownIntervalRef.current) {
+            clearInterval(reconnectionCountdownIntervalRef.current);
+            reconnectionCountdownIntervalRef.current = null;
+          }
           setCallStatus((prev) => ({
             ...prev,
             error: null,
@@ -101,6 +110,11 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
           vapiLogger.error(
             `Fallo en reconexión, intento final: ${finalAttempt}`
           );
+          // Detener countdown
+          if (reconnectionCountdownIntervalRef.current) {
+            clearInterval(reconnectionCountdownIntervalRef.current);
+            reconnectionCountdownIntervalRef.current = null;
+          }
           if (finalAttempt) {
             setCallStatus((prev) => ({
               ...prev,
@@ -125,10 +139,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       setCallStatus((prev) => ({
         ...prev,
         status: "inactive",
-        activeTranscript: "",
       }));
-      clearVolumeTimeouts(); // Limpiar timers cuando la llamada termina
-      setAssistantVolume(0); // Reset volume when call ends
       NotificationManager.vapiDisconnected();
     });
 
@@ -148,58 +159,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       }));
     });
 
-    // Consolidado: Un solo handler para todos los mensajes de Vapi
-    vapi.on("message", (message: VapiMessage) => {
-      // Manejar mensajes del asistente
-      if (
-        message.type === "assistant-message" ||
-        (message.role === "assistant" && message.content)
-      ) {
-        if (message.role && message.content) {
-          setCallStatus((prev) => ({
-            ...prev,
-            messages: [
-              ...(prev.messages || []),
-              {
-                role: message.role as string,
-                content: message.content as string,
-                timestamp: new Date(),
-              },
-            ],
-          }));
-        }
-        // Simular volumen cuando el asistente habla
-        setAssistantVolume(0.8); // Volume spike when assistant speaks
-      }
-
-      // Manejar transcripciones parciales
-      if (
-        message.type === "transcript" &&
-        message.transcriptType === "partial"
-      ) {
-        setCallStatus((prev) => ({
-          ...prev,
-          activeTranscript: message.transcript,
-        }));
-      }
-
-      // Si es una transcripción final del asistente, reducir volumen gradualmente
-      if (
-        message.type === "transcript" &&
-        message.transcriptType === "final" &&
-        message.role === "assistant"
-      ) {
-        // Limpiar timers previos antes de crear nuevos
-        clearVolumeTimeouts();
-
-        // Gradual volume fade after assistant finishes speaking
-        const timeout1 = window.setTimeout(() => setAssistantVolume(0.3), 500);
-        const timeout2 = window.setTimeout(() => setAssistantVolume(0.1), 1000);
-        const timeout3 = window.setTimeout(() => setAssistantVolume(0), 1500);
-
-        volumeFadeTimeoutsRef.current.push(timeout1, timeout2, timeout3);
-      }
-    });
+    // Nota: handler de "message" removido porque no hay UI que consuma transcripción o historial actualmente
 
     vapi.on("error", async (originalError: Error) => {
       const vapiError = createVapiError(originalError);
@@ -215,9 +175,12 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         status: "error",
         error: vapiError,
       }));
-
-      clearVolumeTimeouts(); // Limpiar timers en caso de error
-      setAssistantVolume(0); // Reset volume on error
+      // No hay timers/volumen que limpiar
+      // Detener countdown si estuviera activo
+      if (reconnectionCountdownIntervalRef.current) {
+        clearInterval(reconnectionCountdownIntervalRef.current);
+        reconnectionCountdownIntervalRef.current = null;
+      }
 
       // Notificar al usuario sobre el error
       notifyUser(vapiError);
@@ -238,10 +201,15 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
           await reconnectionManager.startReconnection(async () => {
             // Función de reconexión que reutiliza la lógica de start
             const assistantId =
-              config.assistantId ||
-              import.meta.env.VITE_VAPI_ASSISTANT_ID ||
-              "8a540a3e-e5f2-43c9-a398-723516f8bf80";
-
+              config.assistantId ?? import.meta.env.VITE_VAPI_ASSISTANT_ID;
+            if (!assistantId) {
+              const missingError = createVapiError(
+                new Error("assistant_id_missing"),
+                "Falta configurar el asistente de voz (assistantId)."
+              );
+              notifyUser(missingError);
+              throw new Error("No assistantId configured");
+            }
             await vapi.start(assistantId);
           });
         } catch (reconnectionError) {
@@ -259,7 +227,6 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
     return () => {
       eventListenersSetupRef.current = false;
-      clearVolumeTimeouts(); // Limpiar timers al desmontar
       if (vapi) {
         vapi.stop();
       }
@@ -267,13 +234,13 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       if (reconnectionManagerRef.current) {
         reconnectionManagerRef.current.cancelReconnection();
       }
+      // Limpiar intervalo de countdown si existe
+      if (reconnectionCountdownIntervalRef.current) {
+        clearInterval(reconnectionCountdownIntervalRef.current);
+        reconnectionCountdownIntervalRef.current = null;
+      }
     };
-  }, [
-    config.publicKey,
-    config.assistantId,
-    config.autoReconnect,
-    clearVolumeTimeouts,
-  ]);
+  }, [config.publicKey, config.assistantId, config.autoReconnect]);
 
   const start = useCallback(async () => {
     let loadingToast: string | undefined;
@@ -301,9 +268,24 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       loadingToast = NotificationManager.vapiConnecting();
 
       const assistantId =
-        config.assistantId ||
-        import.meta.env.VITE_VAPI_ASSISTANT_ID ||
-        "8a540a3e-e5f2-43c9-a398-723516f8bf80";
+        config.assistantId ?? import.meta.env.VITE_VAPI_ASSISTANT_ID;
+      if (!assistantId) {
+        // Cerrar loading toast si se abrió
+        if (loadingToast) {
+          NotificationManager.dismiss(loadingToast);
+        }
+        const vapiError = createVapiError(
+          new Error("assistant_id_missing"),
+          "Falta configurar el asistente de voz (assistantId)."
+        );
+        setCallStatus((prev) => ({
+          ...prev,
+          status: "error",
+          error: vapiError,
+        }));
+        notifyUser(vapiError);
+        return;
+      }
 
       // Starting call with Assistant ID
       await vapiRef.current?.start(assistantId);
@@ -390,6 +372,11 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
           nextRetryIn: 0,
         },
       }));
+      // Detener countdown
+      if (reconnectionCountdownIntervalRef.current) {
+        clearInterval(reconnectionCountdownIntervalRef.current);
+        reconnectionCountdownIntervalRef.current = null;
+      }
     }
   }, []);
 
@@ -408,7 +395,6 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     isSessionActive: callStatus.status === "active",
     isLoading: callStatus.status === "loading",
     isUserSpeaking: callStatus.isUserSpeaking || false,
-    assistantVolume,
     error: callStatus.error || null,
     hasError: !!callStatus.error,
     isReconnecting: callStatus.reconnection?.isReconnecting || false,
@@ -421,8 +407,6 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     retry,
     clearError,
     cancelReconnection,
-    messages: callStatus.messages,
-    activeTranscript: callStatus.activeTranscript || "",
     // Nuevas propiedades para manejo de permisos
     needsPermission:
       callStatus.status === "permission-required" || !canUseMicrophone,

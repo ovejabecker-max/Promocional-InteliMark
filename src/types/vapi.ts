@@ -76,7 +76,6 @@ export interface VapiHookReturn {
   isSessionActive: boolean;
   isLoading: boolean;
   isUserSpeaking: boolean;
-  assistantVolume: number;
   error: VapiError | null;
   hasError: boolean;
   isReconnecting: boolean;
@@ -89,8 +88,6 @@ export interface VapiHookReturn {
   retry: () => Promise<void>;
   clearError: () => void;
   cancelReconnection: () => void;
-  messages: VapiCallStatus["messages"];
-  activeTranscript: string;
   // Nuevos campos para manejo de permisos
   needsPermission: boolean;
   isPermissionDenied: boolean;

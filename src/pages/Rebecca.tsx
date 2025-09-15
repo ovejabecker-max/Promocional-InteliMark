@@ -187,7 +187,7 @@ const Rebecca = memo(() => {
   }, [portalDetectionData, entryState.hasInitialized]);
 
   // 🎬 FUNCIÓN: Inicializar continuidad desde portal
-  const initializePortalContinuity = (_transitionData: any) => {
+  const initializePortalContinuity = (_transitionData: unknown) => {
     // 🚫 LOG ELIMINADO: Portal continuity - proceso interno innecesario para usuario
 
     // ✅ SIN ANIMACIÓN: Rebecca aparece directamente
@@ -244,7 +244,7 @@ const Rebecca = memo(() => {
             {/* Opcional: Texto diferente según el origen */}
           </h1>
           <div className="vapi-content center-absolute">
-            <VapiChatButton config={vapiConfig} variant="center" size="large" />
+            <VapiChatButton config={vapiConfig} />
           </div>
           <div className="portal-effects center-absolute">
             <div className="glow-ring"></div>
