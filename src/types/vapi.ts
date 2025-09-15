@@ -92,4 +92,7 @@ export interface VapiHookReturn {
   needsPermission: boolean;
   isPermissionDenied: boolean;
   requestMicrophonePermission: () => Promise<boolean>;
+  // Campos para transcripción y mensajes
+  messages: Array<{ role: string; content: string; timestamp: Date }>;
+  activeTranscript: string;
 }

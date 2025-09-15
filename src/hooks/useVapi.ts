@@ -10,8 +10,6 @@ import { vapiLogger } from "../utils/logger";
 import { NotificationManager } from "../utils/notifications";
 import { useMicrophonePermission } from "./useMicrophonePermission";
 
-// Nota: eventos de mensaje no se usan actualmente para UI (transcripción/historial)
-
 export const useVapi = (config: VapiConfig): VapiHookReturn => {
   // Hook para manejo de permisos de micrófono
   const { permissionState, requestPermission, canUseMicrophone } =
@@ -29,6 +27,8 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         DEFAULT_RECONNECTION_CONFIG.maxAttempts,
       nextRetryIn: 0,
     },
+    messages: [],
+    activeTranscript: "",
   });
 
   const vapiRef = useRef<Vapi | null>(null);
@@ -414,5 +414,8 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       callStatus.status === "permission-denied" ||
       permissionState.status === "denied",
     requestMicrophonePermission: requestPermission,
+    // Propiedades de transcripción y mensajes
+    messages: callStatus.messages || [],
+    activeTranscript: callStatus.activeTranscript || "",
   };
 };

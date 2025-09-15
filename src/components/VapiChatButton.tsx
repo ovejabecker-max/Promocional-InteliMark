@@ -27,6 +27,8 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       needsPermission,
       isPermissionDenied,
       requestMicrophonePermission,
+      messages,
+      activeTranscript,
     } = useVapi(config);
 
     // Convertir ms -> segundos para mostrar al usuario
@@ -187,6 +189,14 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
               </div>
             )}
           </button>
+        </div>
+        <div className="transcript-container">
+          <p>{activeTranscript}</p>
+          <ul>
+            {messages.map((msg, index) => (
+              <li key={index}>{`${msg.role}: ${msg.content}`}</li>
+            ))}
+          </ul>
         </div>
       </>
     );
