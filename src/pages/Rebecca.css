@@ -1407,8 +1407,8 @@ body,
   padding-top: 0; /* Asegurar que empiece al mismo nivel */
   padding-left: 20px; /* 🎯 AGREGADO: espacio para el resplandor del lado izquierdo */
   transform: translateY(
-    10px
-  ); /* 🎯 MOVER 10px HACIA ABAJO (40px más abajo que la posición original) */
+    -30px
+  ); /* 🎯 MOVER 30px HACIA ARRIBA para alinear con el título del newsletter */
 }
 
 /* 🎯 ADAPTACIÓN DINÁMICA CUANDO EL BOTÓN MATRIX SE EXPANDE */
