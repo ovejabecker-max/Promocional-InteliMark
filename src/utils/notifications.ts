@@ -27,13 +27,13 @@ export class NotificationManager {
       duration: config.duration,
       position: config.position,
       style: {
-        background: "#10b981",
+        background: "#d36600e3",
         color: "white",
         ...config.style,
       },
       iconTheme: {
-        primary: "#ffffff",
-        secondary: "#10b981",
+        primary: "#ff5e00ff",
+        secondary: "#f86916e3",
       },
     });
   }
@@ -47,13 +47,13 @@ export class NotificationManager {
       duration: config.duration,
       position: config.position,
       style: {
-        background: "#ef4444",
+        background: "#fc7318ff",
         color: "white",
         ...config.style,
       },
       iconTheme: {
         primary: "#ffffff",
-        secondary: "#ef4444",
+        secondary: "#ff7b00ff",
       },
     });
   }
@@ -68,7 +68,7 @@ export class NotificationManager {
       position: config.position,
       icon: "⚠️",
       style: {
-        background: "#f59e0b",
+        background: "#f57c0bff",
         color: "white",
         ...config.style,
       },
@@ -85,7 +85,7 @@ export class NotificationManager {
       position: config.position,
       icon: "ℹ️",
       style: {
-        background: "#3b82f6",
+        background: "#fc6500d5",
         color: "white",
         ...config.style,
       },
@@ -100,7 +100,7 @@ export class NotificationManager {
     return toast.loading(message, {
       position: config.position,
       style: {
-        background: "#6b7280",
+        background: "#da771aff",
         color: "white",
         ...config.style,
       },
