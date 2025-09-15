@@ -56,9 +56,10 @@ export const useMicrophonePermission = (): UseMicrophonePermissionReturn => {
         }
 
         // Usar la API de Permissions si está disponible
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const permissionStatus = await navigator.permissions.query({
-          name: "microphone" as any,
-        });
+          name: "microphone",
+        } as any);
 
         switch (permissionStatus.state) {
           case "granted":
@@ -223,10 +224,12 @@ export const useMicrophonePermission = (): UseMicrophonePermissionReturn => {
   // Escuchar cambios en los permisos (si el navegador lo soporta)
   useEffect(() => {
     let permissionStatus: PermissionStatus | null = null;
+    let cleanup: (() => void) | null = null;
 
     const setupPermissionListener = async () => {
       try {
         if (checkBrowserSupport()) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           permissionStatus = await navigator.permissions.query({
             name: "microphone" as any,
           });
@@ -237,7 +240,7 @@ export const useMicrophonePermission = (): UseMicrophonePermissionReturn => {
 
           permissionStatus.addEventListener("change", handlePermissionChange);
 
-          return () => {
+          cleanup = () => {
             permissionStatus?.removeEventListener(
               "change",
               handlePermissionChange
@@ -254,9 +257,7 @@ export const useMicrophonePermission = (): UseMicrophonePermissionReturn => {
     setupPermissionListener();
 
     return () => {
-      if (permissionStatus) {
-        // Cleanup será manejado por la función retornada de setupPermissionListener
-      }
+      cleanup?.();
     };
   }, [refreshPermissionStatus, checkBrowserSupport]);
 

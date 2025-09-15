@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useState, useMemo } from "react";
 import { useVapi } from "../hooks/useVapi";
 import type { VapiConfig } from "../types/vapi";
 import VapiIcon from "./VapiIcon";
@@ -90,6 +90,68 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       return "prompt";
     }, [isPermissionDenied, needsPermission]);
 
+    // Memoizar el cálculo del estilo para evitar re-renders innecesarios por cambios de volumen
+    const containerStyle = useMemo(
+      () =>
+        ({
+          "--assistant-volume-level": assistantVolume,
+        } as React.CSSProperties),
+      [assistantVolume]
+    );
+
+    // Memoizar las etiquetas de accesibilidad para mejorar performance
+    const ariaLabel = useMemo(() => {
+      if (isReconnecting) {
+        return `Reconectando (${reconnectionAttempt}/${maxReconnectionAttempts}) - Próximo intento en ${nextRetryIn}s - Click para cancelar`;
+      }
+      if (needsPermission || isPermissionDenied) {
+        return "Configurar permisos de micrófono";
+      }
+      if (hasError) {
+        return error?.isRecoverable
+          ? "Reintentar conexión"
+          : "Limpiar error e intentar de nuevo";
+      }
+      return isSessionActive ? "Terminar llamada" : "Iniciar llamada";
+    }, [
+      isReconnecting,
+      reconnectionAttempt,
+      maxReconnectionAttempts,
+      nextRetryIn,
+      needsPermission,
+      isPermissionDenied,
+      hasError,
+      error,
+      isSessionActive,
+    ]);
+
+    const title = useMemo(() => {
+      if (isReconnecting) {
+        return `Reconectando... Intento ${reconnectionAttempt} de ${maxReconnectionAttempts}${
+          nextRetryIn > 0 ? ` - Próximo intento en ${nextRetryIn}s` : ""
+        }`;
+      }
+      if (needsPermission) {
+        return "Se requieren permisos de micrófono para usar el chat de voz";
+      }
+      if (isPermissionDenied) {
+        return "Permisos de micrófono denegados - Click para configurar";
+      }
+      if (hasError) {
+        return error?.message;
+      }
+      return undefined;
+    }, [
+      isReconnecting,
+      reconnectionAttempt,
+      maxReconnectionAttempts,
+      nextRetryIn,
+      needsPermission,
+      isPermissionDenied,
+      hasError,
+      error,
+    ]);
+
     const handleClick = useCallback(() => {
       if (isReconnecting) {
         // Si está reconectando, cancelar reconexión
@@ -122,48 +184,16 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
     ]);
 
     const getAriaLabel = () => {
-      if (isReconnecting) {
-        return `Reconectando (${reconnectionAttempt}/${maxReconnectionAttempts}) - Próximo intento en ${nextRetryIn}s - Click para cancelar`;
-      }
-      if (needsPermission || isPermissionDenied) {
-        return "Configurar permisos de micrófono";
-      }
-      if (hasError) {
-        return error?.isRecoverable
-          ? "Reintentar conexión"
-          : "Limpiar error e intentar de nuevo";
-      }
-      return isSessionActive ? "Terminar llamada" : "Iniciar llamada";
+      return ariaLabel;
     };
 
     const getTitle = () => {
-      if (isReconnecting) {
-        return `Reconectando... Intento ${reconnectionAttempt} de ${maxReconnectionAttempts}${
-          nextRetryIn > 0 ? ` - Próximo intento en ${nextRetryIn}s` : ""
-        }`;
-      }
-      if (needsPermission) {
-        return "Se requieren permisos de micrófono para usar el chat de voz";
-      }
-      if (isPermissionDenied) {
-        return "Permisos de micrófono denegados - Click para configurar";
-      }
-      if (hasError) {
-        return error?.message;
-      }
-      return undefined;
+      return title;
     };
 
     return (
       <>
-        <div
-          className="vapi-button-container"
-          style={
-            {
-              "--assistant-volume-level": assistantVolume,
-            } as React.CSSProperties
-          }
-        >
+        <div className="vapi-button-container" style={containerStyle}>
           <button
             onClick={handleClick}
             disabled={isLoading}
@@ -172,6 +202,16 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
             title={getTitle()}
           >
             <VapiIcon />
+            {isReconnecting && (
+              <div className="reconnection-indicator">
+                <span className="reconnection-text">
+                  {reconnectionAttempt}/{maxReconnectionAttempts}
+                </span>
+                {nextRetryIn > 0 && (
+                  <span className="retry-countdown">{nextRetryIn}s</span>
+                )}
+              </div>
+            )}
           </button>
         </div>
 

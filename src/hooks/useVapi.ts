@@ -43,8 +43,21 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
   const vapiRef = useRef<Vapi | null>(null);
   const reconnectionManagerRef = useRef<VapiReconnectionManager | null>(null);
+  const volumeFadeTimeoutsRef = useRef<number[]>([]);
+  const eventListenersSetupRef = useRef(false);
+
+  // Limpiar timers de volumen para evitar memory leaks
+  const clearVolumeTimeouts = useCallback(() => {
+    volumeFadeTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
+    volumeFadeTimeoutsRef.current = [];
+  }, []);
 
   useEffect(() => {
+    // Evitar configurar múltiples listeners
+    if (eventListenersSetupRef.current) {
+      return;
+    }
+
     vapiRef.current = new Vapi(config.publicKey);
     const vapi = vapiRef.current;
 
@@ -114,6 +127,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         status: "inactive",
         activeTranscript: "",
       }));
+      clearVolumeTimeouts(); // Limpiar timers cuando la llamada termina
       setAssistantVolume(0); // Reset volume when call ends
       NotificationManager.vapiDisconnected();
     });
@@ -175,10 +189,15 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         message.transcriptType === "final" &&
         message.role === "assistant"
       ) {
+        // Limpiar timers previos antes de crear nuevos
+        clearVolumeTimeouts();
+
         // Gradual volume fade after assistant finishes speaking
-        setTimeout(() => setAssistantVolume(0.3), 500);
-        setTimeout(() => setAssistantVolume(0.1), 1000);
-        setTimeout(() => setAssistantVolume(0), 1500);
+        const timeout1 = window.setTimeout(() => setAssistantVolume(0.3), 500);
+        const timeout2 = window.setTimeout(() => setAssistantVolume(0.1), 1000);
+        const timeout3 = window.setTimeout(() => setAssistantVolume(0), 1500);
+
+        volumeFadeTimeoutsRef.current.push(timeout1, timeout2, timeout3);
       }
     });
 
@@ -197,6 +216,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         error: vapiError,
       }));
 
+      clearVolumeTimeouts(); // Limpiar timers en caso de error
       setAssistantVolume(0); // Reset volume on error
 
       // Notificar al usuario sobre el error
@@ -234,12 +254,26 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       }
     });
 
+    // Marcar que los listeners están configurados
+    eventListenersSetupRef.current = true;
+
     return () => {
+      eventListenersSetupRef.current = false;
+      clearVolumeTimeouts(); // Limpiar timers al desmontar
       if (vapi) {
         vapi.stop();
       }
+      // Cancelar reconexión si está en progreso
+      if (reconnectionManagerRef.current) {
+        reconnectionManagerRef.current.cancelReconnection();
+      }
     };
-  }, [config.publicKey, config.assistantId, config.autoReconnect]);
+  }, [
+    config.publicKey,
+    config.assistantId,
+    config.autoReconnect,
+    clearVolumeTimeouts,
+  ]);
 
   const start = useCallback(async () => {
     let loadingToast: string | undefined;
