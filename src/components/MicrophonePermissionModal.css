@@ -1,0 +1,205 @@
+/* Modal de permisos de micrófono */
+.permission-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+.permission-modal {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.1);
+  max-width: 480px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideInModal 0.3s ease-out;
+  position: relative;
+}
+
+.permission-modal-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.permission-modal-header h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.permission-modal-body {
+  padding: 24px;
+}
+
+.permission-message {
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.permission-benefits {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.permission-benefits h4 {
+  color: #00ffff;
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.permission-benefits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.permission-benefits li {
+  color: #c0c0c0;
+  padding: 6px 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.permission-instructions {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.permission-instructions p {
+  color: #ffc107;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.permission-instructions ol {
+  color: #e0e0e0;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.permission-instructions li {
+  padding: 4px 0;
+  line-height: 1.5;
+}
+
+.permission-modal-footer {
+  padding: 16px 24px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.permission-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.permission-btn-primary {
+  background: linear-gradient(135deg, #00ffff 0%, #0080ff 100%);
+  color: #000000;
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
+}
+
+.permission-btn-primary:hover {
+  background: linear-gradient(135deg, #00e6e6 0%, #0073e6 100%);
+  box-shadow: 0 6px 16px rgba(0, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.permission-btn-primary:active {
+  transform: translateY(0);
+}
+
+.permission-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.permission-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Animaciones */
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .permission-modal {
+    margin: 20px;
+    width: calc(100% - 40px);
+  }
+
+  .permission-modal-header {
+    padding: 20px 20px 12px;
+  }
+
+  .permission-modal-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .permission-modal-body {
+    padding: 20px;
+  }
+
+  .permission-message {
+    font-size: 1rem;
+  }
+
+  .permission-modal-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .permission-btn {
+    width: 100%;
+  }
+}

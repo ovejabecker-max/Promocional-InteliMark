@@ -8,6 +8,7 @@ import {
 } from "../utils/vapiReconnection";
 import { vapiLogger } from "../utils/logger";
 import { NotificationManager } from "../utils/notifications";
+import { useMicrophonePermission } from "./useMicrophonePermission";
 
 interface VapiMessage {
   type?: string;
@@ -18,6 +19,10 @@ interface VapiMessage {
 }
 
 export const useVapi = (config: VapiConfig): VapiHookReturn => {
+  // Hook para manejo de permisos de micrófono
+  const { permissionState, requestPermission, canUseMicrophone } =
+    useMicrophonePermission();
+
   const [callStatus, setCallStatus] = useState<VapiCallStatus>({
     status: "inactive",
     messages: [],
@@ -243,6 +248,18 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
         assistantId: config.assistantId,
       });
 
+      // Verificar permisos de micrófono antes de iniciar
+      if (!canUseMicrophone) {
+        vapiLogger.warn("Permisos de micrófono no disponibles, solicitando...");
+        setCallStatus((prev) => ({ ...prev, status: "permission-required" }));
+
+        const hasPermission = await requestPermission();
+        if (!hasPermission) {
+          setCallStatus((prev) => ({ ...prev, status: "permission-denied" }));
+          return;
+        }
+      }
+
       // Limpiar errores previos
       setCallStatus((prev) => ({ ...prev, status: "loading", error: null }));
 
@@ -287,7 +304,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
       notifyUser(vapiError);
     }
-  }, [config.assistantId]);
+  }, [config.assistantId, canUseMicrophone, requestPermission]);
 
   const stop = useCallback(() => {
     try {
@@ -372,5 +389,12 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     cancelReconnection,
     messages: callStatus.messages,
     activeTranscript: callStatus.activeTranscript || "",
+    // Nuevas propiedades para manejo de permisos
+    needsPermission:
+      callStatus.status === "permission-required" || !canUseMicrophone,
+    isPermissionDenied:
+      callStatus.status === "permission-denied" ||
+      permissionState.status === "denied",
+    requestMicrophonePermission: requestPermission,
   };
 };

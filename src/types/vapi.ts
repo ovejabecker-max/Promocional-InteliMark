@@ -52,7 +52,9 @@ export interface VapiCallStatus {
     | "active"
     | "ended"
     | "error"
-    | "reconnecting";
+    | "reconnecting"
+    | "permission-required"
+    | "permission-denied";
   call?: unknown; // Tipo más seguro que 'any'
   activeTranscript?: string;
   isUserSpeaking?: boolean;
@@ -89,4 +91,8 @@ export interface VapiHookReturn {
   cancelReconnection: () => void;
   messages: VapiCallStatus["messages"];
   activeTranscript: string;
+  // Nuevos campos para manejo de permisos
+  needsPermission: boolean;
+  isPermissionDenied: boolean;
+  requestMicrophonePermission: () => Promise<boolean>;
 }

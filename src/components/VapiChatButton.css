@@ -458,3 +458,154 @@
     filter: drop-shadow(0 0 3px rgba(0, 0, 0, 1));
   }
 }
+
+/* 🎤 ESTADOS DE PERMISOS DE MICRÓFONO */
+
+/* 🔔 ESTADO PERMISSION-REQUIRED - Se necesitan permisos */
+.vapi-chat-button--permission-required {
+  animation: permission-request-pulse 2s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.vapi-chat-button--permission-required .vapi-button-container::before {
+  opacity: 0.8;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 193, 7, 0.6) 0deg,
+    rgba(255, 152, 0, 0.6) 90deg,
+    rgba(255, 87, 34, 0.6) 180deg,
+    rgba(255, 193, 7, 0.6) 270deg,
+    rgba(255, 193, 7, 0.6) 360deg
+  );
+  animation: permission-spinner 3s linear infinite;
+}
+
+.vapi-chat-button--permission-required .cls-1 {
+  fill: #ffc107;
+  animation: permission-glow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(255, 193, 7, 0.8))
+    drop-shadow(0 0 30px rgba(255, 193, 7, 0.6));
+}
+
+.vapi-chat-button--permission-required .cls-2 {
+  fill: #ffeb3b;
+  opacity: 0.9;
+}
+
+/* 🚫 ESTADO PERMISSION-DENIED - Permisos denegados */
+.vapi-chat-button--permission-denied {
+  animation: permission-denied-shake 1s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.vapi-chat-button--permission-denied .vapi-button-container::before {
+  opacity: 0.9;
+  background: conic-gradient(
+    from 0deg,
+    rgba(244, 67, 54, 0.7) 0deg,
+    rgba(255, 87, 34, 0.7) 120deg,
+    rgba(244, 67, 54, 0.7) 240deg,
+    rgba(244, 67, 54, 0.7) 360deg
+  );
+  animation: denied-warning-pulse 1.5s ease-in-out infinite;
+}
+
+.vapi-chat-button--permission-denied .cls-1 {
+  fill: #f44336;
+  animation: denied-urgent-flash 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(244, 67, 54, 0.9))
+    drop-shadow(0 0 40px rgba(244, 67, 54, 0.6));
+}
+
+.vapi-chat-button--permission-denied .cls-2 {
+  fill: #ff5722;
+  opacity: 0.8;
+  animation: denied-secondary-pulse 2s ease-in-out infinite;
+}
+
+/* ANIMACIONES PARA PERMISOS */
+
+@keyframes permission-request-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes permission-spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes permission-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes permission-denied-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-2px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes denied-warning-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes denied-urgent-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  75% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes denied-secondary-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
