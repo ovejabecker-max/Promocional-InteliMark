@@ -1,36 +1,32 @@
 import React, { memo, useCallback, useMemo } from "react";
-import { useVapi } from "../hooks/useVapi";
-import type { VapiConfig } from "../types/vapi";
+import type { VapiHookReturn } from "../types/vapi";
 import VapiIcon from "./VapiIcon";
 import "./VapiChatButton.css";
 
-interface VapiChatButtonProps {
-  config: VapiConfig;
+// Make the component accept all properties from VapiHookReturn as props
+interface VapiChatButtonProps extends Partial<VapiHookReturn> {
   className?: string;
 }
 
 export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
-  ({ config, className = "" }) => {
-    const {
-      isSessionActive,
-      isLoading,
-      error,
-      hasError,
-      isReconnecting,
-      reconnectionAttempt,
-      maxReconnectionAttempts,
-      nextRetryIn,
-      toggleCall,
-      retry,
-      clearError,
-      cancelReconnection,
-      needsPermission,
-      isPermissionDenied,
-      requestMicrophonePermission,
-      messages,
-      activeTranscript,
-    } = useVapi(config);
-
+  ({
+    isSessionActive,
+    isLoading,
+    error,
+    hasError,
+    isReconnecting,
+    reconnectionAttempt,
+    maxReconnectionAttempts,
+    nextRetryIn,
+    toggleCall,
+    retry,
+    clearError,
+    cancelReconnection,
+    needsPermission,
+    isPermissionDenied,
+    requestMicrophonePermission,
+    className = "",
+  }) => {
     // Convertir ms -> segundos para mostrar al usuario
     const nextRetrySeconds = useMemo(
       () => Math.ceil((nextRetryIn || 0) / 1000),
@@ -65,10 +61,8 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       className,
     ]);
 
-    // Contenedor sin estilos dinámicos actualmente
     const containerStyle = undefined;
 
-    // Memoizar las etiquetas de accesibilidad para mejorar performance
     const ariaLabel = useMemo(() => {
       if (isReconnecting) {
         return `Reconectando (${reconnectionAttempt}/${maxReconnectionAttempts}) - Próximo intento en ${nextRetrySeconds}s - Click para cancelar`;
@@ -125,26 +119,20 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
 
     const handleClick = useCallback(() => {
       if (isReconnecting) {
-        // Si está reconectando, cancelar reconexión
-        cancelReconnection();
+        cancelReconnection?.();
       } else if (needsPermission || isPermissionDenied) {
-        // Si necesita permisos, solicitarlos directamente
-        requestMicrophonePermission().then((granted) => {
+        requestMicrophonePermission?.().then((granted) => {
           if (granted) {
-            // Intentar iniciar la llamada después de obtener permisos
-            setTimeout(() => toggleCall(), 100);
+            setTimeout(() => toggleCall?.(), 100);
           }
         });
       } else if (hasError && error?.isRecoverable) {
-        // Si hay un error recuperable, intentar retry
-        retry();
+        retry?.();
       } else if (hasError) {
-        // Si el error no es recuperable, limpiar error e intentar de nuevo
-        clearError();
-        toggleCall();
+        clearError?.();
+        toggleCall?.();
       } else {
-        // Comportamiento normal
-        toggleCall();
+        toggleCall?.();
       }
     }, [
       isReconnecting,
@@ -168,37 +156,27 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
     };
 
     return (
-      <>
-        <div className="vapi-button-container" style={containerStyle}>
-          <button
-            onClick={handleClick}
-            disabled={isLoading}
-            className={getButtonClass()}
-            aria-label={getAriaLabel()}
-            title={getTitle()}
-          >
-            <VapiIcon />
-            {isReconnecting && (
-              <div className="reconnection-indicator">
-                <span className="reconnection-text">
-                  {reconnectionAttempt}/{maxReconnectionAttempts}
-                </span>
-                {nextRetrySeconds > 0 && (
-                  <span className="retry-countdown">{nextRetrySeconds}s</span>
-                )}
-              </div>
-            )}
-          </button>
-        </div>
-        <div className="transcript-container">
-          <p>{activeTranscript}</p>
-          <ul>
-            {messages.map((msg, index) => (
-              <li key={index}>{`${msg.role}: ${msg.content}`}</li>
-            ))}
-          </ul>
-        </div>
-      </>
+      <div className="vapi-button-container" style={containerStyle}>
+        <button
+          onClick={handleClick}
+          disabled={isLoading}
+          className={getButtonClass()}
+          aria-label={getAriaLabel()}
+          title={getTitle()}
+        >
+          <VapiIcon />
+          {isReconnecting && (
+            <div className="reconnection-indicator">
+              <span className="reconnection-text">
+                {reconnectionAttempt}/{maxReconnectionAttempts}
+              </span>
+              {nextRetrySeconds > 0 && (
+                <span className="retry-countdown">{nextRetrySeconds}s</span>
+              )}
+            </div>
+          )}
+        </button>
+      </div>
     );
   }
 );

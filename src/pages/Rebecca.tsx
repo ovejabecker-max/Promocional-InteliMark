@@ -5,9 +5,11 @@ import { useLocation } from "react-router-dom";
 import { usePortalTransition } from "../contexts/TransitionContext";
 import { VapiChatButton } from "../components/VapiChatButton";
 import { vapiConfig } from "../config/vapi.config";
+import { useVapi } from "../hooks/useVapi";
 import FuenteCero from "../components/FuenteCero";
 import { NewsletterForm } from "../components/NewsletterForm";
 import SimpleCreditsModal from "../components/SimpleCreditsModal";
+import { TranscriptModal } from '../components/TranscriptModal';
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
@@ -17,6 +19,9 @@ const Rebecca = memo(() => {
   // 🌀 HOOKS DE TRANSICIÓN: Detectar si viene de portal
   const location = useLocation();
   const portalTransition = usePortalTransition();
+
+  const vapiProps = useVapi(vapiConfig);
+  const { isSessionActive, messages } = vapiProps;
 
   // 🎯 ESTADO DE ENTRADA: Desde portal o navegación normal
   const [entryState, setEntryState] = useState({
@@ -138,7 +143,7 @@ const Rebecca = memo(() => {
     };
   }, []); // 🎯 OPTIMIZADO: Sin dependencias para evitar re-creación del observer
 
-  // � OPTIMIZACIÓN: Estabilizar dependencias del portal para evitar re-ejecuciones
+  //  OPTIMIZACIÓN: Estabilizar dependencias del portal para evitar re-ejecuciones
   const portalDetectionData = useMemo(
     () => ({
       isFromPortal: location.state?.fromPortal || portalTransition.isFromPortal,
@@ -244,7 +249,7 @@ const Rebecca = memo(() => {
             {/* Opcional: Texto diferente según el origen */}
           </h1>
           <div className="vapi-content center-absolute">
-            <VapiChatButton config={vapiConfig} />
+            <VapiChatButton {...vapiProps} />
           </div>
           <div className="portal-effects center-absolute">
             <div className="glow-ring"></div>
@@ -253,6 +258,7 @@ const Rebecca = memo(() => {
             <div className="rotating-ring-inner"></div>
             <div className="wave-effect"></div>
           </div>
+          <TranscriptModal isOpen={isSessionActive} transcripts={messages} />
         </div>
 
         <section

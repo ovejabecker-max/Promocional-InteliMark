@@ -159,7 +159,30 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       }));
     });
 
-    // Nota: handler de "message" removido porque no hay UI que consuma transcripción o historial actualmente
+    vapi.on('message', (message) => {
+      if (message.type === 'transcript' && message.transcriptType === 'final') {
+        setCallStatus((prev) => {
+          const newMessages = [...prev.messages];
+          const lastMessage = newMessages[newMessages.length - 1];
+
+          if (lastMessage && lastMessage.role === message.role) {
+            // Append to the last message if the role is the same
+            lastMessage.text += ' ' + message.transcript;
+          } else {
+            // Add a new message
+            newMessages.push({
+              role: message.role,
+              text: message.transcript,
+            });
+          }
+
+          return {
+            ...prev,
+            messages: newMessages,
+          };
+        });
+      }
+    });
 
     vapi.on("error", async (originalError: Error) => {
       const vapiError = createVapiError(originalError);
