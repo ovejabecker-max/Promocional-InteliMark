@@ -30,12 +30,12 @@ export const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, transc
   return (
     <div className="transcript-modal-container">
       <div className="transcript-modal-header">
-        <h3 className="transcript-modal-title">Transcripción en Vivo</h3>
+        <h3 className="transcript-modal-title">REBECCA CHAT</h3>
       </div>
       <div className="transcript-modal-body" ref={modalBodyRef}>
         {transcripts.map((transcript, index) => (
           <div key={index} className="transcript-message">
-            <span className="transcript-role">{transcript.role === 'user' ? 'Tú:' : 'Asistente:'}</span>
+            <span className="transcript-role">{transcript.role === 'user' ? 'Tú:' : 'Rebecca:'}</span>
             <span>{transcript.text}</span>
           </div>
         ))}

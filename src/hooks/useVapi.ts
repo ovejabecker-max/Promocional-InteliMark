@@ -162,18 +162,22 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
     vapi.on('message', (message) => {
       if (message.type === 'transcript' && message.transcriptType === 'final') {
         setCallStatus((prev) => {
-          const newMessages = [...prev.messages];
+          const newMessages = [...(prev.messages || [])];
           const lastMessage = newMessages[newMessages.length - 1];
+
+          const newMessage = {
+            role: message.role,
+            content: message.transcript,
+            timestamp: new Date(),
+          };
 
           if (lastMessage && lastMessage.role === message.role) {
             // Append to the last message if the role is the same
-            lastMessage.text += ' ' + message.transcript;
+            lastMessage.content += ' ' + message.transcript;
+            lastMessage.timestamp = new Date();
           } else {
             // Add a new message
-            newMessages.push({
-              role: message.role,
-              text: message.transcript,
-            });
+            newMessages.push(newMessage);
           }
 
           return {

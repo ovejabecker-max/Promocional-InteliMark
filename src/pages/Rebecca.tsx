@@ -23,6 +23,13 @@ const Rebecca = memo(() => {
   const vapiProps = useVapi(vapiConfig);
   const { isSessionActive, messages } = vapiProps;
 
+  const transcripts = useMemo(() => {
+    return (messages || []).map((message) => ({
+      role: message.role as 'user' | 'assistant',
+      text: message.content,
+    }));
+  }, [messages]);
+
   // 🎯 ESTADO DE ENTRADA: Desde portal o navegación normal
   const [entryState, setEntryState] = useState({
     fromPortal: false,
@@ -258,7 +265,7 @@ const Rebecca = memo(() => {
             <div className="rotating-ring-inner"></div>
             <div className="wave-effect"></div>
           </div>
-          <TranscriptModal isOpen={isSessionActive} transcripts={messages} />
+          <TranscriptModal isOpen={isSessionActive} transcripts={transcripts} />
         </div>
 
         <section
