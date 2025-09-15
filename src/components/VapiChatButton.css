@@ -597,33 +597,7 @@
 
 /* 🔔 ESTADO PERMISSION-REQUIRED - Se necesitan permisos */
 .vapi-chat-button--permission-required {
-  animation: permission-request-pulse 2s ease-in-out infinite;
   cursor: pointer;
-}
-
-.vapi-chat-button--permission-required .vapi-button-container::before {
-  opacity: 0.8;
-  background: conic-gradient(
-    from 0deg,
-    rgba(255, 193, 7, 0.6) 0deg,
-    rgba(255, 152, 0, 0.6) 90deg,
-    rgba(255, 87, 34, 0.6) 180deg,
-    rgba(255, 193, 7, 0.6) 270deg,
-    rgba(255, 193, 7, 0.6) 360deg
-  );
-  animation: permission-spinner 3s linear infinite;
-}
-
-.vapi-chat-button--permission-required .cls-1 {
-  fill: #ffc107;
-  animation: permission-glow 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 15px rgba(255, 193, 7, 0.8))
-    drop-shadow(0 0 30px rgba(255, 193, 7, 0.6));
-}
-
-.vapi-chat-button--permission-required .cls-2 {
-  fill: #ffeb3b;
-  opacity: 0.9;
 }
 
 /* 🚫 ESTADO PERMISSION-DENIED - Permisos denegados */

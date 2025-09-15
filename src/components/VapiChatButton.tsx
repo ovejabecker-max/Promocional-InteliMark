@@ -1,8 +1,7 @@
-import React, { memo, useCallback, useState, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useVapi } from "../hooks/useVapi";
 import type { VapiConfig } from "../types/vapi";
 import VapiIcon from "./VapiIcon";
-import { MicrophonePermissionModal } from "./MicrophonePermissionModal";
 import "./VapiChatButton.css";
 
 interface VapiChatButtonProps {
@@ -14,8 +13,6 @@ interface VapiChatButtonProps {
 
 export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
   ({ config, className = "", size = "large", variant = "center" }) => {
-    const [showPermissionModal, setShowPermissionModal] = useState(false);
-
     const {
       isSessionActive,
       isLoading,
@@ -70,25 +67,6 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       isPermissionDenied,
       className,
     ]);
-
-    const handleRequestPermission = useCallback(async () => {
-      const granted = await requestMicrophonePermission();
-      if (granted) {
-        setShowPermissionModal(false);
-        // Intentar iniciar la llamada después de obtener permisos
-        setTimeout(() => toggleCall(), 100);
-      }
-    }, [requestMicrophonePermission, toggleCall]);
-
-    const handleCancelPermission = useCallback(() => {
-      setShowPermissionModal(false);
-    }, []);
-
-    const getPermissionStatus = useCallback(() => {
-      if (isPermissionDenied) return "denied";
-      if (needsPermission) return "prompt";
-      return "prompt";
-    }, [isPermissionDenied, needsPermission]);
 
     // Memoizar el cálculo del estilo para evitar re-renders innecesarios por cambios de volumen
     const containerStyle = useMemo(
@@ -157,8 +135,13 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
         // Si está reconectando, cancelar reconexión
         cancelReconnection();
       } else if (needsPermission || isPermissionDenied) {
-        // Si necesita permisos, mostrar modal
-        setShowPermissionModal(true);
+        // Si necesita permisos, solicitarlos directamente
+        requestMicrophonePermission().then((granted) => {
+          if (granted) {
+            // Intentar iniciar la llamada después de obtener permisos
+            setTimeout(() => toggleCall(), 100);
+          }
+        });
       } else if (hasError && error?.isRecoverable) {
         // Si hay un error recuperable, intentar retry
         retry();
@@ -180,7 +163,7 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
       retry,
       clearError,
       toggleCall,
-      setShowPermissionModal,
+      requestMicrophonePermission,
     ]);
 
     const getAriaLabel = () => {
@@ -214,13 +197,6 @@ export const VapiChatButton: React.FC<VapiChatButtonProps> = memo(
             )}
           </button>
         </div>
-
-        <MicrophonePermissionModal
-          isOpen={showPermissionModal}
-          onRequestPermission={handleRequestPermission}
-          onCancel={handleCancelPermission}
-          permissionStatus={getPermissionStatus()}
-        />
       </>
     );
   }
