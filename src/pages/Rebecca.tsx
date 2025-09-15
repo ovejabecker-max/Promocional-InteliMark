@@ -408,14 +408,14 @@ const Rebecca = memo(() => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "flex-start",
-                transform: "translateY(50px)",
+                transform: "translateY(20px)",
                 gap: 0,
               }}
             >
               <div
                 style={{
                   width: "380px",
-                  height: "480px",
+                  height: "400px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
