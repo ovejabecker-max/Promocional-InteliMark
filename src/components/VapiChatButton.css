@@ -600,6 +600,28 @@
   cursor: pointer;
 }
 
+.vapi-chat-button--permission-required:hover {
+  transform: scale(1.08) rotateZ(1deg);
+}
+
+.vapi-chat-button--permission-required:hover .vapi-button-container::before {
+  opacity: 0.6;
+}
+
+.vapi-chat-button--permission-required:hover .vapi-button-container::after {
+  opacity: 0.4;
+}
+
+.vapi-chat-button--permission-required:hover .cls-1 {
+  fill: #c5c6c2;
+  filter: drop-shadow(0 0 8px rgba(179, 180, 176, 0.5));
+}
+
+.vapi-chat-button--permission-required:hover .cls-2 {
+  fill: #ff8c00;
+  filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.6));
+}
+
 /* 🚫 ESTADO PERMISSION-DENIED - Permisos denegados */
 .vapi-chat-button--permission-denied {
   animation: permission-denied-shake 1s ease-in-out infinite;
