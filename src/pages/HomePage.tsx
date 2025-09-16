@@ -9,7 +9,12 @@ import {
 } from "react";
 import type { FC } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useTexture, PerspectiveCamera, Text } from "@react-three/drei";
+import {
+  useTexture,
+  PerspectiveCamera,
+  Text,
+  useProgress,
+} from "@react-three/drei";
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -259,6 +264,28 @@ const HomePage: FC<HomePageProps> = () => {
 
   // 🌀 NUEVO: Hook de gestión de transiciones
   const transitionContext = useTransition();
+  // Carga de assets (drei) para gatear la inicialización
+  const { active } = useProgress();
+
+  // Refs para valores/funciones usados en callbacks de ScrollTrigger
+  const isTransitioningRef = useRef(isTransitioning);
+  useEffect(() => {
+    isTransitioningRef.current = isTransitioning;
+  }, [isTransitioning]);
+
+  // Se inicializa con noop y se actualiza después de declarar la función
+  const triggerPortalTransitionRef = useRef<() => void>(() => {});
+
+  const transitionContextRef = useRef(transitionContext);
+  useEffect(() => {
+    transitionContextRef.current = transitionContext;
+  }, [transitionContext]);
+
+  // Ref estable para evitar re-creación por cambios de scroll
+  const scrollPercentageRef = useRef(scrollPercentage);
+  useEffect(() => {
+    scrollPercentageRef.current = scrollPercentage;
+  }, [scrollPercentage]);
 
   const config = useMemo(() => {
     return {
@@ -602,6 +629,11 @@ const HomePage: FC<HomePageProps> = () => {
     });
   }, [navigate]);
 
+  // Enlazar función en ref estable
+  useEffect(() => {
+    triggerPortalTransitionRef.current = triggerPortalTransition;
+  }, [triggerPortalTransition]);
+
   const renderTrail = useCallback(() => {
     const canvas = trailCanvasRef.current;
     if (!canvas) return;
@@ -727,13 +759,7 @@ const HomePage: FC<HomePageProps> = () => {
   }, []);
 
   const [isCanvasReady, setIsCanvasReady] = useState(false);
-  const setupScrollTriggerRef = useRef<(() => void) | null>(null);
-
-  useEffect(() => {
-    if (isCanvasReady && setupScrollTriggerRef.current) {
-      setupScrollTriggerRef.current();
-    }
-  }, [isCanvasReady]);
+  const setupAttemptsRef = useRef(0);
 
   useEffect(() => {
     const canvas = trailCanvasRef.current;
@@ -765,234 +791,216 @@ const HomePage: FC<HomePageProps> = () => {
   }, [handleMouseMove, handleMouseLeave]);
 
   useEffect(() => {
+    // Gatear por readiness real: Canvas creado y assets listos (drei)
     const isReady = () => {
       return !!(
-        sceneRef.current?.children.length &&
-        sceneRef.current.children.length >=
-          UI_CONFIG.SCENE_READY_MIN_CHILDREN &&
-        cameraRef.current?.position &&
-        scrollRef.current?.offsetHeight &&
-        scrollRef.current.offsetHeight > 0
+        isCanvasReady &&
+        !active &&
+        cameraRef.current &&
+        scrollRef.current &&
+        scrollRef.current.offsetHeight > 0 &&
+        sceneRef.current &&
+        sceneRef.current.children &&
+        sceneRef.current.children.length >= UI_CONFIG.SCENE_READY_MIN_CHILDREN
       );
     };
 
-    const setupScrollTrigger = (attempt = 1) => {
+    let ctx: gsap.Context | null = null;
+
+    const setupScrollTrigger = () => {
       if (!isReady()) {
-        if (attempt < UI_CONFIG.MAX_SETUP_ATTEMPTS) {
-          setTimeout(
-            () => setupScrollTrigger(attempt + 1),
-            SCROLL_CONFIG.SETUP_RETRY_DELAY
-          );
-        } else {
-          console.warn(
-            `ScrollTrigger setup failed after ${UI_CONFIG.MAX_SETUP_ATTEMPTS} attempts`
-          );
+        if (setupAttemptsRef.current < 20) {
+          setupAttemptsRef.current += 1;
+          setTimeout(() => {
+            // rAF doble para asegurar layout estable
+            requestAnimationFrame(() =>
+              requestAnimationFrame(setupScrollTrigger)
+            );
+          }, 120);
         }
         return;
       }
+      setupAttemptsRef.current = 0;
 
-      // Safe access after isReady check
       const scene = sceneRef.current!;
       const scrollElement = scrollRef.current!;
 
-      const logoMesh = scene.children[1] as THREE.Mesh;
-      const textPhrase1 = scene.children[2] as THREE.Group;
-      const textPhrase2 = scene.children[3] as THREE.Group;
+      const logoMesh = (scene.children?.[1] as THREE.Mesh) || null;
+      const textPhrase1 = (scene.children?.[2] as THREE.Group) || null;
+      const textPhrase2 = (scene.children?.[3] as THREE.Group) || null;
 
-      ScrollTrigger.killAll();
+      ctx = gsap.context(() => {
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: scrollElement,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1,
+            invalidateOnRefresh: true,
+            refreshPriority: -1,
+            scroller: window,
+            onUpdate: (self) => {
+              const progress = Math.round(self.progress * 100);
+              if (Math.abs(progress - scrollPercentageRef.current) >= 1) {
+                setScrollPercentage(progress);
+              }
+            },
+          },
+        });
 
-      const timeline = gsap.timeline({
-        scrollTrigger: {
+        ScrollTrigger.create({
           trigger: scrollElement,
           start: "top top",
           end: "bottom bottom",
-          scrub: 1,
-          invalidateOnRefresh: true,
-          refreshPriority: -1,
           scroller: window,
           onUpdate: (self) => {
-            const progress = Math.round(self.progress * 100);
+            const progress = self.progress * 100;
 
-            const effectiveProgress = progress;
+            if (
+              progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
+              progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+              !glitchTriggeredRef.current
+            ) {
+              glitchTriggeredRef.current = true;
+              setIsDigitalGlitch(true);
+              setTimeout(
+                () => setIsDigitalGlitch(false),
+                SCROLL_CONFIG.GLITCH_DURATION
+              );
+            }
 
-            if (Math.abs(effectiveProgress - scrollPercentage) >= 1) {
-              setScrollPercentage(effectiveProgress);
+            if (
+              progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+              !portalTriggeredRef.current &&
+              !isTransitioningRef.current
+            ) {
+              portalTriggeredRef.current = true;
+              setIsTransitioning(true);
+
+              transitionContextRef.current.startTransition({
+                type: "portal",
+                direction: "home-to-rebecca",
+                fromPage: "home",
+                toPage: "rebecca",
+                portalData: {
+                  cameraPosition: cameraRef.current
+                    ? {
+                        x: cameraRef.current.position.x,
+                        y: cameraRef.current.position.y,
+                        z: cameraRef.current.position.z,
+                      }
+                    : undefined,
+                  sceneRotation: sceneRef.current
+                    ? {
+                        x: sceneRef.current.rotation.x,
+                        y: sceneRef.current.rotation.y,
+                        z: sceneRef.current.rotation.z,
+                      }
+                    : undefined,
+                  lastScrollPercentage: progress,
+                  glitchTriggered: glitchTriggeredRef.current,
+                },
+              });
+
+              document.body.style.overflow = "hidden";
+              triggerPortalTransitionRef.current();
             }
           },
-        },
-      });
+        });
 
-      ScrollTrigger.create({
-        trigger: scrollElement,
-        start: "top top",
-        end: "bottom bottom",
-        scroller: window,
-        onUpdate: (self) => {
-          const progress = self.progress * 100;
-
-          if (
-            progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
-            progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
-            !glitchTriggeredRef.current
-          ) {
-            glitchTriggeredRef.current = true;
-            setIsDigitalGlitch(true);
-
-            setTimeout(() => {
-              setIsDigitalGlitch(false);
-            }, SCROLL_CONFIG.GLITCH_DURATION);
-          }
-
-          if (
-            progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
-            !portalTriggeredRef.current &&
-            !isTransitioning
-          ) {
-            // console.log(`🌀 Portal trigger activado a ${progress}%`);
-            portalTriggeredRef.current = true;
-            setIsTransitioning(true);
-
-            // 🌀 INICIAR TRANSICIÓN EN CONTEXT
-            transitionContext.startTransition({
-              type: "portal",
-              direction: "home-to-rebecca",
-              fromPage: "home",
-              toPage: "rebecca",
-              portalData: {
-                cameraPosition: cameraRef.current
-                  ? {
-                      x: cameraRef.current.position.x,
-                      y: cameraRef.current.position.y,
-                      z: cameraRef.current.position.z,
-                    }
-                  : undefined,
-                sceneRotation: sceneRef.current
-                  ? {
-                      x: sceneRef.current.rotation.x,
-                      y: sceneRef.current.rotation.y,
-                      z: sceneRef.current.rotation.z,
-                    }
-                  : undefined,
-                lastScrollPercentage: progress,
-                glitchTriggered: glitchTriggeredRef.current,
-              },
-            });
-
-            // 🚫 BLOQUEAR SCROLL: Deshabilitar interacción durante transición
-            document.body.style.overflow = "hidden";
-            // console.log("🚫 Scroll bloqueado");
-
-            triggerPortalTransition();
-          }
-        },
-      });
-
-      timeline.to(
-        cameraRef.current!.position,
-        {
-          y: 2,
-          z: ANIMATION_CONFIG.CAMERA_TARGET_Z,
-          ease: EASING_CONFIG.SCROLL_ANIMATION,
-        },
-        0
-      );
-
-      if (logoMesh?.position) {
         timeline.to(
-          logoMesh.position,
+          cameraRef.current!.position,
           {
-            z: ANIMATION_CONFIG.LOGO_TARGET_Z,
+            y: 2,
+            z: ANIMATION_CONFIG.CAMERA_TARGET_Z,
             ease: EASING_CONFIG.SCROLL_ANIMATION,
           },
           0
         );
-      }
 
-      if (textPhrase1?.children) {
-        const [line1, line2, line3] = textPhrase1.children;
-        if (line1?.position)
+        if (logoMesh?.position) {
           timeline.to(
-            line1.position,
+            logoMesh.position,
             {
-              z: ANIMATION_CONFIG.TEXT_LINE1_Z,
+              z: ANIMATION_CONFIG.LOGO_TARGET_Z,
               ease: EASING_CONFIG.SCROLL_ANIMATION,
             },
             0
           );
-        if (line2?.position)
-          timeline.to(
-            line2.position,
-            {
-              z: ANIMATION_CONFIG.TEXT_LINE2_Z,
-              ease: EASING_CONFIG.SCROLL_ANIMATION,
-            },
-            0
-          );
-        if (line3?.position)
-          timeline.to(
-            line3.position,
-            {
-              z: ANIMATION_CONFIG.TEXT_LINE3_Z,
-              ease: EASING_CONFIG.SCROLL_ANIMATION,
-            },
-            0
-          );
-      }
+        }
 
-      if (textPhrase2?.children) {
-        const [line1, line2] = textPhrase2.children;
-        if (line1?.position)
-          timeline.to(
-            line1.position,
-            {
-              z: ANIMATION_CONFIG.TEXT2_LINE1_Z,
-              ease: EASING_CONFIG.SCROLL_ANIMATION,
-            },
-            0
-          );
-        if (line2?.position)
-          timeline.to(
-            line2.position,
-            {
-              z: ANIMATION_CONFIG.TEXT2_LINE2_Z,
-              ease: EASING_CONFIG.SCROLL_ANIMATION,
-            },
-            0
-          );
-      }
+        if (textPhrase1?.children) {
+          const [line1, line2, line3] =
+            textPhrase1.children as THREE.Object3D[];
+          if (line1?.position)
+            timeline.to(
+              line1.position,
+              {
+                z: ANIMATION_CONFIG.TEXT_LINE1_Z,
+                ease: EASING_CONFIG.SCROLL_ANIMATION,
+              },
+              0
+            );
+          if (line2?.position)
+            timeline.to(
+              line2.position,
+              {
+                z: ANIMATION_CONFIG.TEXT_LINE2_Z,
+                ease: EASING_CONFIG.SCROLL_ANIMATION,
+              },
+              0
+            );
+          if (line3?.position)
+            timeline.to(
+              line3.position,
+              {
+                z: ANIMATION_CONFIG.TEXT_LINE3_Z,
+                ease: EASING_CONFIG.SCROLL_ANIMATION,
+              },
+              0
+            );
+        }
 
-      ScrollTrigger.refresh();
+        if (textPhrase2?.children) {
+          const [line1, line2] = textPhrase2.children as THREE.Object3D[];
+          if (line1?.position)
+            timeline.to(
+              line1.position,
+              {
+                z: ANIMATION_CONFIG.TEXT2_LINE1_Z,
+                ease: EASING_CONFIG.SCROLL_ANIMATION,
+              },
+              0
+            );
+          if (line2?.position)
+            timeline.to(
+              line2.position,
+              {
+                z: ANIMATION_CONFIG.TEXT2_LINE2_Z,
+                ease: EASING_CONFIG.SCROLL_ANIMATION,
+              },
+              0
+            );
+        }
 
-      const activeScrollTriggers = ScrollTrigger.getAll();
-      if (activeScrollTriggers.length === 0) {
-        console.warn("No ScrollTriggers were created");
-      }
+        ScrollTrigger.refresh();
+      }, mainRef);
     };
 
-    const initializeScrollTrigger = () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setupScrollTrigger();
-        });
-      });
-    };
-
-    setupScrollTriggerRef.current = initializeScrollTrigger;
-
-    if (isCanvasReady) {
-      initializeScrollTrigger();
-    }
+    // Ejecutar cuando pase a listo
+    // rAF doble inicial y luego reintentos silenciosos dentro de setupScrollTrigger
+    requestAnimationFrame(() => requestAnimationFrame(setupScrollTrigger));
 
     return () => {
-      // 🧹 LIMPIEZA COMPLETA: Restaurar scroll y estados
       document.body.style.overflow = "";
-      ScrollTrigger.killAll();
+      ctx?.revert();
       portalTriggeredRef.current = false;
       glitchTriggeredRef.current = false;
       navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
-  }, [triggerPortalTransition]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, isCanvasReady]);
 
   return (
     <div ref={mainRef} className="homepage-container">
