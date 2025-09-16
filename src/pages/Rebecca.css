@@ -1586,206 +1586,9 @@ body,
 /* ======== ESTADOS NEWSLETTER REMOVIDOS - CONSOLIDADOS MÁS ABAJO ======== */
 
 /* ============================================================================
-   6️⃣ MODAL OFICIAL DE CRÉDITOS - CONTENEDOR TECNOLÓGICO
-   ============================================================================ */
-
-/* 🎬 OVERLAY PRINCIPAL */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* 🎭 CONTENEDOR PRINCIPAL DEL MODAL */
-  position: relative;
-  width: 90vw;
-  max-width: 1000px;
-  height: 80vh;
-  max-height: 700px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ❌ BOTÓN DE CIERRE */
-.credits-close-button {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-  border: 2px solid #da8023;
-  border-radius: 50%;
-  color: #ffffff;
-  font-size: 24px;
-  font-weight: bold;
-  cursor: inherit; /* Heredar cursor CAD del contenedor padre */
-  z-index: 101;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 20px rgba(218, 128, 35, 0.3);
-}
-
-.credits-close-button:hover {
-  background: linear-gradient(145deg, #da8023, #b86f1d);
-  transform: scale(1.1);
-  box-shadow: 0 0 30px rgba(218, 128, 35, 0.6);
-}
-
-/* 🖼️ MARCO TECNOLÓGICO CON IMAGEN PNG */
-  width: 100%;
-  height: 100%;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: techFrameGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes techFrameGlow {
-  0% {
-    filter: drop-shadow(0 0 20px rgba(218, 128, 35, 0.3));
-  }
-  100% {
-    filter: drop-shadow(0 0 40px rgba(218, 128, 35, 0.6));
-  }
-}
-
-/* 📺 ÁREA DE CONTENIDO DENTRO DEL MARCO - TRANSPARENTE */
-  width: 75%;
-  height: 70%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 10px;
-  /* ✨ TRANSPARENCIA TOTAL */
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* 🎯 TÍTULO DE CRÉDITOS */
-  text-align: center;
-  padding: 20px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(218, 128, 35, 0.2),
-    transparent
-  );
-  border-bottom: 1px solid rgba(218, 128, 35, 0.3);
-}
-
-  color: #da8023;
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0;
-  text-shadow: 0 0 10px rgba(218, 128, 35, 0.5);
-  font-family: "Courier New", monospace;
-  letter-spacing: 2px;
-}
-
-/* 🎬 CONTENEDOR DE SCROLL TIPO PELÍCULA */
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 10%,
-    black 90%,
-    transparent 100%
-  );
-}
-
-/* 📜 SCROLL ANIMADO DE CRÉDITOS */
-  position: absolute;
-  width: 100%;
-  padding: 40px 20px;
-}
-
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(-100%);
-  }
-}
-
-/* 🎭 SECCIÓN DE CRÉDITOS */
-  text-align: center;
-  color: #ffffff;
-}
-
-/* 👤 ITEM INDIVIDUAL DE CRÉDITO - RESTAURADO */
-  margin-bottom: 40px;
-}
-
-  color: #da8023;
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0 0 8px 0;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(218, 128, 35, 0.7);
-  font-family: "Courier New", monospace;
-}
-
-  color: #ffffff;
-  font-size: 16px;
-  margin: 0;
-  font-weight: 300;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-}
-
-  0% {
-    text-shadow: 0 0 10px rgba(218, 128, 35, 0.3);
-  }
-  100% {
-    text-shadow: 0 0 20px rgba(218, 128, 35, 0.7);
-  }
-}
-
-/* 🏆 CRÉDITO FINAL ESPECIAL */
-  margin-top: 60px;
-  padding: 30px;
-  border: 2px solid rgba(218, 128, 35, 0.5);
-  border-radius: 10px;
-  background: rgba(218, 128, 35, 0.1);
-}
-
-  font-size: 22px;
-  color: #ffffff;
-  margin-bottom: 15px;
-}
-
-  color: #da8023;
-  font-size: 14px;
-}
+  6️⃣ MODAL OFICIAL DE CRÉDITOS - (Definido en src/components/SimpleCreditsModal.css)
+  Nota: Se elimina bloque corrupto/duplicado aquí para evitar errores de parseo.
+  ============================================================================ */
 
 /* ============================================================================
    📧 NEWSLETTER COMPONENT - SECCIÓN CONSOLIDADA COMPLETA
@@ -1795,11 +1598,28 @@ body,
 .newsletter-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px; /* Espaciado vertical consistente entre elementos internos */
   position: relative;
   z-index: 1; /* 🎯 Z-INDEX BAJO PARA NO INTERFERIR CON EL BOTÓN AI */
-  transform: translateY(-10px); /* 🎯 AJUSTADO: Mover hacia arriba para alinear títulos */
+  transform: none !important; /* 🔧 Evitar stacking de transforms que invierta dirección */
+  margin-top: 30px !important; /* 🎯 BAJAR +30px en total */
   max-width: 350px; /* 🎯 ANCHO REDUCIDO para input más corto */
+}
+
+/* 🧹 Normalización de títulos dentro del newsletter */
+.newsletter-section h4 {
+  transform: none !important; /* anula desplazamientos globales */
+  margin: 0 0 6px 0 !important; /* separación con el h3 */
+}
+
+.newsletter-section > h3 {
+  transform: none !important; /* evitar stacking de transforms */
+  margin: 0 !important; /* se maneja con gap del contenedor */
+}
+
+/* 🧹 Texto informativo: sin desplazamiento extra, usar gap para orden visual */
+.newsletter-section > p:not(.newsletter-message) {
+  margin: 0 !important; /* antes tenía +30px, se normaliza para orden */
 }
 
 /* 📧 TÍTULOS Y TEXTOS DEL NEWSLETTER */
@@ -1813,7 +1633,15 @@ body,
   padding-bottom: 8px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   font-family: "Oxanium", sans-serif;
-  transform: translateY(-43px) !important; /* 🎯 AJUSTE AUMENTADO: Mover título más hacia arriba para mejor alineación */
+  transform: translateY(
+    17px
+  ) !important; /* 🎯 BAJAR 30px adicionales (de -13px a +17px) */
+}
+
+/* 📧 SOLO el título principal del newsletter (h3) 30px más abajo */
+.newsletter-section > h3 {
+  transform: none !important; /* evitar stacking de transforms */
+  margin-top: 30px !important; /* desplazar visualmente y en flujo */
 }
 
 .footer-info h3 {
@@ -1840,14 +1668,19 @@ body,
   white-space: normal; /* 🎯 ASEGURAR QUE PERMITA SALTOS DE LÍNEA */
 }
 
+/* 📧 MOVER SOLO EL PÁRRAFO INFORMATIVO DEL NEWSLETTER */
+.newsletter-section > p:not(.newsletter-message) {
+  margin-top: 30px !important; /* 🎯 BAJAR 30px la información del boletín */
+}
+
 /* 📧 FORMULARIO DEL NEWSLETTER */
 .newsletter-form {
   display: flex;
   gap: 14px;
   margin: 0;
-  margin-top: 12px; /* 🎯 AJUSTE: Separación adicional del formulario de los textos */
+  margin-top: 12px !important; /* separación moderada desde el texto informativo */
   position: relative;
-  transform: translateY(25px); /* 🎯 MOVER FORMULARIO HACIA ABAJO */
+  transform: none !important; /* sin desplazamiento absoluto, más ordenado */
   z-index: 1; /* 🎯 Z-INDEX BAJO PARA NO INTERFERIR CON EL BOTÓN AI */
 }
 
