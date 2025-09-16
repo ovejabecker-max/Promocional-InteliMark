@@ -8,7 +8,7 @@ import {
   memo,
 } from "react";
 import type { FC } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { useTexture, PerspectiveCamera, Text } from "@react-three/drei";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -92,6 +92,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const LandscapeScene: FC = memo(() => {
   const texture = useTexture(marDeDatosTexture);
+  const materialRef = useRef<THREE.ShaderMaterial>(null!);
 
   // Optimizar textura una sola vez
   useMemo(() => {
@@ -102,15 +103,25 @@ const LandscapeScene: FC = memo(() => {
       texture.anisotropy = Math.min(4, 16); // ✅ Mejora calidad en ángulos
       texture.wrapS = THREE.ClampToEdgeWrapping;
       texture.wrapT = THREE.ClampToEdgeWrapping;
+      // Nota: El espacio de color se maneja en el renderer con gl.outputColorSpace
     }
   }, [texture]);
+
+  // Animar el tiempo para los efectos
+  useFrame((state) => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = state.clock.getElapsedTime();
+    }
+  });
 
   return (
     <mesh rotation-x={-Math.PI / 2} position-y={-5}>
       <planeGeometry args={[100, 100, 30, 30]} />
       <shaderMaterial
+        ref={materialRef}
         uniforms={{
           uTexture: { value: texture },
+          uTime: { value: 0 },
         }}
         vertexShader={`
           varying vec2 vUv;
@@ -121,10 +132,36 @@ const LandscapeScene: FC = memo(() => {
         `}
         fragmentShader={`
           uniform sampler2D uTexture;
+          uniform float uTime;
           varying vec2 vUv;
 
           void main() {
-            gl_FragColor = texture2D(uTexture, vUv);
+            // 1) Flujo y Distorsión Líquida
+            vec2 uv = vUv;
+            uv.x += sin(vUv.y * 10.0 + uTime * 1.5) * 0.01;
+            uv.y += cos(vUv.x * 8.0 + uTime * 1.2) * 0.008;
+
+            vec4 tex = texture2D(uTexture, uv);
+            vec3 color = tex.rgb;
+
+            // 2) Ondas de Luz en Movimiento (cáusticas suaves)
+            float lightWave = sin(vUv.x * 20.0 + uTime * 3.0) * cos(vUv.y * 15.0 + uTime * 2.5) * 0.05;
+            color += lightWave * vec3(0.15, 0.15, 0.15);
+
+            // 3) Viñeta sutil
+            float dist = length(vUv - 0.5);
+            color *= (1.0 - dist * 0.2);
+
+            // 4) Pulso de brillo global
+            float pulse = sin(uTime * 2.0) * 0.05 + 0.95;
+            color *= pulse;
+
+            // 5) Ondas concéntricas (ripples)
+            float centerDist = length(vUv - 0.5);
+            float ripple = sin(centerDist * 30.0 - uTime * 5.0) * 0.02;
+            color += vec3(ripple);
+
+            gl_FragColor = vec4(color, tex.a);
           }
         `}
       />
