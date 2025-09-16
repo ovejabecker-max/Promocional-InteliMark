@@ -1132,6 +1132,7 @@ body,
 .navigation-section .ai-matrix-button {
   position: relative;
   z-index: 8 !important;
+  margin-top: -70px;
 }
 
 /* 🧠 CONTENEDOR MATRIZ DE IA */
@@ -1411,8 +1412,8 @@ body,
   padding-top: 0; /* Asegurar que empiece al mismo nivel */
   padding-left: 20px; /* 🎯 AGREGADO: espacio para el resplandor del lado izquierdo */
   transform: translateY(
-    -30px
-  ); /* 🎯 MOVER 30px HACIA ARRIBA para alinear con el título del newsletter */
+    47px
+  ) !important; /* 🎯 BAJAR 77px respecto al estado anterior (-30 → +47) para alinear títulos */
 }
 
 /* 🎯 ADAPTACIÓN DINÁMICA CUANDO EL BOTÓN MATRIX SE EXPANDE */
@@ -1641,7 +1642,7 @@ body,
 /* 📧 SOLO el título principal del newsletter (h3) 30px más abajo */
 .newsletter-section > h3 {
   transform: none !important; /* evitar stacking de transforms */
-  margin-top: 30px !important; /* desplazar visualmente y en flujo */
+  margin-top: 40px !important; /* +10px adicionales solo para el título */
 }
 
 .footer-info h3 {
@@ -1670,7 +1671,7 @@ body,
 
 /* 📧 MOVER SOLO EL PÁRRAFO INFORMATIVO DEL NEWSLETTER */
 .newsletter-section > p:not(.newsletter-message) {
-  margin-top: 30px !important; /* 🎯 BAJAR 30px la información del boletín */
+  margin-top: 5px !important; /* 🎯 SUBIR 10px respecto a antes (de 30px a 20px) */
 }
 
 /* 📧 FORMULARIO DEL NEWSLETTER */
