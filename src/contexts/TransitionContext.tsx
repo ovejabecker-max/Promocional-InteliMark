@@ -1,68 +1,14 @@
 // src/contexts/TransitionContext.tsx
 
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import type { ReactNode } from "react";
-
-// 🎯 TIPOS DE TRANSICIÓN
-export type TransitionType = "portal" | "normal" | "direct";
-export type TransitionDirection = "home-to-rebecca" | "rebecca-to-home";
-
-// 📊 INTERFACE DEL ESTADO DE TRANSICIÓN
-export interface TransitionState {
-  isTransitioning: boolean;
-  transitionType: TransitionType;
-  direction: TransitionDirection | null;
-  fromPage: string | null;
-  toPage: string | null;
-  transitionProgress: number;
-  portalEffectsData?: {
-    cameraPosition?: { x: number; y: number; z: number };
-    sceneRotation?: { x: number; y: number; z: number };
-    lastScrollPercentage?: number;
-    glitchTriggered?: boolean;
-  };
-}
-
-// 🛠️ ACTIONS DEL CONTEXT
-export interface TransitionActions {
-  startTransition: (config: {
-    type: TransitionType;
-    direction: TransitionDirection;
-    fromPage: string;
-    toPage: string;
-    portalData?: TransitionState["portalEffectsData"];
-  }) => void;
-  updateProgress: (progress: number) => void;
-  completeTransition: () => void;
-  resetTransition: () => void;
-}
-
-// 🎭 CONTEXT INTERFACE COMPLETA
-export interface TransitionContextType
-  extends TransitionState,
-    TransitionActions {}
-
-// 🔧 ESTADO INICIAL
-const initialState: TransitionState = {
-  isTransitioning: false,
-  transitionType: "normal",
-  direction: null,
-  fromPage: null,
-  toPage: null,
-  transitionProgress: 0,
-  portalEffectsData: undefined,
-};
-
-// 🌐 CREAR CONTEXT
-const TransitionContext = createContext<TransitionContextType | undefined>(
-  undefined
-);
+import {
+  TransitionContext,
+  initialTransitionState as initialState,
+  type TransitionDirection,
+  type TransitionState,
+  type TransitionType,
+} from "./TransitionContextContext";
 
 // 🏗️ PROVIDER COMPONENT
 export const TransitionProvider: React.FC<{ children: ReactNode }> = ({
@@ -145,36 +91,6 @@ export const TransitionProvider: React.FC<{ children: ReactNode }> = ({
 };
 
 // 🪝 CUSTOM HOOK
-export const useTransition = (): TransitionContextType => {
-  const context = useContext(TransitionContext);
+// Nota: hooks movidos a archivos dedicados para cumplir con react-refresh
 
-  if (context === undefined) {
-    throw new Error("useTransition must be used within a TransitionProvider");
-  }
-
-  return context;
-};
-
-// 🎯 HOOK ESPECÍFICO PARA PORTAL TRANSITIONS
-export const usePortalTransition = () => {
-  const transition = useTransition();
-
-  return useMemo(() => {
-    const isFromPortal =
-      transition.transitionType === "portal" &&
-      transition.direction === "home-to-rebecca";
-
-    const isToPortal =
-      transition.transitionType === "portal" &&
-      transition.direction === "rebecca-to-home";
-
-    return {
-      ...transition,
-      isFromPortal,
-      isToPortal,
-      portalData: transition.portalEffectsData,
-    };
-  }, [transition]);
-};
-
-export default TransitionContext;
+// Nota: no exportar el contexto por defecto aquí para cumplir con react-refresh

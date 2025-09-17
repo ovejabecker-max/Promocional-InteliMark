@@ -1,11 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useCallback,
-  useRef,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useRef, useEffect, useState } from "react";
+import { AnimationContext } from "./AnimationContextContext";
 
 // 🎯 CONFIGURACIÓN OPTIMIZADA CON LAZY LOADING
 const ANIMATION_CONFIG = {
@@ -22,7 +16,6 @@ const isDevelopment = import.meta.env.DEV;
 // ✅ LOGS ESENCIALES: Inicializaciones, errores, completaciones importantes
 const debugLog = (_message: string, ..._args: unknown[]) => {
   if (isDevelopment) {
-    // eslint-disable-next-line no-console
     // console.log(_message, ..._args);
   }
 };
@@ -38,13 +31,7 @@ const TITLE_CONFIG = {
   SCROLLING_PARTS: ["Sitio en construcción... |", "Vuelve pronto. |"],
 } as const;
 
-interface AnimationContextType {
-  isActive: boolean;
-  startAnimations: () => void;
-  stopAnimations: () => void;
-}
-
-const AnimationContext = createContext<AnimationContextType | null>(null);
+// Tipos y contexto se definen en AnimationContextContext.ts
 
 // 🔍 DETECTAR DISPOSITIVOS MÓVILES
 const isMobileDevice = (): boolean => {
@@ -138,10 +125,7 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     img.onerror = () => {
-      if (isDevelopment) {
-        // eslint-disable-next-line no-console
-        console.warn("⚠️ Error al cargar favicon, intentando fallback...");
-      }
+      // Fallback silencioso al favicon por defecto
       img.src = "/favicon.ico";
     };
 
@@ -332,13 +316,4 @@ export const AnimationProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// 🎯 HOOK PERSONALIZADO PARA USO FÁCIL
-export const useTabAnimations = () => {
-  const context = useContext(AnimationContext);
-  if (!context) {
-    throw new Error("useTabAnimations debe usarse dentro de AnimationProvider");
-  }
-  return context;
-};
-
-export default AnimationContext;
+// Nota: el hook useTabAnimations se movió a src/hooks/useTabAnimations.ts

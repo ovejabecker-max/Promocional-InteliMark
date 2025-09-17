@@ -19,7 +19,7 @@ import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useNavigate } from "react-router-dom";
-import { useTransition } from "../contexts/TransitionContext";
+import { useTransition } from "../hooks/useTransition";
 import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
 import AudioVisualizer from "../components/AudioVisualizer";
@@ -1060,7 +1060,6 @@ const HomePage: FC<HomePageProps> = () => {
       navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, isCanvasReady]);
 
   return (

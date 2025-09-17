@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, memo, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-import { usePortalTransition } from "../contexts/TransitionContext";
+import { usePortalTransition } from "../hooks/usePortalTransition";
 import { VapiChatButton } from "../components/VapiChatButton";
 import { vapiConfig } from "../config/vapi.config";
 import { useVapi } from "../hooks/useVapi";

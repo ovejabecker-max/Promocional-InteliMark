@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { vapiLogger } from "../utils/logger";
 import { NotificationManager } from "../utils/notifications";
 
+// Tipado local para evitar usar tipos globales que disparen no-undef en ESLint
+type MicrophonePermissionDescriptor = { name: "microphone" };
+
 export type MicrophonePermissionStatus =
   | "prompt"
   | "granted"
@@ -55,11 +58,10 @@ export const useMicrophonePermission = (): UseMicrophonePermissionReturn => {
           return "unsupported";
         }
 
-        // Usar la API de Permissions si está disponible
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // Usar la API de Permissions si está disponible sin usar any
         const permissionStatus = await navigator.permissions.query({
           name: "microphone",
-        } as any);
+        } as MicrophonePermissionDescriptor);
 
         switch (permissionStatus.state) {
           case "granted":
@@ -229,10 +231,9 @@ export const useMicrophonePermission = (): UseMicrophonePermissionReturn => {
     const setupPermissionListener = async () => {
       try {
         if (checkBrowserSupport()) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           permissionStatus = await navigator.permissions.query({
-            name: "microphone" as any,
-          });
+            name: "microphone",
+          } as MicrophonePermissionDescriptor);
 
           const handlePermissionChange = () => {
             refreshPermissionStatus();

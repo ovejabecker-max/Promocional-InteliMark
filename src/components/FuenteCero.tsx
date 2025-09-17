@@ -98,13 +98,17 @@ const MatrixCanvas: React.FC<{
 }> = ({ auraPosition, parentRef }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   // Números, letras y símbolos de programación
-  const characterSet = (
-    "0123456789" +
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-    "abcdefghijklmnopqrstuvwxyz" +
-    "{}[]()<>;:,.=+-*/%&|!?" +
-    "\"'#@^~$"
-  ).split("");
+  const characterSet = React.useMemo(
+    () =>
+      (
+        "0123456789" +
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+        "abcdefghijklmnopqrstuvwxyz" +
+        "{}[]()<>;:,.=+-*/%&|!?" +
+        "\"'#@^~$"
+      ).split(""),
+    []
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -243,7 +247,7 @@ const MatrixCanvas: React.FC<{
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [auraPosition, parentRef]);
+  }, [auraPosition, parentRef, characterSet]);
 
   return <canvas ref={canvasRef} className="matrix-canvas" />;
 };

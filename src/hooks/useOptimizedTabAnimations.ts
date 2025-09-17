@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { useTabAnimations } from "../contexts/AnimationContext";
+import { useContext } from "react";
+import { AnimationContext } from "../contexts/AnimationContextContext";
 
 /**
  * Hook simplificado para activar animaciones de pestaña
@@ -8,7 +9,13 @@ import { useTabAnimations } from "../contexts/AnimationContext";
  * @param enabled - Si las animaciones deben estar activas (por defecto true)
  */
 export const useOptimizedTabAnimations = (enabled: boolean = true) => {
-  const { isActive, startAnimations, stopAnimations } = useTabAnimations();
+  const ctx = useContext(AnimationContext);
+  if (!ctx) {
+    throw new Error(
+      "useOptimizedTabAnimations debe usarse dentro de AnimationProvider"
+    );
+  }
+  const { isActive, startAnimations, stopAnimations } = ctx;
 
   useEffect(() => {
     if (enabled) {
