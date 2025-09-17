@@ -62,7 +62,7 @@ export const useNewsletter = () => {
         setTimeout(() => {
           setState((prev) => ({ ...prev, message: "", messageType: "idle" }));
         }, 5000);
-      } catch (error) {
+      } catch (_error) {
         setState({
           isSubmitting: false,
           message: "Error al registrar el correo. Inténtalo nuevamente.",

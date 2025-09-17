@@ -38,6 +38,9 @@ export default [
         {
           varsIgnorePattern: "^_",
           argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
         },
       ],
       "@typescript-eslint/no-explicit-any": "warn",

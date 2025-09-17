@@ -323,7 +323,7 @@ const HomePage: FC<HomePageProps> = () => {
             }
           });
         }
-      } catch (error) {
+      } catch (_error) {
         // Ignorar errores de limpieza de WebGL
       }
     };
