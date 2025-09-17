@@ -9,7 +9,7 @@ import { useVapi } from "../hooks/useVapi";
 import FuenteCero from "../components/FuenteCero";
 import { NewsletterForm } from "../components/NewsletterForm";
 import SimpleCreditsModal from "../components/SimpleCreditsModal";
-import { TranscriptModal } from '../components/TranscriptModal';
+import { TranscriptModal } from "../components/TranscriptModal";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
@@ -25,7 +25,7 @@ const Rebecca = memo(() => {
 
   const transcripts = useMemo(() => {
     return (messages || []).map((message) => ({
-      role: message.role as 'user' | 'assistant',
+      role: message.role as "user" | "assistant",
       text: message.content,
     }));
   }, [messages]);
@@ -73,19 +73,46 @@ const Rebecca = memo(() => {
 
           setCtaState((prev) => ({ ...prev, scrollPercent: ratio }));
 
-          // 🎯 OPTIMIZADO: CTA Section (Matrix + Button + Text) activation at 30%
+          // 🎯 CTA Section (Matrix + Text) activation at 30%
           if (ratio >= 0.3 && !currentState.effectsActivated.ctaSection) {
             setCtaState((prev) => ({
               ...prev,
               effectsActivated: { ...prev.effectsActivated, ctaSection: true },
-              buttonVisible: true, // 🎯 Aparece junto con Matrix y texto
             }));
           } else if (ratio < 0.3 && currentState.effectsActivated.ctaSection) {
             setCtaState((prev) => ({
               ...prev,
               effectsActivated: { ...prev.effectsActivated, ctaSection: false },
-              buttonVisible: false,
             }));
+          }
+
+          // 🎯 BOTÓN CTA: Mostrar cuando la sección está completamente visible (con tolerancia)
+          // Usamos las dimensiones del rectángulo de intersección vs el bounding rect del target
+          const bcr = entry.boundingClientRect;
+          const ir = entry.intersectionRect;
+          const tol = 6; // tolerancia más robusta por variaciones de layout/scrollbar
+          // Usar dimensiones de viewport “útiles” en lugar de innerWidth/innerHeight
+          const viewportW = document.documentElement.clientWidth;
+          const viewportH = document.documentElement.clientHeight;
+          // Cubre prácticamente todo el viewport (aunque el target sea más alto que la ventana)
+          const coversViewport =
+            ir.width >= viewportW - tol && ir.height >= viewportH - tol;
+          // Caso clásico: target y viewport del mismo tamaño
+          const fullyVisibleTarget =
+            ir.width >= bcr.width - tol && ir.height >= bcr.height - tol;
+
+          // Histéresis de respaldo basada en ratio
+          const SHOW_RATIO = 0.95; // más laxo para asegurar aparición
+          const HIDE_RATIO = 0.9; // histéresis para evitar parpadeos
+          const shouldShow =
+            coversViewport || fullyVisibleTarget || ratio >= SHOW_RATIO;
+          const shouldHide =
+            !coversViewport && !fullyVisibleTarget && ratio < HIDE_RATIO;
+
+          if (shouldShow && !currentState.buttonVisible) {
+            setCtaState((prev) => ({ ...prev, buttonVisible: true }));
+          } else if (shouldHide && currentState.buttonVisible) {
+            setCtaState((prev) => ({ ...prev, buttonVisible: false }));
           }
 
           // Typewriter activation at 95%
@@ -134,7 +161,8 @@ const Rebecca = memo(() => {
         });
       },
       {
-        threshold: [0, 0.1, 0.3, 0.95, 1], // 🎯 OPTIMIZADO: Reducido de 6 a 5 thresholds
+        // 🎯 Mayor granularidad para evitar saltos: 0..1 con paso de 0.01
+        threshold: Array.from({ length: 101 }, (_, i) => i / 100),
       }
     );
 
@@ -281,36 +309,39 @@ const Rebecca = memo(() => {
 
           <div className="cta-content">
             <h2 className="cta-title cta-title-container">
-              <span
-                className={`cta-title-span trabajemos ${
-                  ctaState.scrollPercent >= 0.3 ? "visible" : ""
-                }`}
-                style={{
-                  transform: `translateX(${
-                    -window.innerWidth * 0.7 +
-                    (Math.min(ctaState.scrollPercent, 0.9) / 0.9) *
-                      window.innerWidth *
-                      0.7
-                  }px)`,
-                }}
-              >
-                TRABAJEMOS
-              </span>
-              <span
-                className={`cta-title-span juntos ${
-                  ctaState.scrollPercent >= 0.3 ? "visible" : ""
-                }`}
-                style={{
-                  transform: `translateX(${
-                    window.innerWidth * 0.7 -
-                    (Math.min(ctaState.scrollPercent, 0.9) / 0.9) *
-                      window.innerWidth *
-                      0.7
-                  }px)`,
-                }}
-              >
-                JUNTOS
-              </span>
+              {(() => {
+                // 🎯 Normalizar progreso entre 0.3 y 0.9 para un movimiento suave
+                const start = 0.3;
+                const end = 0.9;
+                const raw = ctaState.scrollPercent;
+                const progress = Math.max(
+                  0,
+                  Math.min(1, (raw - start) / (end - start))
+                );
+                const w = window.innerWidth * 0.7;
+                const leftX = -w * (1 - progress); // -w → 0
+                const rightX = w * (1 - progress); //  w → 0
+                return (
+                  <>
+                    <span
+                      className={`cta-title-span trabajemos ${
+                        raw >= start ? "visible" : ""
+                      }`}
+                      style={{ transform: `translateX(${leftX}px)` }}
+                    >
+                      TRABAJEMOS
+                    </span>
+                    <span
+                      className={`cta-title-span juntos ${
+                        raw >= start ? "visible" : ""
+                      }`}
+                      style={{ transform: `translateX(${rightX}px)` }}
+                    >
+                      JUNTOS
+                    </span>
+                  </>
+                );
+              })()}
             </h2>
 
             <div className="cta-subtitle">

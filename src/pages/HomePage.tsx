@@ -483,6 +483,20 @@ const HomePage: FC<HomePageProps> = () => {
     // console.log("✅ Elementos encontrados, iniciando transición...");
 
     if (areSoundsEnabled) {
+      // Ducking: bajar volumen del ambiente durante la transición
+      if (ambientAudioRef.current) {
+        try {
+          gsap.to(ambientAudioRef.current, {
+            volume: Math.max(0, Math.min(1, 0.03)),
+            duration: 0.35,
+            ease: "power2.out",
+            overwrite: true,
+          });
+        } catch (_e) {
+          // ignorar
+        }
+      }
+
       // Asegurar que el audio de transición exista
       if (!transitionAudioRef.current) {
         transitionAudioRef.current = createAudioElement({
@@ -625,6 +639,22 @@ const HomePage: FC<HomePageProps> = () => {
       }
     }, ANIMATION_CONFIG.NAVIGATION_FALLBACK_DELAY);
 
+    // 🔄 Restaurar volumen ambiente si por alguna razón no navegamos
+    const restoreAmbientOnStall = setTimeout(() => {
+      if (!navigationExecutedRef.current && ambientAudioRef.current) {
+        try {
+          gsap.to(ambientAudioRef.current, {
+            volume: AUDIO_CONFIG.AMBIENT_VOLUME,
+            duration: 0.3,
+            ease: "power2.out",
+            overwrite: true,
+          });
+        } catch (_e) {
+          // ignorar
+        }
+      }
+    }, AUDIO_CONFIG.TRANSITION_DURATION + 300);
+
     // 🧹 LIMPIEZA Y NAVEGACIÓN: Todo consolidado en un solo callback
     portalTimeline.eventCallback("onComplete", () => {
       // 🎯 NAVEGACIÓN SINCRONIZADA: Se ejecuta al completar la animación real
@@ -648,8 +678,9 @@ const HomePage: FC<HomePageProps> = () => {
         });
       }
 
-      // Cancelar fallback
+      // Cancelar fallback y restauración condicional
       clearTimeout(navigationFallback);
+      clearTimeout(restoreAmbientOnStall);
 
       // Reset para futuras transiciones
       portalTriggeredRef.current = false;
