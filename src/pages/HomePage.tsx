@@ -302,14 +302,15 @@ const HomePage: FC<HomePageProps> = () => {
   }, []);
 
   useEffect(() => {
+    const sceneAtMount = sceneRef.current;
     return () => {
       try {
         if (THREE.Cache) {
           THREE.Cache.clear();
         }
 
-        if (sceneRef.current) {
-          sceneRef.current.traverse((child: THREE.Object3D) => {
+        if (sceneAtMount) {
+          sceneAtMount.traverse((child: THREE.Object3D) => {
             if (child instanceof THREE.Mesh) {
               if (child.geometry) child.geometry.dispose();
               if (child.material) {
@@ -323,7 +324,7 @@ const HomePage: FC<HomePageProps> = () => {
           });
         }
       } catch (error) {
-        console.warn("Cleanup WebGL context:", error);
+        // Ignorar errores de limpieza de WebGL
       }
     };
   }, []);
@@ -353,8 +354,8 @@ const HomePage: FC<HomePageProps> = () => {
         }
 
         return audio;
-      } catch (error) {
-        console.warn(`Error creating audio element for ${config.src}:`, error);
+      } catch (_error) {
+        // Ignorar errores de creación de audio
         return new Audio();
       }
     },
@@ -380,15 +381,15 @@ const HomePage: FC<HomePageProps> = () => {
         ambientAudioRef.current = null;
       }
     };
-  }, []);
+  }, [createAudioElement]);
 
   useEffect(() => {
     const transitionAudio = createAudioElement({
       src: AUDIO_CONFIG.TRANSITION_PATH,
       volume: AUDIO_CONFIG.TRANSITION_VOLUME,
       preload: "auto",
-      onError: (error) => {
-        console.warn("Error cargando audio de transición:", error.message);
+      onError: (_error) => {
+        // Ignorar errores de carga del audio de transición
       },
     });
 
@@ -399,7 +400,7 @@ const HomePage: FC<HomePageProps> = () => {
         transitionAudioRef.current = null;
       }
     };
-  }, []);
+  }, [createAudioElement]);
 
   useEffect(() => {
     return () => {
@@ -422,6 +423,25 @@ const HomePage: FC<HomePageProps> = () => {
             await ambientAudioRef.current.play();
             setHasStartedAmbientSound(true);
           }
+          // 🎯 Desbloquear/preparar el audio de transición con el gesto del usuario
+          // Reproducimos en volumen 0 y pausamos inmediatamente para que luego pueda
+          // sonar sin bloqueo durante la transición.
+          if (transitionAudioRef.current) {
+            const transition = transitionAudioRef.current;
+            try {
+              transition.currentTime = 0;
+              // Usar muted para evitar cambios de volumen persistentes
+              transition.muted = true; // evitar sonido al activar
+              await transition.play();
+              transition.pause();
+            } catch (_err) {
+              // En algunos navegadores, play() puede fallar; ignoramos silenciosamente
+            } finally {
+              // Asegurar estado consistente para futura reproducción
+              transition.muted = false;
+              transition.volume = AUDIO_CONFIG.TRANSITION_VOLUME; // restaurar volumen objetivo
+            }
+          }
         } else {
           setAreSoundsEnabled(false);
 
@@ -433,8 +453,8 @@ const HomePage: FC<HomePageProps> = () => {
             transitionAudioRef.current.pause();
           }
         }
-      } catch (error) {
-        console.warn("Error al manejar audio:", error);
+      } catch (_error) {
+        // Ignorar errores al manejar audio
       }
     },
     [setAreSoundsEnabled, setHasStartedAmbientSound]
@@ -457,36 +477,50 @@ const HomePage: FC<HomePageProps> = () => {
     const camera = cameraRef.current;
 
     if (!canvas || !scene || !camera) {
-      console.error("❌ Elementos requeridos no encontrados:", {
-        canvas: !!canvas,
-        scene: !!scene,
-        camera: !!camera,
-      });
       return;
     }
 
     // console.log("✅ Elementos encontrados, iniciando transición...");
 
-    if (transitionAudioRef.current && areSoundsEnabled) {
-      transitionAudioRef.current.currentTime = 0;
+    if (areSoundsEnabled) {
+      // Asegurar que el audio de transición exista
+      if (!transitionAudioRef.current) {
+        transitionAudioRef.current = createAudioElement({
+          src: AUDIO_CONFIG.TRANSITION_PATH,
+          volume: AUDIO_CONFIG.TRANSITION_VOLUME,
+          preload: "auto",
+        });
+      }
 
-      const playTransitionSound = async () => {
+      const el = transitionAudioRef.current;
+      // Forzar estado correcto antes de reproducir
+      if (el) {
+        el.muted = false;
+        el.volume = AUDIO_CONFIG.TRANSITION_VOLUME;
         try {
-          await transitionAudioRef.current?.play();
-
-          setTimeout(() => {
-            if (transitionAudioRef.current) {
-              transitionAudioRef.current.pause();
-            }
-          }, AUDIO_CONFIG.TRANSITION_DURATION);
-        } catch (error) {
-          if (import.meta.env.DEV) {
-            console.warn("Transition audio skipped:", error);
-          }
+          // currentTime puede fallar si no hay metadata aún
+          el.currentTime = 0;
+        } catch (_e) {
+          // ignorar
         }
-      };
 
-      playTransitionSound();
+        const playTransitionSound = async () => {
+          try {
+            await el.play();
+            setTimeout(() => {
+              try {
+                el.pause();
+              } catch (_e) {
+                // ignorar
+              }
+            }, AUDIO_CONFIG.TRANSITION_DURATION);
+          } catch (_error) {
+            // Ignorado: algunos navegadores pueden bloquear play() fuera de gesto directo
+          }
+        };
+
+        playTransitionSound();
+      }
     }
 
     scene.position.set(0, 0, 0);
@@ -586,11 +620,7 @@ const HomePage: FC<HomePageProps> = () => {
     const navigationFallback = setTimeout(() => {
       if (!navigationExecutedRef.current) {
         navigationExecutedRef.current = true;
-
-        // 🔓 RESTAURAR SCROLL: Habilitar scroll antes de navegar
         document.body.style.overflow = "";
-
-        console.warn("Animation may have stalled, forcing navigation fallback");
         navigate(ROUTES.REBECCA);
       }
     }, ANIMATION_CONFIG.NAVIGATION_FALLBACK_DELAY);
@@ -627,7 +657,7 @@ const HomePage: FC<HomePageProps> = () => {
         navigationExecutedRef.current = false;
       }, 1000);
     });
-  }, [navigate]);
+  }, [navigate, areSoundsEnabled, transitionContext, createAudioElement]);
 
   // Enlazar función en ref estable
   useEffect(() => {
@@ -733,7 +763,7 @@ const HomePage: FC<HomePageProps> = () => {
         isMouseActiveRef.current = false;
       }, SCROLL_CONFIG.MOUSE_IDLE_TIMEOUT);
     },
-    [renderTrail, config.mouseTrail.updateInterval]
+    [renderTrail, config.mouseTrail.updateInterval, config.mouseTrail.maxPoints]
   );
 
   const handleMouseLeave = useCallback(() => {
