@@ -103,11 +103,12 @@
   background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0) 100%);
 }
 
+/* Pista de créditos: arranca justo debajo (top:100%) */
 .credits-track {
   position: absolute;
-  bottom: -100%; /* Comienza fuera (debajo) */
+  top: 100%; /* primer bloque totalmente fuera */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -126,11 +127,13 @@
 }
 
 /* Activación diferida: solo cuando el modal tiene la clase .animate */
-.simple-credits-modal.animate .credits-track {
-  animation: credits-scroll 28s linear forwards;
+/* Variable de distancia total (ajustable). Incrementar si el último bloque no llega a salir arriba. */
+.simple-credits-modal {
+  --credits-distance: 190%;
+  --credits-duration: 28s;
 }
-.simple-credits-modal.animate .credit-block {
-  animation: credit-fade 28s linear forwards;
+.simple-credits-modal.animate .credits-track {
+  animation: credits-scroll var(--credits-duration) linear forwards;
 }
 
 /* Estado previo (pre) mantiene la pista en posición inicial sin animar */
@@ -162,24 +165,12 @@
     transform: translate(-50%, 0);
   }
   100% {
-    transform: translate(-50%, -120%);
+    transform: translate(-50%, calc(-1 * var(--credits-distance)));
   }
 }
 
 /* Sutil aparición / desaparición global (opcional si se reutiliza) */
-@keyframes credit-fade {
-  0%,
-  5% {
-    opacity: 0;
-  }
-  10%,
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
+/* (Opcional) Si se desea un leve fade global, se puede añadir otra animación aquí. */
 
 /* Ajustes responsivos mínimos */
 @media (max-width: 900px) {
