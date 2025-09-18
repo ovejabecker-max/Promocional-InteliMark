@@ -113,7 +113,6 @@
   flex-direction: column;
   align-items: center;
   gap: 2.2rem;
-  animation: credits-scroll 28s linear forwards;
   font-size: clamp(0.75rem, 1.05vw, 1rem);
   letter-spacing: 0.5px;
 }
@@ -124,7 +123,20 @@
   max-width: 90%;
   margin: 0 auto;
   filter: drop-shadow(0 0 4px rgba(218, 128, 35, 0.35));
+}
+
+/* Activación diferida: solo cuando el modal tiene la clase .animate */
+.simple-credits-modal.animate .credits-track {
+  animation: credits-scroll 28s linear forwards;
+}
+.simple-credits-modal.animate .credit-block {
   animation: credit-fade 28s linear forwards;
+}
+
+/* Estado previo (pre) mantiene la pista en posición inicial sin animar */
+.simple-credits-modal.pre .credits-track {
+  transform: translate(-50%, 0);
+  bottom: -100%;
 }
 
 .credit-role {

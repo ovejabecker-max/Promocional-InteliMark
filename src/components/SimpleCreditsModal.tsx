@@ -1,6 +1,6 @@
 // src/components/SimpleCreditsModal.tsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./SimpleCreditsModal.css";
 
 interface SimpleCreditsModalProps {
@@ -14,6 +14,20 @@ export const SimpleCreditsModal: React.FC<SimpleCreditsModalProps> = ({
   onClose,
   backgroundImage,
 }) => {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setReady(false);
+      // Doble rAF para asegurar que el frame inicial (sin animación) se pinte
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setReady(true));
+      });
+    } else {
+      setReady(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -22,7 +36,7 @@ export const SimpleCreditsModal: React.FC<SimpleCreditsModalProps> = ({
       onClick={onClose}
       style={{ cursor: "pointer" }}
     >
-      <div className="simple-credits-modal">
+      <div className={`simple-credits-modal ${ready ? "animate" : "pre"}`}>
         <img
           src={backgroundImage}
           alt="Marco tecnológico de créditos"
