@@ -41,6 +41,166 @@
   margin: 0 auto;
 }
 
+/* ============================= */
+/* CAPA DE TEXTO DE CRÉDITOS      */
+/* ============================= */
+/* Se posiciona encima de la imagen pero solo ocupa el área central negra.
+   Ajustamos con porcentajes aproximados basados en el marco: se deja margen
+   interno para no invadir el borde luminoso. */
+.credits-text-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72%; /* Ajustable según pruebas visuales */
+  height: 62%;
+  pointer-events: none; /* No bloquea el cierre por clic */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Oxanium", "Orbitron", sans-serif;
+  color: #f5f5f5;
+  text-shadow: 0 0 6px rgba(218, 128, 35, 0.35),
+    0 0 18px rgba(218, 128, 35, 0.15);
+}
+
+.credits-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Máscara estricta */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+/* Degradados adicionales (opcionales) para reforzar entrada/salida */
+.credits-fade {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 14%;
+  pointer-events: none;
+  z-index: 2;
+}
+.credits-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 100%);
+}
+.credits-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.credits-track {
+  position: absolute;
+  bottom: -100%; /* Comienza fuera (debajo) */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.2rem;
+  animation: credits-scroll 28s linear forwards;
+  font-size: clamp(0.75rem, 1.05vw, 1rem);
+  letter-spacing: 0.5px;
+}
+
+.credit-block {
+  text-align: center;
+  line-height: 1.25;
+  max-width: 90%;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 4px rgba(218, 128, 35, 0.35));
+  animation: credit-fade 28s linear forwards;
+}
+
+.credit-role {
+  margin: 0 0 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.85;
+  letter-spacing: 1.5px;
+  color: #ffb470;
+  text-transform: uppercase;
+}
+
+.credit-name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+/* Animaciones */
+@keyframes credits-scroll {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  100% {
+    transform: translate(-50%, -120%);
+  }
+}
+
+/* Sutil aparición / desaparición global (opcional si se reutiliza) */
+@keyframes credit-fade {
+  0%,
+  5% {
+    opacity: 0;
+  }
+  10%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Ajustes responsivos mínimos */
+@media (max-width: 900px) {
+  .credits-text-layer {
+    width: 78%;
+    height: 58%;
+  }
+  .credits-track {
+    gap: 1.9rem;
+    font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  }
+  .credit-name {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .credits-text-layer {
+    width: 82%;
+    height: 54%;
+  }
+  .credits-track {
+    gap: 1.6rem;
+    animation-duration: 30s;
+  }
+  .credit-role {
+    font-size: 0.65rem;
+  }
+  .credit-name {
+    font-size: 0.78rem;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .simple-credits-overlay {
