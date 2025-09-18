@@ -8,12 +8,12 @@ import { vapiConfig } from "../config/vapi.config";
 import { useVapi } from "../hooks/useVapi";
 import FuenteCero from "../components/FuenteCero";
 import { NewsletterForm } from "../components/NewsletterForm";
+import { RobotFooterModel } from "../components/RobotFooterModel";
 import SimpleCreditsModal from "../components/SimpleCreditsModal";
 import { TranscriptModal } from "../components/TranscriptModal";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
-import { RobotFooterModel } from "../components/RobotFooterModel";
 import "./Rebecca.css";
 
 const Rebecca = memo(() => {
@@ -457,9 +457,7 @@ const Rebecca = memo(() => {
                 gap: 0,
               }}
             >
-              <div className="robot-footer-3d-container">
-                <RobotFooterModel />
-              </div>
+              <RobotFooterModel />
 
               <div className="footer-credits">
                 <button

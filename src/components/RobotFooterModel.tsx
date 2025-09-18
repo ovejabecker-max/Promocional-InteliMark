@@ -1,85 +1,89 @@
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import React, { Suspense, useEffect, useRef } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { Environment, OrbitControls, useGLTF } from "@react-three/drei";
-import { Suspense, useRef } from "react";
 import * as THREE from "three";
 
-// Pre-carga del modelo (ruta en public)
-// El archivo se encuentra en public/Robot_footer.glb por lo que se referencia como "/Robot_footer.glb"
-
-interface RobotModelProps {
-  rotationSpeed?: number;
-}
-
-function RobotModel({ rotationSpeed = 0.15 }: RobotModelProps) {
+// Componente que carga y ajusta el modelo
+function RobotModel() {
   const group = useRef<THREE.Group>(null!);
-  const { scene } = useGLTF("/Robot_footer.glb");
+  const { scene } = useGLTF("/Robot_footer.glb", true);
+  const { size } = useThree();
 
-  // Ajustes iniciales del modelo (escala y rotación base)
-  if (scene && !scene.userData.__initialized) {
-    scene.traverse((obj) => {
-      if ((obj as THREE.Mesh).isMesh) {
-        const mesh = obj as THREE.Mesh;
-        mesh.castShadow = false;
-        mesh.receiveShadow = false;
-      }
-    });
-    scene.scale.set(2.2, 2.2, 2.2);
-    scene.rotation.y = Math.PI; // Girar para que mire al frente
-    scene.userData.__initialized = true;
-  }
+  // Ajustar escala automáticamente para caber en el contenedor
+  useEffect(() => {
+    if (!group.current) return;
+    // Clonar escena para evitar mutar original si se reutiliza
+    const cloned = scene.clone(true);
+    // Limpiar hijos previos (si hot reload)
+    group.current.clear();
+    group.current.add(cloned);
 
-  useFrame((_, delta) => {
-    if (group.current) {
-      group.current.rotation.y += delta * rotationSpeed * 0.2; // Rotación muy lenta
-    }
-  });
+    // Calcular bounding box y escalar
+    const box = new THREE.Box3().setFromObject(cloned);
+    const sizeVec = new THREE.Vector3();
+    box.getSize(sizeVec);
+    const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z);
+    // Parámetros de ajuste fino (se pueden retocar rápidamente si hace falta)
+    const TARGET_SIZE = 2.5; // antes 2.6 (ligeramente menor => más margen)
+    const PADDING_PERCENT = 0.9; // antes 0.95 (más aire alrededor)
+    const scale = (TARGET_SIZE / maxDim) * PADDING_PERCENT;
+    cloned.scale.setScalar(scale);
 
-  return <primitive ref={group} object={scene} position={[0, -0.6, 0]} />;
+    // Recentrar en origen
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    cloned.position.sub(center); // mover al origen
+    cloned.position.y -= sizeVec.y * 0.02; // ajuste vertical más sutil tras reducción
+  }, [scene, size]);
+
+  // Rotación eliminada según solicitud del usuario
+
+  return <group ref={group} />;
 }
 
-function AutoFitCamera() {
+// Adaptar cámara a un encuadre cómodo
+function AdjustCamera() {
   const { camera } = useThree();
-  // Posición fija pensada para un modelo de cabeza centrado
-  camera.position.set(0, 0.4, 3.2);
-  camera.lookAt(0, 0.2, 0);
+  useEffect(() => {
+    camera.position.set(0, 0.4, 4.2);
+    camera.near = 0.01;
+    camera.far = 100;
+    camera.updateProjectionMatrix();
+  }, [camera]);
   return null;
 }
 
-export const RobotFooterModel = () => {
+export const RobotFooterModel: React.FC = () => {
   return (
-    <div className="robot-footer-3d-wrapper">
+    <div
+      className="robot-footer-container"
+      style={{
+        width: "380px",
+        height: "400px",
+        position: "relative",
+        background: "transparent",
+        borderRadius: "10px",
+        overflow: "hidden",
+        pointerEvents: "none", // impedir interferir con UI circundante
+      }}
+    >
       <Canvas
-        shadows={false}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true }}
-        camera={{ fov: 35, near: 0.1, far: 50 }}
+        style={{ position: "absolute", inset: 0 }}
+        dpr={[1, 2]}
+        gl={{ alpha: true, antialias: true }}
+        camera={{ fov: 35, position: [0, 0.4, 4.2] }}
       >
-        <color attach="background" args={[0, 0, 0]} />
         <Suspense fallback={null}>
-          <AutoFitCamera />
-          <ambientLight intensity={0.6} />
-          <directionalLight
-            intensity={1.1}
-            position={[2, 3, 4]}
-            castShadow={false}
-          />
-          <directionalLight intensity={0.4} position={[-3, 2, -2]} />
-          <spotLight
-            intensity={1.2}
-            position={[0, 4, 3]}
-            angle={0.5}
-            penumbra={0.4}
-          />
-          <RobotModel />
+          <AdjustCamera />
+          <ambientLight intensity={0.7} />
+          {/* Luz direccional suave */}
+          <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow />
           <Environment preset="city" />
+          <RobotModel />
           <OrbitControls
             enablePan={false}
             enableZoom={false}
-            enableRotate={true}
             autoRotate={false}
-            makeDefault={false}
-            minPolarAngle={Math.PI / 2 - 0.4}
-            maxPolarAngle={Math.PI / 2 + 0.2}
           />
         </Suspense>
       </Canvas>
@@ -87,5 +91,7 @@ export const RobotFooterModel = () => {
   );
 };
 
-// Declaración GLTF para permitir el pre-load en build
+// Pre-cargar el modelo
 useGLTF.preload("/Robot_footer.glb");
+
+export default RobotFooterModel;
