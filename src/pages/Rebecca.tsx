@@ -13,6 +13,7 @@ import { TranscriptModal } from "../components/TranscriptModal";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
+import { RobotFooterModel } from "../components/RobotFooterModel";
 import "./Rebecca.css";
 
 const Rebecca = memo(() => {
@@ -456,26 +457,8 @@ const Rebecca = memo(() => {
                 gap: 0,
               }}
             >
-              <div
-                style={{
-                  width: "380px",
-                  height: "400px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "rgba(218, 128, 35, 0.1)",
-                  border: "2px dashed rgba(218, 128, 35, 0.3)",
-                  borderRadius: "10px",
-                  color: "#da8023",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  margin: "0 auto",
-                }}
-              >
-                🤖 Robot 3D
-                <br />
-                (Temporalmente deshabilitado)
+              <div className="robot-footer-3d-container">
+                <RobotFooterModel />
               </div>
 
               <div className="footer-credits">

@@ -297,6 +297,56 @@ body,
   position: absolute;
   top: 12.5%;
   left: 12.5%;
+  /* === Robot 3D Footer Model === */
+  .robot-footer-3d-container {
+    width: 380px;
+    height: 400px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    background: radial-gradient(
+      circle at 50% 60%,
+      rgba(218, 128, 35, 0.15),
+      rgba(0, 0, 0, 0.85)
+    );
+    border: 1px solid rgba(218, 128, 35, 0.35);
+    border-radius: 14px;
+    box-shadow: 0 0 25px rgba(218, 128, 35, 0.25), 0 8px 32px rgba(0, 0, 0, 0.6),
+      inset 0 0 12px rgba(218, 128, 35, 0.1);
+    overflow: hidden;
+    backdrop-filter: blur(6px);
+  }
+
+  .robot-footer-3d-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .robot-footer-3d-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+    outline: none;
+  }
+
+  .robot-footer-3d-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0) 40%
+    );
+    mix-blend-mode: screen;
+  }
   z-index: 6;
   opacity: 0.4;
 }
