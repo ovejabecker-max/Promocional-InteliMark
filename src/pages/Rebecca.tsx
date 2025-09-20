@@ -15,6 +15,7 @@ import { HomePageModal } from "../components/HomePageModal";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
+import Home3DIcon from "../assets/Home3D.png";
 import "./Rebecca.css";
 
 const Rebecca = memo(() => {
@@ -280,7 +281,7 @@ const Rebecca = memo(() => {
         }`}
       >
         <div className="main-content-wrapper">
-          {/* 🎯 BOTÓN PARA ABRIR HOMEPAGE MODAL - Esquina superior izquierda */}
+          {/* 🎯 BOTÓN PARA ABRIR HOMEPAGE MODAL - Solo imagen */}
           <button
             className="homepage-modal-button"
             onClick={() =>
@@ -289,8 +290,7 @@ const Rebecca = memo(() => {
             aria-label="Ver experiencia 3D completa"
             title="Ver experiencia 3D completa"
           >
-            <span className="homepage-modal-button-icon">🌐</span>
-            <span className="homepage-modal-button-text">Experiencia 3D</span>
+            <img src={Home3DIcon} alt="3D Icon" />
           </button>
 
           <h1 className="portal-title">
