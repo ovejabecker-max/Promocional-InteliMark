@@ -11,6 +11,7 @@ import { NewsletterForm } from "../components/NewsletterForm";
 import { RobotFooterModel } from "../components/RobotFooterModel";
 import SimpleCreditsModal from "../components/SimpleCreditsModal";
 import { TranscriptModal } from "../components/TranscriptModal";
+import { HomePageModal } from "../components/HomePageModal";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
@@ -52,6 +53,7 @@ const Rebecca = memo(() => {
   // Estados de UI
   const [uiState, setUiState] = useState({
     showCreditsModal: false,
+    showHomePageModal: false,
   });
 
   // Referencias
@@ -278,6 +280,19 @@ const Rebecca = memo(() => {
         }`}
       >
         <div className="main-content-wrapper">
+          {/* 🎯 BOTÓN PARA ABRIR HOMEPAGE MODAL - Esquina superior izquierda */}
+          <button
+            className="homepage-modal-button"
+            onClick={() =>
+              setUiState((prev) => ({ ...prev, showHomePageModal: true }))
+            }
+            aria-label="Ver experiencia 3D completa"
+            title="Ver experiencia 3D completa"
+          >
+            <span className="homepage-modal-button-icon">🌐</span>
+            <span className="homepage-modal-button-text">Experiencia 3D</span>
+          </button>
+
           <h1 className="portal-title">
             {entryState.fromPortal
               ? "¡Bienvenido al futuro!"
@@ -522,6 +537,14 @@ const Rebecca = memo(() => {
           setUiState((prev) => ({ ...prev, showCreditsModal: false }))
         }
         backgroundImage={ContenedorCreditos}
+      />
+
+      {/* 🌐 MODAL DE HOMEPAGE EMBEBIDO - EXPERIENCIA 3D COMPLETA */}
+      <HomePageModal
+        isOpen={uiState.showHomePageModal}
+        onClose={() =>
+          setUiState((prev) => ({ ...prev, showHomePageModal: false }))
+        }
       />
     </>
   );

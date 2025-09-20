@@ -532,6 +532,72 @@ body,
   overflow: hidden; /* 🎯 AGREGADO: Contener todos los efectos dentro de la sección principal */
 }
 
+/* 🌐 BOTÓN PARA ABRIR HOMEPAGE MODAL - ESQUINA SUPERIOR IZQUIERDA */
+.homepage-modal-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(218, 128, 35, 0.1);
+  border: 2px solid rgba(218, 128, 35, 0.4);
+  border-radius: 50px;
+  color: #ffffff;
+  font-family: var(--font-tech);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  text-decoration: none;
+  user-select: none;
+}
+
+.homepage-modal-button:hover {
+  background: rgba(218, 128, 35, 0.2);
+  border-color: rgba(218, 128, 35, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(218, 128, 35, 0.3);
+}
+
+.homepage-modal-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(218, 128, 35, 0.4);
+}
+
+.homepage-modal-button-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.homepage-modal-button-text {
+  white-space: nowrap;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+  .homepage-modal-button {
+    top: 15px;
+    left: 15px;
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .homepage-modal-button-icon {
+    font-size: 16px;
+  }
+
+  .homepage-modal-button-text {
+    font-size: 11px;
+  }
+}
+
 /* SECCIÓN CTA - REORGANIZACIÓN CRONOLÓGICA COMPLETA */
 
 /* ============================================================================

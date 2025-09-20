@@ -18,7 +18,8 @@ import {
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useNavigate } from "react-router-dom";
+import { useModalAwareNavigate } from "../hooks/useHomePageModal";
+import { useHomePageModalContext } from "../hooks/useHomePageModal";
 import { useTransition } from "../hooks/useTransition";
 import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
@@ -260,7 +261,8 @@ const HomePage: FC<HomePageProps> = () => {
 
   const transitionAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  const navigate = useNavigate();
+  const navigate = useModalAwareNavigate();
+  const modalContext = useHomePageModalContext();
 
   // 🌀 NUEVO: Hook de gestión de transiciones
   const transitionContext = useTransition();
@@ -886,6 +888,17 @@ const HomePage: FC<HomePageProps> = () => {
       const scene = sceneRef.current!;
       const scrollElement = scrollRef.current!;
 
+      // 🎯 DETERMINAR EL SCROLLER CORRECTO SEGÚN EL CONTEXTO
+      let scrollerElement: Window | Element = window;
+
+      if (modalContext.isEmbedded) {
+        // Buscar el contenedor de scroll del modal
+        const modalContent = document.querySelector(".homepage-modal-content");
+        if (modalContent) {
+          scrollerElement = modalContent;
+        }
+      }
+
       const logoMesh = (scene.children?.[1] as THREE.Mesh) || null;
       const textPhrase1 = (scene.children?.[2] as THREE.Group) || null;
       const textPhrase2 = (scene.children?.[3] as THREE.Group) || null;
@@ -899,7 +912,7 @@ const HomePage: FC<HomePageProps> = () => {
             scrub: 1,
             invalidateOnRefresh: true,
             refreshPriority: -1,
-            scroller: window,
+            scroller: scrollerElement,
             onUpdate: (self) => {
               const progress = Math.round(self.progress * 100);
               if (Math.abs(progress - scrollPercentageRef.current) >= 1) {
@@ -913,7 +926,7 @@ const HomePage: FC<HomePageProps> = () => {
           trigger: scrollElement,
           start: "top top",
           end: "bottom bottom",
-          scroller: window,
+          scroller: scrollerElement,
           onUpdate: (self) => {
             const progress = self.progress * 100;
 
@@ -1060,7 +1073,7 @@ const HomePage: FC<HomePageProps> = () => {
       navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
-  }, [active, isCanvasReady]);
+  }, [active, isCanvasReady, modalContext.isEmbedded]);
 
   return (
     <div ref={mainRef} className="homepage-container">
