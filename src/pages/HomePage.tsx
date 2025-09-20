@@ -1076,7 +1076,12 @@ const HomePage: FC<HomePageProps> = () => {
   }, [active, isCanvasReady, modalContext.isEmbedded]);
 
   return (
-    <div ref={mainRef} className="homepage-container">
+    <div
+      ref={mainRef}
+      className={`homepage-container ${
+        modalContext.isEmbedded ? "homepage-embedded" : ""
+      }`}
+    >
       <canvas
         ref={trailCanvasRef}
         className="cursor-trail-canvas full-viewport-fixed gpu-accelerated"
