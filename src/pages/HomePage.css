@@ -214,91 +214,36 @@ body {
   }
 }
 
-/* 🔧 CRITICAL: Anular TODOS los transforms de GSAP en modal embebido */
-.homepage-embedded * {
-  transform: none !important;
-  will-change: auto !important;
-}
-
-/* 🔧 CRITICAL: Específicamente para elementos 3D y canvas */
-.homepage-embedded canvas,
-.homepage-embedded .canvas-container,
-.homepage-embedded .canvas-container *,
-.homepage-embedded .scroll-content,
-.homepage-embedded .scroll-content * {
-  position: absolute !important;
-  transform: none !important;
-  transition: none !important;
-  will-change: auto !important;
-}
-
 /* 🎯 ESTILOS ESPECÍFICOS PARA HOMEPAGE EMBEBIDO EN MODAL */
+
+/* 🔧 CRÍTICO: Solo anular transforms en elementos específicos problemáticos */
+.homepage-embedded .canvas-container,
+.homepage-embedded .canvas-container canvas,
 .homepage-embedded .full-viewport-fixed {
-  /* 🔧 CRITICAL: Posición fija absoluta sin transforms */
+  /* Mantener posición fija pero permitir scroll */
   position: absolute !important;
   top: 0 !important;
   left: 0 !important;
   width: 100% !important;
   height: 100vh !important;
-  transform: none !important; /* 🔧 EVITAR transforms que causen movimiento */
-  z-index: var(--z-background);
 }
 
-.homepage-embedded .cursor-trail-canvas {
-  /* 🔧 CRITICAL: Canvas de cursor fijo */
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100vh !important;
-  transform: none !important; /* 🔧 EVITAR transforms */
-  pointer-events: none;
-  z-index: var(--z-cursor-trail);
-}
-
-.homepage-embedded .canvas-container {
-  /* 🔧 CRITICAL: Canvas 3D completamente fijo */
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100vh !important;
-  transform: none !important; /* 🔧 EVITAR transforms que causen movimiento */
-  z-index: var(--z-background);
-}
-
-/* 🔧 CRITICAL: Evitar que GSAP mueva el contenido del canvas */
-.homepage-embedded .canvas-container canvas {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  transform: none !important; /* 🔧 ANULAR transforms de GSAP */
-}
-
+/* 🔧 Permitir que el contenido de scroll funcione normalmente */
 .homepage-embedded .scroll-content {
-  /* 🔧 CRITICAL: Scroll content fijo */
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
+  position: relative !important;
   z-index: var(--z-content);
   width: 100% !important;
   height: var(--scroll-height-desktop, 300vh) !important;
   min-height: var(--scroll-height-desktop, 300vh) !important;
-  max-height: var(--scroll-height-desktop, 300vh) !important;
-  transform: none !important; /* 🔧 EVITAR transforms */
-  overflow: hidden;
+  /* NO anular transforms aquí - necesarios para scroll */
 }
 
-/* 🔧 CRITICAL: Contenedor principal completamente fijo */
+/* 🔧 Contenedor principal con comportamiento de scroll normal */
 .homepage-embedded {
   position: relative !important;
-  top: 0 !important;
-  left: 0 !important;
   width: 100% !important;
   height: var(--scroll-height-desktop, 300vh) !important;
   min-height: var(--scroll-height-desktop, 300vh) !important;
-  max-height: var(--scroll-height-desktop, 300vh) !important;
-  transform: none !important; /* 🔧 EVITAR cualquier transform */
-  overflow: hidden !important;
+  overflow: visible !important; /* Permitir scroll normal */
   background: #000000;
 }

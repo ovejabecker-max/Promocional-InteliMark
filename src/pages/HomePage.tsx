@@ -904,27 +904,70 @@ const HomePage: FC<HomePageProps> = () => {
       const textPhrase2 = (scene.children?.[3] as THREE.Group) || null;
 
       ctx = gsap.context(() => {
-        // 🔧 CRITICAL: Si está embebido, deshabilitar animaciones que causen movimiento
+        // 🎯 CONFIGURACIÓN DIFERENCIADA: Modal vs Normal
         if (modalContext.isEmbedded) {
-          // Solo crear el ScrollTrigger para porcentaje, sin animaciones de movimiento
+          // 🔧 MODAL: Animaciones limitadas pero funcionales
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: scrollElement,
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 1,
+              invalidateOnRefresh: true,
+              refreshPriority: -1,
+              scroller: scrollerElement,
+              onUpdate: (self) => {
+                const progress = Math.round(self.progress * 100);
+                if (Math.abs(progress - scrollPercentageRef.current) >= 1) {
+                  setScrollPercentage(progress);
+                }
+              },
+            },
+          });
+
+          // 🔧 MODAL: Solo animaciones sutiles de texto, sin mover cámara
+          if (textPhrase1?.children) {
+            const [line1, line2, line3] =
+              textPhrase1.children as THREE.Object3D[];
+            if (line1?.position)
+              timeline.to(line1.position, { z: 20, ease: "none" }, 0);
+            if (line2?.position)
+              timeline.to(line2.position, { z: 15, ease: "none" }, 0);
+            if (line3?.position)
+              timeline.to(line3.position, { z: 10, ease: "none" }, 0);
+          }
+
+          if (textPhrase2?.children) {
+            const [line1, line2] = textPhrase2.children as THREE.Object3D[];
+            if (line1?.position)
+              timeline.to(line1.position, { z: 8, ease: "none" }, 0);
+            if (line2?.position)
+              timeline.to(line2.position, { z: 5, ease: "none" }, 0);
+          }
+
+          // Portal trigger para modal (solo cerrar modal)
           ScrollTrigger.create({
             trigger: scrollElement,
             start: "top top",
             end: "bottom bottom",
             scroller: scrollerElement,
             onUpdate: (self) => {
-              const progress = Math.round(self.progress * 100);
-              if (Math.abs(progress - scrollPercentageRef.current) >= 1) {
-                setScrollPercentage(progress);
+              const progress = self.progress * 100;
+
+              if (
+                progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+                !portalTriggeredRef.current &&
+                modalContext.closeModal
+              ) {
+                portalTriggeredRef.current = true;
+                modalContext.closeModal();
               }
             },
           });
 
-          // No ejecutar animaciones de cámara ni elementos 3D que causen movimiento
+          ScrollTrigger.refresh();
           return;
-        }
-
-        // Animaciones normales solo para HomePage no embebido
+        } // Animaciones normales solo para HomePage no embebido
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: scrollElement,
@@ -1094,7 +1137,7 @@ const HomePage: FC<HomePageProps> = () => {
       navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
-  }, [active, isCanvasReady, modalContext.isEmbedded]);
+  }, [active, isCanvasReady, modalContext]);
 
   return (
     <div

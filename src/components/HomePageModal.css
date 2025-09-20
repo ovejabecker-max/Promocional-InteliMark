@@ -71,10 +71,8 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  /* 🎯 MEJORADO: Scroll behavior optimizado para consistencia */
+  /* 🎯 SCROLL BEHAVIOR: Smooth para mejor UX */
   scroll-behavior: smooth;
-  /* 🔧 CRITICAL: Evitar que el contenido se expanda más allá del viewport */
-  max-height: 100vh;
   /* Custom scrollbar for modal */
   scrollbar-width: thin;
   scrollbar-color: rgba(218, 128, 35, 0.6) rgba(0, 0, 0, 0.3);
@@ -98,33 +96,27 @@
 }
 
 .homepage-modal-wrapper {
-  /* 🎯 CRITICAL: Altura exacta que coincide con el scroll content */
-  height: var(--scroll-height-desktop, 300vh);
-  min-height: var(--scroll-height-desktop, 300vh);
-  max-height: var(--scroll-height-desktop, 300vh);
+  /* 🎯 ALTURA DINÁMICA: Solo lo necesario para el contenido */
+  height: auto;
+  min-height: 100vh;
   width: 100%;
   position: relative;
-  overflow: hidden; /* 🔧 CRITICAL: Evitar overflow que cause sección negra */
-  /* 🎯 FONDO NEGRO SÓLIDO PARA EVITAR TRANSPARENCIAS */
-  background: #000000;
+  overflow: visible; /* Permitir scroll natural */
+  background: #000000; /* Fondo consistente */
 }
 
 /* Ensure HomePage renders correctly in modal */
 .homepage-modal-wrapper .app-main {
-  /* 🎯 CRITICAL: Altura exacta que coincide con el wrapper */
-  height: var(--scroll-height-desktop, 300vh);
-  min-height: var(--scroll-height-desktop, 300vh);
-  max-height: var(--scroll-height-desktop, 300vh);
-  overflow: hidden; /* 🔧 CRITICAL: Evitar overflow */
+  /* 🎯 ALTURA DINÁMICA: Se adapta al contenido */
+  height: auto;
+  min-height: 100vh;
 }
 
 /* Asegurar que el contenido del scroll funcione correctamente */
 .homepage-modal-wrapper .scroll-content {
-  /* 🎯 CRITICAL: Altura exacta - sin excesos */
+  /* 🎯 ALTURA RESPONSIVE: Como HomePage normal */
   height: var(--scroll-height-desktop, 300vh);
   min-height: var(--scroll-height-desktop, 300vh);
-  max-height: var(--scroll-height-desktop, 300vh);
-  overflow: hidden; /* 🔧 CRITICAL: Evitar que el contenido se desborde */
 }
 
 /* Prevent any overflow issues with 3D content */
