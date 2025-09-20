@@ -27,7 +27,7 @@
 .homepage-modal-close {
   position: absolute;
   top: 20px;
-  right: 20px;
+  left: 20px;
   width: 50px;
   height: 50px;
   background: rgba(218, 128, 35, 0.2);
@@ -138,7 +138,7 @@
 @media (max-width: 768px) {
   .homepage-modal-close {
     top: 15px;
-    right: 15px;
+    left: 15px;
     width: 40px;
     height: 40px;
     font-size: 20px;
