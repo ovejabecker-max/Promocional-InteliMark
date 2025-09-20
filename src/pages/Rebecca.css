@@ -1082,20 +1082,7 @@ body,
   box-sizing: border-box;
   z-index: 3;
   overflow: hidden; /* 🎯 CONTENCIÓN: Prevenir que efectos del footer escapen hacia otras secciones */
-  background: linear-gradient(
-      45deg,
-      rgba(80, 80, 80, 0.8) 0%,
-      transparent 25%,
-      transparent 75%,
-      rgba(80, 80, 80, 0.8) 100%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(80, 80, 80, 0.6) 0%,
-      transparent 50%,
-      rgba(80, 80, 80, 0.6) 100%
-    ),
-    #505050;
+  background: #505050;
   backdrop-filter: blur(15px);
   /* 🎯 RESTAURAR TIPOGRAFÍA ORIGINAL */
   font-family: "Orbitron", "Oxanium", sans-serif;
