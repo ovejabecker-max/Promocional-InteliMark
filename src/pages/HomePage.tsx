@@ -904,6 +904,27 @@ const HomePage: FC<HomePageProps> = () => {
       const textPhrase2 = (scene.children?.[3] as THREE.Group) || null;
 
       ctx = gsap.context(() => {
+        // 🔧 CRITICAL: Si está embebido, deshabilitar animaciones que causen movimiento
+        if (modalContext.isEmbedded) {
+          // Solo crear el ScrollTrigger para porcentaje, sin animaciones de movimiento
+          ScrollTrigger.create({
+            trigger: scrollElement,
+            start: "top top",
+            end: "bottom bottom",
+            scroller: scrollerElement,
+            onUpdate: (self) => {
+              const progress = Math.round(self.progress * 100);
+              if (Math.abs(progress - scrollPercentageRef.current) >= 1) {
+                setScrollPercentage(progress);
+              }
+            },
+          });
+
+          // No ejecutar animaciones de cámara ni elementos 3D que causen movimiento
+          return;
+        }
+
+        // Animaciones normales solo para HomePage no embebido
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: scrollElement,

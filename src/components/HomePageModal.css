@@ -1,5 +1,14 @@
 /* src/components/HomePageModal.css */
 
+/* 🎯 VARIABLES CSS PARA CONSISTENCY CON HOMEPAGE */
+.homepage-modal-overlay {
+  /* Variables heredadas de HomePage para responsive behavior */
+  --scroll-height-mobile: 250vh;
+  --scroll-height-medium: 275vh;
+  --scroll-height-desktop: 300vh;
+  --scroll-height-landscape: 200vh;
+}
+
 .homepage-modal-overlay {
   position: fixed;
   top: 0;
@@ -18,6 +27,7 @@
   height: 100%;
   cursor: auto;
   overflow: hidden;
+  /* 🎯 CRITICAL: Fondo negro sólido - sin gradientes que causen problemas */
   background: #000000;
 }
 
@@ -61,6 +71,10 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  /* 🎯 MEJORADO: Scroll behavior optimizado para consistencia */
+  scroll-behavior: smooth;
+  /* 🔧 CRITICAL: Evitar que el contenido se expanda más allá del viewport */
+  max-height: 100vh;
   /* Custom scrollbar for modal */
   scrollbar-width: thin;
   scrollbar-color: rgba(218, 128, 35, 0.6) rgba(0, 0, 0, 0.3);
@@ -84,19 +98,33 @@
 }
 
 .homepage-modal-wrapper {
-  min-height: 300vh; /* Asegurar altura suficiente para scroll */
+  /* 🎯 CRITICAL: Altura exacta que coincide con el scroll content */
+  height: var(--scroll-height-desktop, 300vh);
+  min-height: var(--scroll-height-desktop, 300vh);
+  max-height: var(--scroll-height-desktop, 300vh);
   width: 100%;
   position: relative;
+  overflow: hidden; /* 🔧 CRITICAL: Evitar overflow que cause sección negra */
+  /* 🎯 FONDO NEGRO SÓLIDO PARA EVITAR TRANSPARENCIAS */
+  background: #000000;
 }
 
 /* Ensure HomePage renders correctly in modal */
 .homepage-modal-wrapper .app-main {
-  min-height: 300vh;
+  /* 🎯 CRITICAL: Altura exacta que coincide con el wrapper */
+  height: var(--scroll-height-desktop, 300vh);
+  min-height: var(--scroll-height-desktop, 300vh);
+  max-height: var(--scroll-height-desktop, 300vh);
+  overflow: hidden; /* 🔧 CRITICAL: Evitar overflow */
 }
 
 /* Asegurar que el contenido del scroll funcione correctamente */
 .homepage-modal-wrapper .scroll-content {
-  min-height: 300vh; /* Match HomePage requirements */
+  /* 🎯 CRITICAL: Altura exacta - sin excesos */
+  height: var(--scroll-height-desktop, 300vh);
+  min-height: var(--scroll-height-desktop, 300vh);
+  max-height: var(--scroll-height-desktop, 300vh);
+  overflow: hidden; /* 🔧 CRITICAL: Evitar que el contenido se desborde */
 }
 
 /* Prevent any overflow issues with 3D content */
@@ -142,5 +170,51 @@
     width: 40px;
     height: 40px;
     font-size: 20px;
+  }
+}
+
+/* 🎯 MEDIA QUERIES RESPONSIVE PARA MODAL HOMEPAGE - ALTURA EXACTA */
+
+/* Móvil pequeño - altura base */
+@media (max-width: 480px) {
+  .homepage-modal-wrapper,
+  .homepage-modal-wrapper .app-main,
+  .homepage-modal-wrapper .scroll-content {
+    height: var(--scroll-height-mobile);
+    min-height: var(--scroll-height-mobile);
+    max-height: var(--scroll-height-mobile);
+  }
+}
+
+/* Móvil grande y tablet pequeño */
+@media (min-width: 481px) {
+  .homepage-modal-wrapper,
+  .homepage-modal-wrapper .app-main,
+  .homepage-modal-wrapper .scroll-content {
+    height: var(--scroll-height-medium);
+    min-height: var(--scroll-height-medium);
+    max-height: var(--scroll-height-medium);
+  }
+}
+
+/* Tablet y desktop pequeño */
+@media (min-width: 769px) {
+  .homepage-modal-wrapper,
+  .homepage-modal-wrapper .app-main,
+  .homepage-modal-wrapper .scroll-content {
+    height: var(--scroll-height-desktop);
+    min-height: var(--scroll-height-desktop);
+    max-height: var(--scroll-height-desktop);
+  }
+}
+
+/* Orientación landscape en móviles */
+@media (max-height: 600px) and (orientation: landscape) {
+  .homepage-modal-wrapper,
+  .homepage-modal-wrapper .app-main,
+  .homepage-modal-wrapper .scroll-content {
+    height: var(--scroll-height-landscape) !important;
+    min-height: var(--scroll-height-landscape) !important;
+    max-height: var(--scroll-height-landscape) !important;
   }
 }

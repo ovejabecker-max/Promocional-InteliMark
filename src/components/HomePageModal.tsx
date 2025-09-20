@@ -53,7 +53,8 @@ export const HomePageModal: React.FC<HomePageModalProps> = ({
   // Reset scroll when modal opens
   useEffect(() => {
     if (isOpen && contentRef.current) {
-      contentRef.current.scrollTo(0, 0);
+      // 🎯 MEJORADO: Reset scroll suave para mejor UX
+      contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [isOpen]);
 
