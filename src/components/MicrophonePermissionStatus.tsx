@@ -4,6 +4,12 @@ import { useMicrophonePermission } from "../hooks/useMicrophonePermission";
 export const MicrophonePermissionStatus: React.FC = () => {
   const { permissionState, canUseMicrophone } = useMicrophonePermission();
 
+  // Debug log para verificar que el componente se está ejecutando
+  console.log("MicrophonePermissionStatus renderizado:", {
+    permissionState,
+    canUseMicrophone,
+  });
+
   const getStatusColor = () => {
     // Todos los estados usan color naranjo
     return "#da8023";
