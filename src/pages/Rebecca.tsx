@@ -12,6 +12,7 @@ import { RobotFooterModel } from "../components/RobotFooterModel";
 import SimpleCreditsModal from "../components/SimpleCreditsModal";
 import { TranscriptModal } from "../components/TranscriptModal";
 import { HomePageModal } from "../components/HomePageModal";
+import { TestNotification } from "../test-notification";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
@@ -270,6 +271,7 @@ const Rebecca = memo(() => {
 
   return (
     <>
+      <TestNotification />
       <div
         ref={containerRef}
         className={`rebecca-container ${
