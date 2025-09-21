@@ -1,0 +1,44 @@
+/* Estilos específicos para react-hot-toast para forzar Oxanium */
+
+/* Selector específico para todos los elementos de toast */
+div[data-hot-toast-id] {
+  font-family: "Oxanium", Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica,
+    Arial, sans-serif !important;
+  font-size: 10px !important;
+}
+
+/* Selector más específico para el contenido del toast */
+div[data-hot-toast-id] > div {
+  font-family: "Oxanium", Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica,
+    Arial, sans-serif !important;
+  font-size: 10px !important;
+}
+
+/* Selector para el wrapper del toast */
+.Toastify__toast {
+  font-family: "Oxanium", Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica,
+    Arial, sans-serif !important;
+  font-size: 10px !important;
+}
+
+/* Forzar Oxanium en cualquier elemento que contenga toast */
+[class*="toast"] {
+  font-family: "Oxanium", Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica,
+    Arial, sans-serif !important;
+  font-size: 10px !important;
+}
+
+/* Especificidad máxima para react-hot-toast */
+div[role="status"] {
+  font-family: "Oxanium", Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica,
+    Arial, sans-serif !important;
+  font-size: 10px !important;
+}
+
+/* Estilos para el contenedor principal de toast */
+#__next div[role="status"],
+body div[role="status"] {
+  font-family: "Oxanium", Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica,
+    Arial, sans-serif !important;
+  font-size: 10px !important;
+}

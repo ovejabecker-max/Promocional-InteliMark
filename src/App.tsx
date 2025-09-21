@@ -107,12 +107,19 @@ function App() {
             // Configuración por defecto para todos los toasts
             duration: 4000,
             style: {
-              background: "#363636",
-              color: "#fff",
-              fontSize: "14px",
-              borderRadius: "8px",
-              boxShadow:
-                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+              background: "transparent",
+              color: "#da8023",
+              fontSize: "10px !important", // Reducido a 10px para evaluación estética
+              fontFamily:
+                "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
+              fontWeight: "700",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              border: "none",
+              borderRadius: "0",
+              padding: "8px",
+              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+              boxShadow: "none",
             },
             // Configuraciones específicas por tipo
             success: {

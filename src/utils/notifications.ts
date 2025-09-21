@@ -1,15 +1,26 @@
 /**
- * Sistema de noti  static success(message: string, options?: NotificationOptions) {
+ * Sistema de noti  static success(message: string, options?: NotificationOptions)   static warning(message: string, options?: NotificationOptions) {
     const config = { ...this.defaultOptions, ...options };
+    return toast(message, {
+      duration: config.duration,
+      position: config.position,
+      style: {
+        background: "transparent",
+        color: "#da8023",
+        fontFamily:
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
+        fontWeight: "700",
+        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
+        border: "none",config = { ...this.defaultOptions, ...options };
     return toast.success(message, {
       duration: config.duration,
       position: config.position,
       style: {
         background: "transparent",
         color: "#da8023",
-        fontFamily: "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+        fontFamily: "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
-        fontSize: "13px", // Reducido de 16px a 13px (20% menos)unificado usando react-hot-toast
+        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)unificado usando react-hot-toast
  * Proporciona notificaciones consistentes en toda la aplicación
  */
 import React from "react";
@@ -39,9 +50,10 @@ export class NotificationManager {
       style: {
         background: "transparent",
         color: "#da8023",
-        fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
+        fontFamily:
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
-        fontSize: "16px",
+        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
         border: "none",
         borderRadius: "0",
         padding: "8px",
@@ -67,9 +79,9 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023",
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
-        fontSize: "13px", // Reducido de 16px a 13px (20% menos)
+        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
         border: "none",
         borderRadius: "0",
         padding: "8px",
@@ -95,9 +107,9 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023",
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
-        fontSize: "13px", // Reducido de 16px a 13px (20% menos)
+        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
         border: "none",
         borderRadius: "0",
         padding: "8px",
@@ -123,9 +135,9 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023", // Color naranjo final
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
-        fontSize: "13px", // Tamaño final reducido 20%
+        fontSize: "10px !important", // Tamaño final reducido 20%
         border: "none",
         borderRadius: "0",
         padding: "8px",
@@ -150,9 +162,9 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023",
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
-        fontSize: "13px", // Reducido de 16px a 13px (20% menos)
+        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
         border: "none",
         borderRadius: "0",
         padding: "8px",
@@ -204,7 +216,7 @@ export class NotificationManager {
       duration,
       style: {
         maxWidth: "400px",
-        fontSize: "14px",
+        fontSize: "10px !important", // Reducido de 14px a 13px
       },
     });
 
@@ -229,7 +241,7 @@ export class NotificationManager {
             duration: 8000,
             style: {
               maxWidth: "450px",
-              fontSize: "13px",
+              fontSize: "10px !important", // Consistente con otros tamaños
             },
           });
         }, 1000);
