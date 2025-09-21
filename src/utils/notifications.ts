@@ -1,5 +1,26 @@
 /**
- * Sistema de notificaciones unificado usando react-hot-toast
+ * Sistema de noti  static s  static success(message: string, options?: NotificationOptions) {
+    const config = { ...this.defaultOptions, ...options };
+    return toast.success(message, {
+      duration: config.duration,
+      position: config.position,
+      style: {
+        background: "transparent",
+        color: "#da8023",
+        fontFamily: "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+        fontWeight: "700",
+        fontSize: "13px", // Reducido de 16px (20% menos)
+        border: "none",ge: string, options?: NotificationOptions) {
+    const config = { ...this.defaultOptions, ...options };
+    return toast.success(message, {
+      duration: config.duration,
+      position: config.position,
+      style: {
+        background: "transparent",
+        color: "#da8023",
+        fontFamily: "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+        fontWeight: "700",
+        fontSize: "16px",unificado usando react-hot-toast
  * Proporciona notificaciones consistentes en toda la aplicación
  */
 import React from "react";
@@ -27,14 +48,21 @@ export class NotificationManager {
       duration: config.duration,
       position: config.position,
       style: {
-        background: "#d36600e3",
-        color: "white",
+        background: "transparent",
+        color: "#da8023",
+        fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
+        fontWeight: "700",
+        fontSize: "16px",
+        border: "none",
+        borderRadius: "0",
+        padding: "8px",
+        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+        boxShadow: "none",
+        textTransform: "uppercase",
+        letterSpacing: "1px",
         ...config.style,
       },
-      iconTheme: {
-        primary: "#ff5e00ff",
-        secondary: "#f86916e3",
-      },
+      icon: "", // Sin icono
     });
   }
 
@@ -47,14 +75,22 @@ export class NotificationManager {
       duration: config.duration,
       position: config.position,
       style: {
-        background: "#fc7318ff",
-        color: "white",
+        background: "transparent",
+        color: "#da8023",
+        fontFamily:
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+        fontWeight: "700",
+        fontSize: "13px", // Reducido de 16px (20% menos)
+        border: "none",
+        borderRadius: "0",
+        padding: "8px",
+        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+        boxShadow: "none",
+        textTransform: "uppercase",
+        letterSpacing: "1px",
         ...config.style,
       },
-      iconTheme: {
-        primary: "#ffffff",
-        secondary: "#ff7b00ff",
-      },
+      icon: "", // Sin icono
     });
   }
 
@@ -66,12 +102,23 @@ export class NotificationManager {
     return toast(message, {
       duration: config.duration,
       position: config.position,
-      icon: "⚠️",
       style: {
-        background: "#f57c0bff",
-        color: "white",
+        background: "transparent",
+        color: "#da8023",
+        fontFamily:
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+        fontWeight: "700",
+        fontSize: "13px", // Reducido de 16px (20% menos)
+        border: "none",
+        borderRadius: "0",
+        padding: "8px",
+        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+        boxShadow: "none",
+        textTransform: "uppercase",
+        letterSpacing: "1px",
         ...config.style,
       },
+      icon: "", // Sin icono
     });
   }
 
@@ -83,12 +130,23 @@ export class NotificationManager {
     return toast(message, {
       duration: config.duration,
       position: config.position,
-      icon: "ℹ️",
       style: {
-        background: "#fc6500d5",
-        color: "white",
+        background: "transparent",
+        color: "#da8023",
+        fontFamily:
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+        fontWeight: "700",
+        fontSize: "13px", // Reducido de 16px (20% menos)
+        border: "none",
+        borderRadius: "0",
+        padding: "8px",
+        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+        boxShadow: "none",
+        textTransform: "uppercase",
+        letterSpacing: "1px",
         ...config.style,
       },
+      icon: "", // Sin icono
     });
   }
 
@@ -100,10 +158,22 @@ export class NotificationManager {
     return toast.loading(message, {
       position: config.position,
       style: {
-        background: "#da771aff",
-        color: "white",
+        background: "transparent",
+        color: "#da8023",
+        fontFamily:
+          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+        fontWeight: "700",
+        fontSize: "13px", // Reducido de 16px (20% menos)
+        border: "none",
+        borderRadius: "0",
+        padding: "8px",
+        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
+        boxShadow: "none",
+        textTransform: "uppercase",
+        letterSpacing: "1px",
         ...config.style,
       },
+      icon: "", // Sin icono
     });
   }
 
@@ -127,7 +197,7 @@ export class NotificationManager {
   static handleVapiError(error: VapiError) {
     // Mensajes personalizados según el tipo de error
     const errorMessages: Record<VapiErrorType, string> = {
-      connection_failed: "🔌 Sin conexión al servicio de voz",
+      connection_failed: "Sin conexión al servicio de voz",
       authentication_failed: "🔐 Error de autenticación",
       assistant_not_found: "🤖 Asistente no disponible",
       microphone_access_denied: "🎤 Acceso al micrófono denegado",
@@ -182,31 +252,31 @@ export class NotificationManager {
    * Notificaciones específicas para estados de Vapi
    */
   static vapiConnecting() {
-    return this.loading("🔌 Conectando al asistente de voz...", {
+    return this.loading("Conectando al asistente de voz...", {
       duration: 10000,
     });
   }
 
   static vapiConnected() {
-    return this.success("✅ Conectado al asistente de voz", {
+    return this.success("Conectado al asistente de voz", {
       duration: 2000,
     });
   }
 
   static vapiDisconnected() {
-    return this.info("👋 Desconectado del asistente de voz", {
+    return this.info("Desconectado del asistente de voz", {
       duration: 2000,
     });
   }
 
   static vapiReconnecting(attempt: number, maxAttempts: number) {
-    return this.warning(`🔄 Reconectando... (${attempt}/${maxAttempts})`, {
+    return this.warning(`Reconectando... (${attempt}/${maxAttempts})`, {
       duration: 3000,
     });
   }
 
   static vapiReconnectionCancelled() {
-    return this.info("❌ Reconexión cancelada", {
+    return this.info("Reconexión cancelada", {
       duration: 2000,
     });
   }

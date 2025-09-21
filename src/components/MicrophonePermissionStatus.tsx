@@ -2,122 +2,140 @@ import React from "react";
 import { useMicrophonePermission } from "../hooks/useMicrophonePermission";
 
 export const MicrophonePermissionStatus: React.FC = () => {
-  const {
-    permissionState,
-    canUseMicrophone,
-    requestPermission,
-    refreshPermissionStatus,
-  } = useMicrophonePermission();
+  const { permissionState, canUseMicrophone } = useMicrophonePermission();
 
   const getStatusColor = () => {
-    switch (permissionState.status) {
-      case "granted":
-        return "#4caf50";
-      case "denied":
-        return "#f44336";
-      case "checking":
-        return "#ff9800";
-      case "unsupported":
-        return "#9e9e9e";
-      default:
-        return "#2196f3";
-    }
+    // Todos los estados usan color naranjo
+    return "#da8023";
   };
 
-  const getStatusIcon = () => {
+  const getStatusText = () => {
     switch (permissionState.status) {
       case "granted":
-        return "✅";
+        return "MICRÓFONO AUTORIZADO";
       case "denied":
-        return "❌";
+        return "ACCESO DENEGADO";
       case "checking":
-        return "🔄";
+        return "VERIFICANDO PERMISOS...";
       case "unsupported":
-        return "🚫";
+        return "DISPOSITIVO NO COMPATIBLE";
       default:
-        return "❓";
+        return "SISTEMA DE AUDIO";
     }
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "20px",
-        right: "20px",
-        background: "rgba(0, 0, 0, 0.8)",
-        color: "white",
-        padding: "16px",
-        borderRadius: "8px",
-        fontSize: "14px",
-        fontFamily: "monospace",
-        border: `2px solid ${getStatusColor()}`,
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-        minWidth: "250px",
-        zIndex: 9999,
-      }}
-    >
+    <>
+      {/* Texto principal del estado - SIN CONTENEDOR */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginBottom: "8px",
+          position: "fixed",
+          top: "20px",
+          right: "20px",
+          color: getStatusColor(),
+          fontSize: "13px", // Reducido de 16px (20% menos)
+          fontFamily:
+            "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+          fontWeight: "900",
+          zIndex: 9999,
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          textShadow: `2px 2px 4px rgba(0, 0, 0, 0.3)`,
+          animation:
+            permissionState.status === "checking"
+              ? "pulse 2s infinite"
+              : "none",
         }}
       >
-        <span style={{ fontSize: "18px" }}>{getStatusIcon()}</span>
-        <strong>Estado del Micrófono</strong>
+        {getStatusText()}
       </div>
 
-      <div>
-        <strong>Status:</strong> {permissionState.status}
-      </div>
-
-      <div>
-        <strong>Soportado:</strong> {permissionState.isSupported ? "Sí" : "No"}
-      </div>
-
-      <div>
-        <strong>Puede usar:</strong> {canUseMicrophone ? "Sí" : "No"}
-      </div>
-
+      {/* Información adicional si hay error - SOLO TEXTO */}
       {permissionState.error && (
-        <div style={{ color: "#f44336", marginTop: "8px", fontSize: "12px" }}>
-          <strong>Error:</strong> {permissionState.error}
+        <div
+          style={{
+            position: "fixed",
+            top: "45px",
+            right: "20px",
+            color: "#da8023",
+            fontSize: "12px",
+            fontFamily:
+              "Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+            fontWeight: "500",
+            zIndex: 9999,
+            maxWidth: "280px",
+            opacity: 0.8,
+            textShadow: `1px 1px 2px rgba(0, 0, 0, 0.2)`,
+          }}
+        >
+          {permissionState.error}
         </div>
       )}
 
-      <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
-        <button
-          onClick={requestPermission}
+      {/* Estado de disponibilidad - SOLO TEXTO */}
+      {!canUseMicrophone && permissionState.status !== "checking" && (
+        <div
           style={{
-            background: "#2196f3",
-            color: "white",
-            border: "none",
-            padding: "6px 12px",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "12px",
+            position: "fixed",
+            top: "45px",
+            right: "20px",
+            color: "#da8023",
+            fontSize: "10px", // Reducido de 12px (20% menos)
+            fontFamily:
+              "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+            fontWeight: "500",
+            zIndex: 9999,
+            textTransform: "uppercase",
+            letterSpacing: "0.5px",
+            textShadow: `1px 1px 2px rgba(0, 0, 0, 0.2)`,
           }}
         >
-          Solicitar
-        </button>
+          MICRÓFONO NO DISPONIBLE
+        </div>
+      )}
 
-        <button
-          onClick={refreshPermissionStatus}
+      {/* Indicador de soporte - SOLO TEXTO */}
+      {!permissionState.isSupported && (
+        <div
           style={{
-            background: "#ff9800",
-            color: "white",
-            border: "none",
-            padding: "6px 12px",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "12px",
+            position: "fixed",
+            top: "65px",
+            right: "20px",
+            color: "#da8023",
+            fontSize: "9px", // Reducido de 11px (20% menos)
+            fontFamily:
+              "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+            fontWeight: "400",
+            zIndex: 9999,
+            opacity: 0.7,
+            textShadow: `1px 1px 2px rgba(0, 0, 0, 0.1)`,
           }}
         >
-          Refrescar
-        </button>
-      </div>
-    </div>
+          Navegador no compatible
+        </div>
+      )}
+    </>
   );
 };
+
+/* Definir la animación pulse directamente */
+if (typeof document !== "undefined") {
+  const existingStyle = document.querySelector("#microphone-status-styles");
+  if (!existingStyle) {
+    const style = document.createElement("style");
+    style.id = "microphone-status-styles";
+    style.textContent = `
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.7;
+          transform: scale(1.02);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
