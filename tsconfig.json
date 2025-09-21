@@ -1,20 +1,32 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    // ✅ TARGET UNIFICADO: ES2022 para toda la aplicación
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+    // ✅ MODULES CONFIG
     "module": "ESNext",
-    "skipLibCheck": true,
     "moduleResolution": "bundler",
+    "moduleDetection": "force",
     "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+
+    // ✅ EMIT CONFIG
     "noEmit": true,
     "jsx": "react-jsx",
+    "skipLibCheck": true,
+
+    // ✅ STRICT LINTING (UNIFICADO)
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "erasableSyntaxOnly": true,
+    "noUncheckedSideEffectImports": true
   },
   "include": ["src"]
 }

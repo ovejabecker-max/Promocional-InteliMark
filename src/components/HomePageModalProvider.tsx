@@ -1,10 +1,10 @@
 // src/components/HomePageModalProvider.tsx
 
-import React, { createContext, ReactNode } from "react";
+import React, { createContext, type ReactNode } from "react";
 import {
   useNavigate as useRouterNavigate,
-  To,
-  NavigateOptions,
+  type To,
+  type NavigateOptions,
 } from "react-router-dom";
 
 // Tipo para la función navigate
