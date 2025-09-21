@@ -2,11 +2,26 @@ import React from "react";
 import { useMicrophonePermission } from "../hooks/useMicrophonePermission";
 
 export const MicrophonePermissionStatus: React.FC = () => {
-  const { permissionState, canUseMicrophone } = useMicrophonePermission();
+  const {
+    permissionState,
+    canUseMicrophone,
+    requestPermission: _requestPermission,
+    refreshPermissionStatus: _refreshPermissionStatus,
+  } = useMicrophonePermission();
 
   const getStatusColor = () => {
-    // Todos los estados usan color naranjo
-    return "#da8023";
+    switch (permissionState.status) {
+      case "granted":
+        return "#da8023"; // Naranjo para estado exitoso
+      case "denied":
+        return "#9e9e9e"; // Gris para estado denegado
+      case "checking":
+        return "#da8023"; // Naranjo para verificando
+      case "unsupported":
+        return "#666666"; // Gris oscuro para no soportado
+      default:
+        return "#da8023"; // Naranjo por defecto
+    }
   };
 
   const getStatusText = () => {
@@ -33,10 +48,9 @@ export const MicrophonePermissionStatus: React.FC = () => {
           top: "20px",
           right: "20px",
           color: getStatusColor(),
-          fontSize: "13px", // Reducido de 16px a 13px (20% menos)
-          fontFamily:
-            "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
-          fontWeight: "900",
+          fontSize: "16px",
+          fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
+          fontWeight: "700",
           zIndex: 9999,
           textTransform: "uppercase",
           letterSpacing: "1px",
@@ -57,10 +71,9 @@ export const MicrophonePermissionStatus: React.FC = () => {
             position: "fixed",
             top: "45px",
             right: "20px",
-            color: "#da8023",
+            color: "#9e9e9e",
             fontSize: "12px",
-            fontFamily:
-              "Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+            fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
             fontWeight: "500",
             zIndex: 9999,
             maxWidth: "280px",
@@ -79,10 +92,9 @@ export const MicrophonePermissionStatus: React.FC = () => {
             position: "fixed",
             top: "45px",
             right: "20px",
-            color: "#da8023",
-            fontSize: "10px", // Reducido de 12px a 10px (20% menos)
-            fontFamily:
-              "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+            color: "#666666",
+            fontSize: "12px",
+            fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
             fontWeight: "500",
             zIndex: 9999,
             textTransform: "uppercase",
@@ -101,10 +113,9 @@ export const MicrophonePermissionStatus: React.FC = () => {
             position: "fixed",
             top: "65px",
             right: "20px",
-            color: "#da8023",
-            fontSize: "9px", // Reducido de 11px a 9px (20% menos)
-            fontFamily:
-              "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+            color: "#666666",
+            fontSize: "11px",
+            fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
             fontWeight: "400",
             zIndex: 9999,
             opacity: 0.7,
@@ -118,24 +129,18 @@ export const MicrophonePermissionStatus: React.FC = () => {
   );
 };
 
-/* Definir la animación pulse directamente */
-if (typeof document !== "undefined") {
-  const existingStyle = document.querySelector("#microphone-status-styles");
-  if (!existingStyle) {
-    const style = document.createElement("style");
-    style.id = "microphone-status-styles";
-    style.textContent = `
-      @keyframes pulse {
-        0%, 100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 0.7;
-          transform: scale(1.02);
-        }
-      }
-    `;
-    document.head.appendChild(style);
+/* Definir la animación pulse aquí mismo para evitar dependencias externas */
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.02);
+    }
   }
-}
+`;
+document.head.appendChild(style);

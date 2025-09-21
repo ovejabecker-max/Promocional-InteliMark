@@ -1,0 +1,267 @@
+/* 🚀 ANIMACIONES TECNOLÓGICAS AVANZADAS - AGENCIA DE IA */
+
+/* Animación de pulso futurista */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Efecto de escaneo holográfico */
+@keyframes holographic-scan {
+  0% {
+    background-position: -100% 0;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 100% 0;
+    opacity: 0;
+  }
+}
+
+/* Brillo de datos en tiempo real */
+@keyframes data-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor,
+      0 0 15px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor,
+      0 0 30px currentColor, 0 0 40px currentColor;
+  }
+}
+
+/* Partículas cuánticas de fondo */
+@keyframes quantum-particles {
+  0%,
+  100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+    opacity: 0.3;
+  }
+  33% {
+    background-position: 30% 30%, 70% 10%, 90% 80%;
+    opacity: 0.6;
+  }
+  66% {
+    background-position: 80% 60%, 20% 80%, 10% 20%;
+    opacity: 0.4;
+  }
+}
+
+/* Campo electromagnético dinámico */
+@keyframes electromagnetic-field {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.2), 0 0 40px rgba(0, 255, 136, 0.1),
+      inset 0 0 20px rgba(0, 255, 136, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.4), 0 0 60px rgba(0, 255, 136, 0.2),
+      inset 0 0 30px rgba(0, 255, 136, 0.1);
+  }
+}
+
+/* Efecto de interferencia digital */
+@keyframes digital-interference {
+  0%,
+  100% {
+    filter: contrast(1) brightness(1);
+  }
+  25% {
+    filter: contrast(1.1) brightness(1.05);
+  }
+  50% {
+    filter: contrast(0.95) brightness(0.98);
+  }
+  75% {
+    filter: contrast(1.05) brightness(1.02);
+  }
+}
+
+/* Clase para texto holográfico */
+.holographic-text {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 25%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0.4) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: holographic-scan 3s infinite;
+}
+
+/* Clase para contenedor cuántico */
+.quantum-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.quantum-container::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+      circle at 20% 20%,
+      rgba(0, 255, 136, 0.1) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(55, 66, 250, 0.1) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 60% 30%,
+      rgba(255, 167, 2, 0.1) 1px,
+      transparent 1px
+    );
+  background-size: 50px 50px, 30px 30px, 40px 40px;
+  animation: quantum-particles 10s infinite;
+  pointer-events: none;
+}
+
+/* Clase para efectos de interfaz neural */
+.neural-interface {
+  background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.1) 0%,
+      rgba(0, 0, 0, 0.2) 100%
+    ),
+    radial-gradient(
+      ellipse at center,
+      rgba(0, 255, 136, 0.05) 0%,
+      transparent 70%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  animation: electromagnetic-field 4s infinite;
+}
+
+/* Efectos específicos para estados */
+.status-granted {
+  animation: data-glow 2s infinite ease-in-out;
+  color: #00ff88;
+}
+
+.status-denied {
+  animation: digital-interference 1.5s infinite;
+  color: #ff4757;
+}
+
+.status-checking {
+  animation: pulse 2s infinite, holographic-scan 3s infinite;
+  color: #ffa502;
+}
+
+.status-unsupported {
+  opacity: 0.6;
+  color: #747d8c;
+  filter: grayscale(0.5);
+}
+
+/* Efecto de texto futurista */
+.futuristic-text {
+  font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+}
+
+.futuristic-text::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  animation: line-scan 2s infinite;
+}
+
+@keyframes line-scan {
+  0%,
+  100% {
+    width: 0;
+    left: 50%;
+  }
+  50% {
+    width: 100%;
+    left: 0;
+  }
+}
+
+/* Botones tecnológicos */
+.tech-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.tech-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.6s;
+}
+
+.tech-button:hover::before {
+  left: 100%;
+}
+
+/* Indicadores de estado avanzados */
+.status-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-indicator::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 10px currentColor;
+  animation: pulse 2s infinite;
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .quantum-container::before {
+    background-size: 30px 30px, 20px 20px, 25px 25px;
+  }
+
+  .futuristic-text {
+    letter-spacing: 1px;
+    font-size: 0.9em;
+  }
+}
