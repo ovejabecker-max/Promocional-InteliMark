@@ -1,26 +1,5 @@
 /**
- * Sistema de noti  static success(message: string, options?: NotificationOptions)   static warning(message: string, options?: NotificationOptions) {
-    const config = { ...this.defaultOptions, ...options };
-    return toast(message, {
-      duration: config.duration,
-      position: config.position,
-      style: {
-        background: "transparent",
-        color: "#da8023",
-        fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
-        fontWeight: "700",
-        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
-        border: "none",config = { ...this.defaultOptions, ...options };
-    return toast.success(message, {
-      duration: config.duration,
-      position: config.position,
-      style: {
-        background: "transparent",
-        color: "#da8023",
-        fontFamily: "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
-        fontWeight: "700",
-        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)unificado usando react-hot-toast
+ * Sistema de notificaciones unificado usando react-hot-toast
  * Proporciona notificaciones consistentes en toda la aplicación
  */
 import React from "react";
