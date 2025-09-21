@@ -121,11 +121,11 @@ export class NotificationManager {
       position: config.position,
       style: {
         background: "transparent",
-        color: "#ff0000", // ROJO TEMPORALMENTE PARA VER SI FUNCIONA
+        color: "#da8023", // Color naranjo final
         fontFamily:
           "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
         fontWeight: "700",
-        fontSize: "24px", // GRANDE TEMPORALMENTE PARA VERIFICAR
+        fontSize: "13px", // Tamaño final reducido 20%
         border: "none",
         borderRadius: "0",
         padding: "8px",
@@ -253,7 +253,7 @@ export class NotificationManager {
   }
 
   static vapiDisconnected() {
-    return this.info("🚨 PRUEBA: Desconectado del asistente de voz - OXANIUM", {
+    return this.info("Desconectado del asistente de voz", {
       duration: 2000,
     });
   }
