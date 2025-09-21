@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useContext } from "react";
-import { AnimationContext } from "../contexts/AnimationContextContext";
+import { AnimationContext } from "../contexts/AnimationContext";
 
 /**
  * Hook simplificado para activar animaciones de pestaña

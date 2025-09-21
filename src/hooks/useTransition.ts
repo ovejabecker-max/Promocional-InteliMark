@@ -4,7 +4,7 @@ import { useContext } from "react";
 import {
   TransitionContext,
   type TransitionContextType,
-} from "../contexts/TransitionContextContext";
+} from "../contexts/TransitionContext";
 
 export const useTransition = (): TransitionContextType => {
   const context = useContext(TransitionContext);

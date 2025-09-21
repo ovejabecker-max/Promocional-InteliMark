@@ -1,5 +1,14 @@
-import React, { useCallback, useRef, useEffect, useState } from "react";
-import { AnimationContext } from "./AnimationContextContext";
+import React, { useCallback, useRef, useEffect, useState, createContext } from "react";
+
+export interface AnimationContextType {
+  isActive: boolean;
+  startAnimations: () => void;
+  stopAnimations: () => void;
+}
+
+export const AnimationContext = createContext<AnimationContextType | null>(
+  null
+);
 
 // 🎯 CONFIGURACIÓN OPTIMIZADA CON LAZY LOADING
 const ANIMATION_CONFIG = {
@@ -30,8 +39,6 @@ const TITLE_CONFIG = {
   DEFAULT_TITLE: "InteliMark",
   SCROLLING_PARTS: ["Sitio en construcción... |", "Vuelve pronto. |"],
 } as const;
-
-// Tipos y contexto se definen en AnimationContextContext.ts
 
 // 🔍 DETECTAR DISPOSITIVOS MÓVILES
 const isMobileDevice = (): boolean => {
