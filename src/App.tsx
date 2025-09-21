@@ -25,7 +25,6 @@ function SPARedirectHandler() {
     const redirectPath = sessionStorage.getItem("redirectPath");
     if (redirectPath) {
       sessionStorage.removeItem("redirectPath");
-      // console.log(`🔄 Redirigiendo desde 404 a: ${redirectPath}`);
       navigate(redirectPath, { replace: true });
     }
   }, [navigate]);
@@ -39,7 +38,6 @@ function ScrollToTop() {
 
   useEffect(() => {
     // ✅ RESTAURAR SCROLL AL INICIO en cada cambio de ruta
-    // console.log(`🎯 Navegando a: ${location.pathname} - restaurando scroll...`);
 
     // Múltiples métodos para máxima compatibilidad
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -50,7 +48,6 @@ function ScrollToTop() {
     const ensureScrollTop = () => {
       if (window.scrollY > 0) {
         window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-        // console.log('✅ Scroll corregido después de navegación');
       }
     };
 

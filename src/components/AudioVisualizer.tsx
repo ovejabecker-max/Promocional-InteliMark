@@ -19,7 +19,6 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = memo(
         }
 
         const newAudioState = !isAudioActive;
-        // Commented for production - console.log("AudioVisualizer Toggle - Estado actual:", isAudioActive, "→ Nuevo estado:", newAudioState);
 
         setIsAudioActive(newAudioState);
 

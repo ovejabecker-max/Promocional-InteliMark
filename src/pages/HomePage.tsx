@@ -371,7 +371,7 @@ const HomePage: FC<HomePageProps> = () => {
       loop: true,
       preload: "auto",
       onError: (_error) => {
-        // Commented for production - console.warn("Error cargando audio ambiente:", error.message);
+        // Error handling for ambient audio loading
       },
     });
 
@@ -472,8 +472,6 @@ const HomePage: FC<HomePageProps> = () => {
   const mouseStoppedTimeoutRef = useRef<number | null>(null);
 
   const triggerPortalTransition = useCallback(() => {
-    // console.log("🚀 triggerPortalTransition INICIADO");
-
     const canvas = canvasRef.current;
     const scene = sceneRef.current;
     const camera = cameraRef.current;
@@ -481,8 +479,6 @@ const HomePage: FC<HomePageProps> = () => {
     if (!canvas || !scene || !camera) {
       return;
     }
-
-    // console.log("✅ Elementos encontrados, iniciando transición...");
 
     if (areSoundsEnabled) {
       // Ducking: bajar volumen del ambiente durante la transición
@@ -553,8 +549,7 @@ const HomePage: FC<HomePageProps> = () => {
         // 📊 OPCIONAL: Tracking de progreso para debugging
         if (import.meta.env.DEV) {
           if (progress % 25 === 0) {
-            // Log cada 25%
-            // console.log(`Portal transition progress: ${progress}%`);
+            // Log cada 25% for debugging
           }
         }
       },
@@ -668,8 +663,6 @@ const HomePage: FC<HomePageProps> = () => {
 
         // ✅ COMPLETAR TRANSICIÓN EN CONTEXT
         transitionContext.completeTransition();
-
-        // console.log("Portal animation completed, navigating to Rebecca...");
 
         // 🚀 NAVEGAR CON ESTADO DE TRANSICIÓN
         navigate(ROUTES.REBECCA, {
