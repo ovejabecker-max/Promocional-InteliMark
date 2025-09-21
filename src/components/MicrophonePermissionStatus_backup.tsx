@@ -25,21 +25,6 @@ export const MicrophonePermissionStatus: React.FC = () => {
     }
   };
 
-  const getStatusText = () => {
-    switch (permissionState.status) {
-      case "granted":
-        return "MICRÓFONO AUTORIZADO";
-      case "denied":
-        return "ACCESO DENEGADO";
-      case "checking":
-        return "VERIFICANDO PERMISOS...";
-      case "unsupported":
-        return "DISPOSITIVO NO COMPATIBLE";
-      default:
-        return "SISTEMA DE AUDIO";
-    }
-  };
-
   return (
     <div
       className="quantum-container neural-interface"
@@ -64,7 +49,7 @@ export const MicrophonePermissionStatus: React.FC = () => {
           0 8px 32px rgba(0, 0, 0, 0.3),
           0 0 0 1px rgba(255, 255, 255, 0.05),
           inset 0 1px 0 rgba(255, 255, 255, 0.1),
-          ${getStatusGlow()}
+          ${getStatusColor()}
         `,
       }}
     >
@@ -87,7 +72,7 @@ export const MicrophonePermissionStatus: React.FC = () => {
             filter: `drop-shadow(0 0 8px ${getStatusColor()})`,
           }}
         >
-          {getStatusIcon()}
+          {getStatusColor()}
         </span>
         <div>
           <strong
