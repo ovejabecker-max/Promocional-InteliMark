@@ -18,8 +18,7 @@ import {
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useModalAwareNavigate } from "../hooks/useHomePageModal";
-import { useHomePageModalContext } from "../hooks/useHomePageModal";
+import { useNavigate } from "react-router-dom";
 import { useTransition } from "../hooks/useTransition";
 import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
@@ -261,8 +260,7 @@ const HomePage: FC<HomePageProps> = () => {
 
   const transitionAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  const navigate = useModalAwareNavigate();
-  const modalContext = useHomePageModalContext();
+  const navigate = useNavigate();
 
   // 🌀 NUEVO: Hook de gestión de transiciones
   const transitionContext = useTransition();
@@ -881,16 +879,7 @@ const HomePage: FC<HomePageProps> = () => {
       const scene = sceneRef.current!;
       const scrollElement = scrollRef.current!;
 
-      // 🎯 DETERMINAR EL SCROLLER CORRECTO SEGÚN EL CONTEXTO
-      let scrollerElement: Window | Element = window;
-
-      if (modalContext.isEmbedded) {
-        // Buscar el contenedor de scroll del modal
-        const modalContent = document.querySelector(".homepage-modal-content");
-        if (modalContent) {
-          scrollerElement = modalContent;
-        }
-      }
+      const scrollerElement: Window | Element = window;
 
       const logoMesh = (scene.children?.[1] as THREE.Mesh) || null;
       const textPhrase1 = (scene.children?.[2] as THREE.Group) || null;
@@ -1066,14 +1055,12 @@ const HomePage: FC<HomePageProps> = () => {
       navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
-  }, [active, isCanvasReady, modalContext.isEmbedded]);
+  }, [active, isCanvasReady]);
 
   return (
     <div
       ref={mainRef}
-      className={`homepage-container ${
-        modalContext.isEmbedded ? "homepage-embedded" : ""
-      }`}
+      className={`homepage-container`}
     >
       <canvas
         ref={trailCanvasRef}

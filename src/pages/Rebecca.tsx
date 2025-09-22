@@ -11,7 +11,7 @@ import { NewsletterForm } from "../components/NewsletterForm";
 import { RobotFooterModel } from "../components/RobotFooterModel";
 import SimpleCreditsModal from "../components/SimpleCreditsModal";
 import { TranscriptModal } from "../components/TranscriptModal";
-import { HomePageModal } from "../components/HomePageModal";
+
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
@@ -54,7 +54,6 @@ const Rebecca = memo(() => {
   // Estados de UI
   const [uiState, setUiState] = useState({
     showCreditsModal: false,
-    showHomePageModal: false,
   });
 
   // Referencias
@@ -539,13 +538,7 @@ const Rebecca = memo(() => {
         backgroundImage={ContenedorCreditos}
       />
 
-      {/* 🌐 MODAL DE HOMEPAGE EMBEBIDO - EXPERIENCIA 3D COMPLETA */}
-      <HomePageModal
-        isOpen={uiState.showHomePageModal}
-        onClose={() =>
-          setUiState((prev) => ({ ...prev, showHomePageModal: false }))
-        }
-      />
+      
     </>
   );
 });
