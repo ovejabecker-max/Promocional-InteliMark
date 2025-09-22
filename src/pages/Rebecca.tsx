@@ -280,18 +280,6 @@ const Rebecca = memo(() => {
         }`}
       >
         <div className="main-content-wrapper">
-          {/* 🎯 BOTÓN PARA ABRIR HOMEPAGE MODAL - Solo imagen */}
-          <button
-            className="homepage-modal-button"
-            onClick={() =>
-              setUiState((prev) => ({ ...prev, showHomePageModal: true }))
-            }
-            aria-label="Ver experiencia 3D completa"
-            title="Ver experiencia 3D completa"
-          >
-            <img src={Home3DIcon} alt="3D Icon" />
-          </button>
-
           <h1 className="portal-title">
             {entryState.fromPortal
               ? "¡Bienvenido al futuro!"
