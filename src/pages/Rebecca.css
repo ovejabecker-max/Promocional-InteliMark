@@ -108,7 +108,7 @@ body {
 html:has(.rebecca-container),
 body:has(.rebecca-container) {
   scroll-behavior: auto;
-  overflow-y: auto;
+  /* overflow-y: auto; <- This was the culprit */
 }
 
 /* Eliminar espacios extra al final */

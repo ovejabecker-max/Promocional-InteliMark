@@ -9,7 +9,7 @@
   background: rgba(0, 0, 0, 0.95);
   z-index: 10000; /* Higher than other modals */
   cursor: pointer;
-  overflow: hidden;
+  /* overflow: hidden; <- This was breaking position: sticky */
 }
 
 .homepage-modal-container {
@@ -17,7 +17,6 @@
   width: 100%;
   height: 100%;
   cursor: auto;
-  overflow: hidden;
   background: #000000;
 }
 
@@ -86,7 +85,8 @@
 .homepage-modal-wrapper {
   min-height: 300vh; /* Asegurar altura suficiente para scroll y animaciones de HomePage */
   width: 100%;
-  position: relative;
+  position: sticky; /* Fija el contenido al hacer scroll */
+  top: 0; /* Lo mantiene en la parte superior */
 }
 
 /* Prevent any overflow issues with 3D content */

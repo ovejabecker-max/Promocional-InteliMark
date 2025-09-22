@@ -32,14 +32,10 @@ export const HomePageModal: React.FC<HomePageModalProps> = ({
 
     if (isOpen) {
       document.addEventListener("keydown", handleEscape);
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = "hidden";
     }
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
-      // Restore body scroll when modal closes
-      document.body.style.overflow = "";
     };
   }, [isOpen, onClose]);
 
