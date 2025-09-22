@@ -84,19 +84,9 @@
 }
 
 .homepage-modal-wrapper {
-  min-height: 300vh; /* Asegurar altura suficiente para scroll */
+  min-height: 300vh; /* Asegurar altura suficiente para scroll y animaciones de HomePage */
   width: 100%;
   position: relative;
-}
-
-/* Ensure HomePage renders correctly in modal */
-.homepage-modal-wrapper .app-main {
-  min-height: 300vh;
-}
-
-/* Asegurar que el contenido del scroll funcione correctamente */
-.homepage-modal-wrapper .scroll-content {
-  min-height: 300vh; /* Match HomePage requirements */
 }
 
 /* Prevent any overflow issues with 3D content */

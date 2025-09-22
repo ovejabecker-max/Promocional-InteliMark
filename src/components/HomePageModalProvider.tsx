@@ -32,31 +32,26 @@ export const HomePageModalProvider: React.FC<HomePageModalProviderProps> = ({
 }) => {
   const originalNavigate = useRouterNavigate();
 
-  // 🎯 FUNCIÓN NAVIGATE INTERCEPTADA: No navega, cierra el modal
+  // 🎯 FUNCIÓN NAVIGATE INTERCEPTADA: Cierra el modal y navega si es necesario.
   const interceptedNavigate: NavigateFunction = (
     to: To,
     options?: NavigateOptions
   ) => {
-    // Si intenta navegar a Rebecca, cierra el modal en su lugar
-    if (
-      to === "/rebecca" ||
-      (typeof to === "string" && to.includes("rebecca"))
-    ) {
-      if (onModalClose) {
-        onModalClose();
-      }
-      return;
-    }
-
-    // Para cualquier otra navegación, también cerramos el modal y navegamos
+    // Siempre cerramos el modal al intentar navegar.
     if (onModalClose) {
       onModalClose();
     }
 
-    // Opcionalmente, ejecutar la navegación real después de cerrar el modal
-    setTimeout(() => {
-      originalNavigate(to, options);
-    }, 100);
+    // Si el destino no es la página actual de Rebecca, procedemos con la navegación
+    // después de un breve retraso para que la animación de cierre del modal se complete.
+    const isNavigatingToRebecca =
+      to === "/rebecca" || (typeof to === "string" && to.includes("rebecca"));
+
+    if (!isNavigatingToRebecca) {
+      setTimeout(() => {
+        originalNavigate(to, options);
+      }, 100); // Retraso para la animación de cierre.
+    }
   };
 
   const contextValue: HomePageModalContextType = {
