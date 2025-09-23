@@ -12,10 +12,8 @@ import { RobotFooterModel } from "../components/RobotFooterModel";
 import SimpleCreditsModal from "../components/SimpleCreditsModal";
 import { TranscriptModal } from "../components/TranscriptModal";
 
-
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
-import Home3DIcon from "../assets/Home3D.png";
 import "./Rebecca.css";
 
 const Rebecca = memo(() => {
@@ -525,8 +523,6 @@ const Rebecca = memo(() => {
         }
         backgroundImage={ContenedorCreditos}
       />
-
-      
     </>
   );
 });
