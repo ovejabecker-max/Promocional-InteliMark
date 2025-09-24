@@ -30,7 +30,7 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023",
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
+          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
         fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
         border: "none",
@@ -58,7 +58,7 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023",
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
+          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
         fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
         border: "none",
@@ -86,7 +86,7 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023",
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
+          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
         fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
         border: "none",
@@ -114,7 +114,7 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023", // Color naranjo final
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
+          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
         fontSize: "10px !important", // Tamaño final reducido 20%
         border: "none",
@@ -141,7 +141,7 @@ export class NotificationManager {
         background: "transparent",
         color: "#da8023",
         fontFamily:
-          "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
+          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
         fontWeight: "700",
         fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
         border: "none",
