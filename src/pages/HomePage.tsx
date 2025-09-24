@@ -40,7 +40,7 @@ const SCROLL_CONFIG = {
   GLITCH_TRIGGER_PERCENTAGE: 68,
   GLITCH_DURATION: 600,
   SETUP_RETRY_DELAY: 300,
-  MOUSE_IDLE_TIMEOUT: 300,
+  MOUSE_IDLE_TIMEOUT: 150, // Reducido para mejor responsividad en desktop
   TEXT_PHASE2_LINE1_START: 45,
   TEXT_PHASE2_LINE1_END: 55,
   TEXT_PHASE2_LINE2_START: 55,
@@ -71,7 +71,7 @@ const TRAIL_CONFIG = {
 } as const;
 
 const UI_CONFIG = {
-  SCROLL_HEIGHT: "200vh",
+  SCROLL_HEIGHT: "300vh", // Solo altura desktop
   CSS_FILTER_TRANSITION: "brightness(400%) contrast(300%) blur(2px)",
   SCENE_READY_MIN_CHILDREN: 4,
   MAX_SETUP_ATTEMPTS: 10,
@@ -99,7 +99,7 @@ const LandscapeScene: FC = memo(() => {
   const texture = useTexture(marDeDatosTexture);
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
 
-  // Optimizar textura una sola vez
+  // Optimizar textura para desktop una sola vez
   useMemo(() => {
     if (texture) {
       texture.generateMipmaps = true; // ✅ Habilitado para mejor LOD
@@ -108,7 +108,7 @@ const LandscapeScene: FC = memo(() => {
       texture.anisotropy = Math.min(4, 16); // ✅ Mejora calidad en ángulos
       texture.wrapS = THREE.ClampToEdgeWrapping;
       texture.wrapT = THREE.ClampToEdgeWrapping;
-      // Nota: El espacio de color se maneja en el renderer con gl.outputColorSpace
+      // Nota: El espacio de color se maneja en el renderer para desktop optimizado
     }
   }, [texture]);
 
@@ -292,11 +292,11 @@ const HomePage: FC<HomePageProps> = () => {
       webgl: {
         antialias: true,
         powerPreference: "high-performance" as const,
-        pixelRatio: Math.min(window.devicePixelRatio, 1.5),
+        pixelRatio: 1, // Fijo para desktop, sin adaptación móvil
       },
       mouseTrail: {
-        maxPoints: 35,
-        updateInterval: 16,
+        maxPoints: 45, // Más puntos para desktop con mayor precisión
+        updateInterval: 12, // Menor intervalo para mayor fluidez en desktop
       },
     };
   }, []);
@@ -822,8 +822,9 @@ const HomePage: FC<HomePageProps> = () => {
     if (!canvas || !container) return;
 
     const updateCanvasSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // Dimensiones fijas optimizadas para desktop
+      canvas.width = Math.max(window.innerWidth, 1200);
+      canvas.height = Math.max(window.innerHeight, 800);
     };
 
     updateCanvasSize();
@@ -1058,10 +1059,7 @@ const HomePage: FC<HomePageProps> = () => {
   }, [active, isCanvasReady]);
 
   return (
-    <div
-      ref={mainRef}
-      className={`homepage-container`}
-    >
+    <div ref={mainRef} className={`homepage-container`}>
       <canvas
         ref={trailCanvasRef}
         className="cursor-trail-canvas full-viewport-fixed gpu-accelerated"
@@ -1084,7 +1082,7 @@ const HomePage: FC<HomePageProps> = () => {
           }}
           onCreated={({ gl }) => {
             gl.setClearColor(0x000000, 0);
-            gl.setPixelRatio(config.webgl.pixelRatio);
+            gl.setPixelRatio(config.webgl.pixelRatio); // PixelRatio fijo para desktop
             gl.outputColorSpace = THREE.SRGBColorSpace;
 
             setIsCanvasReady(true);
