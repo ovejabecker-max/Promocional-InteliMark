@@ -182,8 +182,8 @@ body,
   /* Fondo negro sólido premium */
   background: var(--color-black);
 
-  /* Cursor CAD simplificado con alta especificidad */
-  cursor: crosshair !important;
+  /* Ocultar cursor nativo: lo dibuja el overlay CAD */
+  cursor: none !important;
   box-sizing: border-box;
   scroll-behavior: auto;
   text-rendering: optimizeLegibility;
@@ -193,7 +193,7 @@ body,
 
 /* Asegurar que el cursor CAD se aplique a todos los elementos dentro de Rebecca */
 .rebecca-container * {
-  cursor: crosshair !important;
+  cursor: none !important;
 }
 
 /* Excepciones específicas: CTA permite cursor personalizado de FuenteCero - v2 */

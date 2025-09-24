@@ -11,6 +11,7 @@ import { NewsletterForm } from "../components/NewsletterForm";
 import { RobotFooterModel } from "../components/RobotFooterModel";
 import SimpleCreditsModal from "../components/SimpleCreditsModal";
 import { TranscriptModal } from "../components/TranscriptModal";
+import CadCursor from "../components/CadCursor";
 
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
@@ -267,6 +268,12 @@ const Rebecca = memo(() => {
 
   return (
     <>
+      {/* Cursor CAD estilo AutoCAD: visible dentro de .rebecca-container y oculto sobre CTA */}
+      <CadCursor
+        color="var(--color-orange-primary)"
+        thickness={1}
+        containerSelector=".rebecca-container"
+      />
       <div
         ref={containerRef}
         className={`rebecca-container ${

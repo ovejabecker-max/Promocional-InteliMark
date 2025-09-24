@@ -1,0 +1,68 @@
+/* Overlay a pantalla completa que dibuja el cursor CAD */
+.cad-cursor-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999; /* por encima del contenido, pero bajo modales de sistema si existieran */
+  opacity: 0; /* se controla por JS según zona activa */
+
+  /* Variables dinámicas */
+  --x: 0px;
+  --y: 0px;
+  --cursor-color: var(--color-orange-primary, #da8023);
+  --line-thickness: 5px;
+  --square-size: 8px; /* lado del cuadrado central */
+  --arm-length: 20px; /* largo de cada brazo de la cruz */
+}
+
+/* Segmentos de líneas: usan position fixed para evitar el reflow del DOM */
+.cad-line {
+  position: fixed;
+  background: var(--cursor-color);
+  box-shadow: 0 0 3px var(--cursor-color), 0 0 6px rgba(218, 128, 35, 0.5);
+}
+
+/* Horizontales */
+.cad-line.h {
+  height: var(--line-thickness);
+  top: calc(var(--y));
+}
+.cad-line.h.left {
+  /* Termina justo en el borde izquierdo del cuadrado central */
+  left: calc(var(--x) - (var(--square-size) / 2) - var(--arm-length));
+  width: var(--arm-length);
+}
+.cad-line.h.right {
+  /* Comienza justo al borde derecho del cuadrado central */
+  left: calc(var(--x) + (var(--square-size) / 2));
+  width: var(--arm-length);
+}
+
+/* Verticales */
+.cad-line.v {
+  width: var(--line-thickness);
+  left: calc(var(--x));
+}
+.cad-line.v.top {
+  /* Termina justo en el borde superior del cuadrado central */
+  top: calc(var(--y) - (var(--square-size) / 2) - var(--arm-length));
+  height: var(--arm-length);
+}
+.cad-line.v.bottom {
+  /* Comienza justo al borde inferior del cuadrado central */
+  top: calc(var(--y) + (var(--square-size) / 2));
+  height: var(--arm-length);
+}
+
+/* Cuadrado central */
+.cad-cursor-square {
+  position: fixed;
+  width: var(--square-size);
+  height: var(--square-size);
+  left: calc(var(--x) - (var(--square-size) / 2));
+  top: calc(var(--y) - (var(--square-size) / 2));
+  border: var(--line-thickness) solid var(--cursor-color);
+  box-sizing: border-box;
+  background: transparent; /* sin relleno, estilo AutoCAD */
+  box-shadow: 0 0 3px var(--cursor-color), inset 0 0 2px rgba(218, 128, 35, 0.4);
+}
