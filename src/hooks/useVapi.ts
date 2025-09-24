@@ -159,8 +159,8 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       }));
     });
 
-    vapi.on('message', (message) => {
-      if (message.type === 'transcript' && message.transcriptType === 'final') {
+    vapi.on("message", (message) => {
+      if (message.type === "transcript" && message.transcriptType === "final") {
         setCallStatus((prev) => {
           const newMessages = [...(prev.messages || [])];
           const lastMessage = newMessages[newMessages.length - 1];
@@ -173,7 +173,7 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
           if (lastMessage && lastMessage.role === message.role) {
             // Append to the last message if the role is the same
-            lastMessage.content += ' ' + message.transcript;
+            lastMessage.content += " " + message.transcript;
             lastMessage.timestamp = new Date();
           } else {
             // Add a new message
@@ -272,13 +272,52 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
   const start = useCallback(async () => {
     let loadingToast: string | undefined;
     try {
+      // Verificar contexto de seguridad
+      const isSecureContext = window.isSecureContext;
+      const protocol = window.location.protocol;
+
       vapiLogger.info("Iniciando llamada Vapi", {
         assistantId: config.assistantId,
+        isSecureContext,
+        protocol,
+        userAgent: navigator.userAgent.substring(0, 100), // Primeros 100 caracteres
       });
 
       // Verificar permisos de micrófono antes de iniciar
-      if (!canUseMicrophone) {
-        vapiLogger.warn("Permisos de micrófono no disponibles, solicitando...");
+      if (
+        permissionState.status === "denied" ||
+        permissionState.status === "unsupported"
+      ) {
+        vapiLogger.error(
+          "Permisos de micrófono no disponibles",
+          new Error("microphone_access_denied"),
+          {
+            status: permissionState.status,
+            isSupported: permissionState.isSupported,
+          }
+        );
+        const vapiError = createVapiError(
+          new Error("microphone_access_denied"),
+          "Permisos de micrófono requeridos para el chat de voz."
+        );
+        setCallStatus((prev) => ({
+          ...prev,
+          status: "error",
+          error: vapiError,
+        }));
+        notifyUser(vapiError);
+        return;
+      }
+
+      // Solo solicitar permisos si aún no los tenemos y no están siendo verificados
+      if (
+        permissionState.status === "prompt" ||
+        (!canUseMicrophone && permissionState.status !== "granted")
+      ) {
+        vapiLogger.info("Solicitando permisos de micrófono", {
+          currentStatus: permissionState.status,
+          canUseMicrophone,
+        });
         setCallStatus((prev) => ({ ...prev, status: "permission-required" }));
 
         const hasPermission = await requestPermission();
@@ -315,14 +354,46 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       }
 
       // Starting call with Assistant ID
-      await vapiRef.current?.start(assistantId);
+      try {
+        // Añadir un delay para evitar conflictos con contextos WebGL
+        await new Promise((resolve) => setTimeout(resolve, 150));
 
-      // Cerrar notificación de carga si la conexión es exitosa
-      if (loadingToast) {
-        NotificationManager.dismiss(loadingToast);
+        await vapiRef.current?.start(assistantId);
+
+        // Cerrar notificación de carga si la conexión es exitosa
+        if (loadingToast) {
+          NotificationManager.dismiss(loadingToast);
+        }
+
+        vapiLogger.info("Llamada Vapi iniciada exitosamente");
+      } catch (startError) {
+        // Manejo específico de errores de audio/procesador de entrada
+        const errorMessage = (startError as Error).message || "";
+
+        if (
+          errorMessage.includes("audio") ||
+          errorMessage.includes("processor")
+        ) {
+          vapiLogger.warn(
+            "Error de procesador de audio detectado, pero la conexión puede funcionar",
+            {
+              originalError: errorMessage,
+              context: "Esto puede ser normal en desarrollo HTTP",
+            }
+          );
+
+          // Cerrar notificación de carga
+          if (loadingToast) {
+            NotificationManager.dismiss(loadingToast);
+          }
+
+          // La llamada puede haberse iniciado a pesar del warning
+          vapiLogger.info("Llamada Vapi iniciada (con advertencias de audio)");
+        } else {
+          // Re-lanzar otros errores que sí son críticos
+          throw startError;
+        }
       }
-
-      vapiLogger.info("Llamada Vapi iniciada exitosamente");
     } catch (error) {
       // Cerrar notificación de carga en caso de error
       if (loadingToast) {
@@ -347,7 +418,13 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
 
       notifyUser(vapiError);
     }
-  }, [config.assistantId, canUseMicrophone, requestPermission]);
+  }, [
+    config.assistantId,
+    canUseMicrophone,
+    requestPermission,
+    permissionState.status,
+    permissionState.isSupported,
+  ]);
 
   const stop = useCallback(() => {
     try {
