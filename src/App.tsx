@@ -108,7 +108,7 @@ function App() {
               color: "#da8023",
               fontSize: "10px !important", // Reducido a 10px para evaluación estética
               fontFamily:
-                "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
+                "Oxanium, Inter, Segoe UI, InteliMark system-ui, Avenir, Helvetica, Arial, sans-serif !important",
               fontWeight: "700",
               textTransform: "uppercase",
               letterSpacing: "1px",
