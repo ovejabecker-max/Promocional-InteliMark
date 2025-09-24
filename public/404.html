@@ -16,7 +16,7 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+        background: linear-gradient(135deg, #000000, #2a2a2a, #1a1a1a);
         color: white;
         text-align: center;
         padding: 50px;
@@ -29,19 +29,32 @@
       .container {
         max-width: 600px;
         margin: 0 auto;
+        background: rgba(42, 42, 42, 0.3);
+        border: 2px solid #da8023;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 0 20px rgba(218, 128, 35, 0.3);
+      }
+      h1 {
+        color: #da8023;
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+        text-shadow: 0 0 10px rgba(218, 128, 35, 0.5);
       }
       .loading {
         font-size: 1.5rem;
         margin-bottom: 30px;
+        color: #cccccc;
       }
       .spinner {
-        border: 4px solid #333;
-        border-top: 4px solid #00ffff;
+        border: 4px solid #666666;
+        border-top: 4px solid #da8023;
         border-radius: 50%;
         width: 40px;
         height: 40px;
         animation: spin 1s linear infinite;
         margin: 20px auto;
+        box-shadow: 0 0 15px rgba(218, 128, 35, 0.4);
       }
       @keyframes spin {
         0% {
@@ -54,20 +67,35 @@
       .back-home {
         display: inline-block;
         padding: 15px 30px;
-        background: linear-gradient(45deg, #00ffff, #0080ff);
+        background: linear-gradient(45deg, #da8023, #ff9500);
         color: white;
         text-decoration: none;
-        border-radius: 5px;
-        transition: transform 0.3s ease;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: all 0.3s ease;
         margin-top: 20px;
+        border: 2px solid #da8023;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(218, 128, 35, 0.3);
       }
       .back-home:hover {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        background: linear-gradient(45deg, #ff9500, #da8023);
+        box-shadow: 0 6px 20px rgba(218, 128, 35, 0.5);
+        border-color: #ff9500;
+      }
+      p {
+        color: #999999;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        line-height: 1.6;
       }
     </style>
   </head>
   <body>
     <div class="container">
+      <h1>🎨 PÁGINA NO ENCONTRADA</h1>
       <div class="loading">Redirigiendo...</div>
       <div class="spinner"></div>
       <a href="/" class="back-home"
