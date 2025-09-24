@@ -4,7 +4,7 @@
   --transform-center: translate(-50%, -50%);
   --transition-smooth: all 0.3s ease;
   /* TIPOGRAFÍA UNIFICADA */
-  --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", InteliMark,
     "Helvetica Neue", Arial, sans-serif;
   --font-tech: "Orbitron", "Oxanium", sans-serif;
   --font-mono: "Consolas", "Monaco", "Courier New", monospace;
@@ -173,7 +173,7 @@ body,
   /* 🔧 OPTIMIZADO: Usar height específica para evitar bloqueos de scroll */
   height: fit-content;
   overflow-x: hidden; /* Solo ocultar scroll horizontal */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", InteliMark,
     "Helvetica Neue", Arial, sans-serif;
   color: var(--color-white);
   font-size: 18px;
@@ -707,7 +707,7 @@ body,
 .cta-subtitle .subtitle-line-1,
 .cta-subtitle .subtitle-line-2 {
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", InteliMark,
     "Helvetica Neue", Arial, sans-serif;
   font-weight: 400;
   font-size: 1.5rem; /* 🎯 FIXED: Tamaño fijo 24px */

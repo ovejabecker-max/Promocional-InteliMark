@@ -35,7 +35,7 @@ export const MicrophonePermissionStatus: React.FC = () => {
           color: getStatusColor(),
           fontSize: "13px", // Reducido de 16px a 13px (20% menos)
           fontFamily:
-            "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+            "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif",
           fontWeight: "900",
           zIndex: 9999,
           textTransform: "uppercase",
@@ -60,7 +60,7 @@ export const MicrophonePermissionStatus: React.FC = () => {
             color: "#da8023",
             fontSize: "12px",
             fontFamily:
-              "Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+              "Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif",
             fontWeight: "500",
             zIndex: 9999,
             maxWidth: "280px",
@@ -82,7 +82,7 @@ export const MicrophonePermissionStatus: React.FC = () => {
             color: "#da8023",
             fontSize: "10px", // Reducido de 12px a 10px (20% menos)
             fontFamily:
-              "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+              "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif",
             fontWeight: "500",
             zIndex: 9999,
             textTransform: "uppercase",
@@ -104,7 +104,7 @@ export const MicrophonePermissionStatus: React.FC = () => {
             color: "#da8023",
             fontSize: "9px", // Reducido de 11px a 9px (20% menos)
             fontFamily:
-              "Oxanium, Inter, Segoe UI, Roboto, system-ui, Avenir, Helvetica, Arial, sans-serif",
+              "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif",
             fontWeight: "400",
             zIndex: 9999,
             opacity: 0.7,
