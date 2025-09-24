@@ -1,10 +1,7 @@
-/* 📱 VARIABLES CSS: Valores consolidados y reutilizables */
+/* �️ VARIABLES CSS: Valores consolidados y reutilizables */
 :root {
   /* Heights responsive */
-  --scroll-height-mobile: 250vh; /* Móvil pequeño */
-  --scroll-height-medium: 275vh; /* Móvil grande/tablet pequeño */
   --scroll-height-desktop: 300vh; /* Desktop */
-  --scroll-height-landscape: 200vh; /* Landscape móvil */
 
   /* Colores del sistema de glitch */
   --color-primary-orange: #da8023;
@@ -57,10 +54,10 @@ body {
   height: var(--size-full-viewport);
 }
 
-/* 🎯 CLASE UTILITARIA: Responsive height pattern */
+/* 🖥️ CLASE UTILITARIA: Desktop height pattern */
 .responsive-scroll-height {
-  height: var(--scroll-height-mobile);
-  min-height: var(--scroll-height-mobile);
+  height: var(--scroll-height-desktop);
+  min-height: var(--scroll-height-desktop);
 }
 
 /* Canvas trail optimizado con clases consolidadas */
@@ -186,32 +183,6 @@ body {
     rgba(100, 218, 255, 0.01) 75%,
     var(--color-transparent) 100%
   );
-}
-
-/* 📱 RESPONSIVE: Media queries consolidadas y optimizadas */
-
-/* Móvil grande y tablet pequeño */
-@media (min-width: 481px) {
-  .responsive-scroll-height {
-    height: var(--scroll-height-medium);
-    min-height: var(--scroll-height-medium);
-  }
-}
-
-/* Tablet y desktop pequeño */
-@media (min-width: 769px) {
-  .responsive-scroll-height {
-    height: var(--scroll-height-desktop);
-    min-height: var(--scroll-height-desktop);
-  }
-}
-
-/* ✅ Orientación landscape en móviles - !important necesario para sobrescribir las reglas anteriores */
-@media (max-height: 600px) and (orientation: landscape) {
-  .responsive-scroll-height {
-    height: var(--scroll-height-landscape) !important;
-    min-height: var(--scroll-height-landscape) !important;
-  }
 }
 
 /* 🎯 ESTILOS ESPECÍFICOS PARA HOMEPAGE EMBEBIDO EN MODAL */
