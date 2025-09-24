@@ -532,52 +532,6 @@ body,
   overflow: hidden; /* 🎯 AGREGADO: Contener todos los efectos dentro de la sección principal */
 }
 
-/* 🌐 BOTÓN PARA ABRIR HOMEPAGE MODAL - SOLO IMAGEN */
-.homepage-modal-button {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 100;
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 48px;
-  height: 48px;
-}
-
-.homepage-modal-button img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: brightness(1.2) contrast(1.1);
-  transition: all 0.3s ease;
-}
-
-.homepage-modal-button:hover {
-  transform: translateY(-2px) scale(1.05);
-}
-
-.homepage-modal-button:hover img {
-  filter: brightness(1.4) contrast(1.2)
-    drop-shadow(0 0 10px rgba(218, 128, 35, 0.8));
-}
-
-.homepage-modal-button:active {
-  transform: translateY(0) scale(1);
-}
-
-/* Responsivo para móviles */
-@media (max-width: 768px) {
-  .homepage-modal-button {
-    top: 15px;
-    left: 15px;
-    width: 40px;
-    height: 40px;
-  }
-}
-
 /* SECCIÓN CTA - REORGANIZACIÓN CRONOLÓGICA COMPLETA */
 
 /* ============================================================================
