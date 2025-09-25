@@ -1,7 +1,19 @@
 /* �️ VARIABLES CSS: Valores consolidados y reutilizables */
 :root {
-  /* Heights responsive */
-  --scroll-height-desktop: 300vh; /* Desktop */
+  /* Heights responsive - DESKTOP BASE (preservado) */
+  --scroll-height-desktop: 300vh;
+  --scroll-height: var(--scroll-height-desktop); /* Default desktop */
+
+  /* Responsive font scaling - DESKTOP BASE */
+  --text-scale-factor: 1; /* Desktop base scale */
+  --font-size-3d-base: 1.728rem; /* Base para textos 3D */
+
+  /* Canvas and interaction settings - DESKTOP BASE */
+  --canvas-min-width: 1200px;
+  --canvas-min-height: 800px;
+  --mouse-trail-points: 45;
+  --mouse-trail-interval: 12;
+  --pixel-ratio: 1;
 
   /* Colores del sistema de glitch */
   --color-primary-orange: #da8023;
@@ -56,8 +68,48 @@ body {
 
 /* 🖥️ CLASE UTILITARIA: Desktop height pattern */
 .responsive-scroll-height {
-  height: var(--scroll-height-desktop);
-  min-height: var(--scroll-height-desktop);
+  height: var(--scroll-height); /* ✅ Ahora usa la variable responsive */
+  min-height: var(--scroll-height);
+}
+
+/* 📱 RESPONSIVE SYSTEM: Media queries para adaptar variables */
+
+/* Tablets grandes y pantallas medianas */
+@media (max-width: 1024px) and (min-width: 769px) {
+  :root {
+    --scroll-height: 280vh; /* Reducido proporcionalmente */
+    --text-scale-factor: 0.9;
+    --canvas-min-width: 1000px;
+    --canvas-min-height: 700px;
+    --mouse-trail-points: 35;
+    --mouse-trail-interval: 15;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) and (min-width: 481px) {
+  :root {
+    --scroll-height: 250vh;
+    --text-scale-factor: 0.8;
+    --canvas-min-width: 800px;
+    --canvas-min-height: 600px;
+    --mouse-trail-points: 25;
+    --mouse-trail-interval: 20;
+    --pixel-ratio: 1.5; /* Mejor calidad en tablets */
+  }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  :root {
+    --scroll-height: 200vh; /* Más compacto en móviles */
+    --text-scale-factor: 0.65;
+    --canvas-min-width: 100vw;
+    --canvas-min-height: 100vh;
+    --mouse-trail-points: 15;
+    --mouse-trail-interval: 25;
+    --pixel-ratio: 2; /* Alta densidad para móviles */
+  }
 }
 
 /* Canvas trail optimizado con clases consolidadas */
@@ -183,4 +235,39 @@ body {
     rgba(100, 218, 255, 0.01) 75%,
     var(--color-transparent) 100%
   );
+}
+
+/* 🎮 RESPONSIVE: Interacciones táctiles optimizadas */
+
+/* Touch-friendly adjustments para móviles */
+@media (max-width: 768px) and (pointer: coarse) {
+  .homepage-container {
+    touch-action: pan-y; /* Solo scroll vertical en móviles */
+  }
+
+  /* Mejorar rendimiento en móviles reduciendo efectos */
+  .cursor-trail-canvas {
+    opacity: 0.7; /* Reducir opacidad del trail en móviles */
+  }
+
+  .canvas-container {
+    /* Reducir filtros costosos en móviles */
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+}
+
+/* Tablets: experiencia intermedia */
+@media (max-width: 1024px) and (min-width: 769px) and (pointer: coarse) {
+  .homepage-container {
+    touch-action: pan-y pinch-zoom; /* Permitir zoom en tablets */
+  }
+}
+
+/* Desktop: experiencia completa (sin cambios) */
+@media (min-width: 1025px) and (pointer: fine) {
+  .homepage-container {
+    /* Desktop mantiene experiencia completa sin modificaciones */
+    will-change: auto;
+  }
 }

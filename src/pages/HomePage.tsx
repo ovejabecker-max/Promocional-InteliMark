@@ -24,6 +24,7 @@ import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
 import AudioVisualizer from "../components/AudioVisualizer";
 import marDeDatosTexture from "../assets/mar_de_datos2.webp";
+import { useResponsiveConfig } from "../utils/responsive";
 import "./HomePage.css";
 
 // Configuración de audio
@@ -176,8 +177,8 @@ const LandscapeScene: FC = memo(() => {
 
 LandscapeScene.displayName = "LandscapeScene";
 
-const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
-  ({ scrollPercentage }) => {
+const TextPhrase2: FC<{ scrollPercentage: number; textScale?: number }> = memo(
+  ({ scrollPercentage, textScale = 1 }) => {
     // Función para calcular opacidad basada en rango de scroll
     const calculateOpacity = useCallback(
       (start: number, end: number): number => {
@@ -207,11 +208,14 @@ const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
       return { line1Opacity, line2Opacity };
     }, [scrollPercentage, calculateOpacity]);
 
+    // ✅ RESPONSIVE: Tamaño de fuente adaptativo
+    const fontSize = 1.728 * textScale;
+
     return (
       <group>
         <Text
           position={[0, 5, -140]}
-          fontSize={1.728}
+          fontSize={fontSize}
           color="white"
           anchorX="center"
           anchorY="middle"
@@ -222,7 +226,7 @@ const TextPhrase2: FC<{ scrollPercentage: number }> = memo(
         </Text>
         <Text
           position={[0, 0, -143]}
-          fontSize={1.728}
+          fontSize={fontSize}
           color="white"
           anchorX="center"
           anchorY="middle"
@@ -264,6 +268,8 @@ const HomePage: FC<HomePageProps> = () => {
 
   // 🌀 NUEVO: Hook de gestión de transiciones
   const transitionContext = useTransition();
+  // 📱 NUEVO: Hook de configuración responsive
+  const responsiveConfig = useResponsiveConfig();
   // Carga de assets (drei) para gatear la inicialización
   const { active } = useProgress();
 
@@ -292,14 +298,11 @@ const HomePage: FC<HomePageProps> = () => {
       webgl: {
         antialias: true,
         powerPreference: "high-performance" as const,
-        pixelRatio: 1, // Fijo para desktop, sin adaptación móvil
+        pixelRatio: responsiveConfig.pixelRatio, // ✅ Adaptativo según dispositivo
       },
-      mouseTrail: {
-        maxPoints: 45, // Más puntos para desktop con mayor precisión
-        updateInterval: 12, // Menor intervalo para mayor fluidez en desktop
-      },
+      mouseTrail: responsiveConfig.mouseTrail, // ✅ Adaptativo según dispositivo
     };
-  }, []);
+  }, [responsiveConfig]); // ✅ Dependencia agregada para recalcular
 
   useEffect(() => {
     const sceneAtMount = sceneRef.current;
@@ -822,9 +825,15 @@ const HomePage: FC<HomePageProps> = () => {
     if (!canvas || !container) return;
 
     const updateCanvasSize = () => {
-      // Dimensiones fijas optimizadas para desktop
-      canvas.width = Math.max(window.innerWidth, 1200);
-      canvas.height = Math.max(window.innerHeight, 800);
+      // ✅ RESPONSIVE: Dimensiones adaptativas según configuración del dispositivo
+      canvas.width = Math.max(
+        window.innerWidth,
+        responsiveConfig.canvas.minWidth
+      );
+      canvas.height = Math.max(
+        window.innerHeight,
+        responsiveConfig.canvas.minHeight
+      );
     };
 
     updateCanvasSize();
@@ -843,7 +852,7 @@ const HomePage: FC<HomePageProps> = () => {
         cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = 0;
     };
-  }, [handleMouseMove, handleMouseLeave]);
+  }, [handleMouseMove, handleMouseLeave, responsiveConfig.canvas]);
 
   useEffect(() => {
     // Gatear por readiness real: Canvas creado y assets listos (drei)
@@ -1100,9 +1109,16 @@ const HomePage: FC<HomePageProps> = () => {
               <LogoWithGlitchEffect
                 scrollPercentage={scrollPercentage}
                 position={[0, 9, 15]}
+                scale={responsiveConfig.textScale}
               />
-              <AnimatedTextPhrase1 scrollPercentage={scrollPercentage} />
-              <TextPhrase2 scrollPercentage={scrollPercentage} />
+              <AnimatedTextPhrase1
+                scrollPercentage={scrollPercentage}
+                textScale={responsiveConfig.textScale}
+              />
+              <TextPhrase2
+                scrollPercentage={scrollPercentage}
+                textScale={responsiveConfig.textScale}
+              />
             </group>
           </Suspense>
         </Canvas>

@@ -9,10 +9,12 @@ import logoTexture from "../assets/logo_InteliMark.png";
 interface LogoWithGlitchEffectProps {
   scrollPercentage: number;
   position?: [number, number, number];
+  scale?: number; // ✅ RESPONSIVE: Prop opcional para scaling
 }
 
 const LogoWithGlitchEffect: FC<LogoWithGlitchEffectProps> = memo(
-  ({ scrollPercentage, position = [0, 9, 15] }) => {
+  ({ scrollPercentage, position = [0, 9, 15], scale = 1 }) => {
+    // ✅ RESPONSIVE: Default scale
     const meshRef = useRef<THREE.Mesh>(null!);
     const materialRef = useRef<THREE.ShaderMaterial>(null!);
     // 🎯 USAR LA IMPORTACIÓN EN LUGAR DE RUTA DIRECTA
@@ -124,7 +126,11 @@ const LogoWithGlitchEffect: FC<LogoWithGlitchEffectProps> = memo(
     });
 
     return (
-      <mesh ref={meshRef} position={position as [number, number, number]}>
+      <mesh
+        ref={meshRef}
+        position={position as [number, number, number]}
+        scale={[scale, scale, 1]}
+      >
         <planeGeometry args={[8, 4]} />
         <shaderMaterial
           ref={materialRef}

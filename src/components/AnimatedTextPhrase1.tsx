@@ -5,10 +5,12 @@ import * as THREE from "three";
 
 interface AnimatedTextPhrase1Props {
   scrollPercentage: number;
+  textScale?: number; // ✅ RESPONSIVE: Prop opcional para scaling
 }
 
 const AnimatedTextPhrase1: FC<AnimatedTextPhrase1Props> = memo(
-  ({ scrollPercentage }) => {
+  ({ scrollPercentage, textScale = 1 }) => {
+    // ✅ RESPONSIVE: Default scale 1
     const groupRef = useRef<THREE.Group>(null!);
 
     // Función para calcular opacidad basada en rango de scroll
@@ -40,12 +42,22 @@ const AnimatedTextPhrase1: FC<AnimatedTextPhrase1Props> = memo(
       };
     }, [scrollPercentage, calculateOpacity]);
 
+    // ✅ RESPONSIVE: Calcular tamaños de fuente adaptivos
+    const fontSizes = useMemo(
+      () => ({
+        line1: 1.2 * textScale,
+        line2: 1.2 * textScale,
+        line3: 1.2 * textScale,
+      }),
+      [textScale]
+    );
+
     return (
       <group ref={groupRef}>
         {/* Línea 1: Texto principal - SIN EFECTOS */}
         <Text
           position={[0, 8, -46]}
-          fontSize={1.2}
+          fontSize={fontSizes.line1}
           color="#ffffff"
           anchorX="center"
           anchorY="middle"
@@ -58,7 +70,7 @@ const AnimatedTextPhrase1: FC<AnimatedTextPhrase1Props> = memo(
         {/* Línea 2: Fade-in simple - SIN EFECTOS */}
         <Text
           position={[0, 5, -47]}
-          fontSize={1.2}
+          fontSize={fontSizes.line2}
           color="#ffffff"
           anchorX="center"
           anchorY="middle"
@@ -71,7 +83,7 @@ const AnimatedTextPhrase1: FC<AnimatedTextPhrase1Props> = memo(
         {/* Línea 3: Fade-in simple - SIN EFECTOS */}
         <Text
           position={[0, 2, -48]}
-          fontSize={1.2}
+          fontSize={fontSizes.line3}
           color="#ffffff"
           anchorX="center"
           anchorY="middle"
