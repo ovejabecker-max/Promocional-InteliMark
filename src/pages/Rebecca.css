@@ -1,3 +1,119 @@
+/* ===================== RESPONSIVE SOLO PARA EL FOOTER ===================== */
+/* Apilar verticalmente el footer en tablets/móviles sin afectar otras secciones */
+@media (max-width: 900px) {
+  .rebecca-container .footer-reveal {
+    padding: 28px 16px;
+  }
+
+  .rebecca-container .footer-reveal .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: clamp(16px, 4vw, 28px);
+  }
+
+  /* Wrapper central (donde está el Robot + créditos) */
+  .rebecca-container .footer-reveal .footer-content > div:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+
+  /* Columna izquierda: newsletter + botón matrix centrados y fluidos */
+  .rebecca-container .footer-reveal .footer-info {
+    align-items: center;
+    justify-content: flex-start;
+    max-width: min(100%, 560px);
+    width: 100%;
+    text-align: center;
+  }
+
+  .rebecca-container .footer-reveal .navigation-section .ai-matrix-button {
+    width: clamp(200px, 60vw, 280px);
+    margin: 12px auto 0;
+  }
+
+  /* Centro: Robot 3D - sobrescribir tamaños inline en móviles */
+  .rebecca-container .footer-reveal .robot-footer-container {
+    width: min(100%, 360px) !important;
+    height: auto !important;
+    aspect-ratio: 19 / 20;
+    min-height: 220px; /* Fallback si aspect-ratio no aplica */
+    pointer-events: auto !important;
+    z-index: 2;
+    margin: 8px 0;
+  }
+
+  /* Créditos centrados */
+  .rebecca-container .footer-reveal .footer-credits {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    position: static; /* Evitar solapamiento/ocultamiento en móvil */
+    left: auto;
+    bottom: auto;
+    transform: none;
+    margin-top: 8px;
+  }
+
+  /* Columna derecha: información de contacto centrada, sin offsets */
+  .rebecca-container .footer-reveal .contact-info {
+    text-align: center;
+    align-items: center;
+    justify-self: center;
+    max-width: min(100%, 560px);
+    width: 100%;
+    padding-left: 0;
+    transform: none !important;
+  }
+
+  .rebecca-container .footer-reveal .contact-item {
+    align-items: center;
+  }
+
+  .rebecca-container .footer-reveal .contact-item p,
+  .rebecca-container .footer-reveal .contact-label {
+    text-align: center;
+  }
+
+  /* Evitar compresiones por efectos hover del botón en pantallas táctiles */
+  .rebecca-container
+    .footer-reveal
+    .footer-content:has(.ai-matrix-button:hover)
+    .contact-info,
+  .rebecca-container
+    .footer-reveal
+    .footer-content:has(.ai-matrix-button:hover)
+    .contact-item {
+    max-width: min(100%, 560px);
+    transform: none;
+  }
+}
+
+/* Móviles pequeños: respiración adicional y tamaños más compactos */
+@media (max-width: 600px) {
+  .rebecca-container .footer-reveal {
+    padding: 24px 12px;
+  }
+
+  .rebecca-container .footer-reveal .footer-content {
+    gap: clamp(12px, 5vw, 20px);
+  }
+
+  .rebecca-container .footer-reveal .navigation-section .ai-matrix-button {
+    width: clamp(200px, 80vw, 260px);
+  }
+
+  .rebecca-container .footer-reveal .robot-footer-container {
+    width: min(100%, 320px) !important;
+    aspect-ratio: 19 / 20;
+    min-height: 200px;
+  }
+}
 /* VARIABLES CSS - COLORES Y GRADIENTES CONSOLIDADOS */
 :root {
   /* UTILIDADES COMUNES */
