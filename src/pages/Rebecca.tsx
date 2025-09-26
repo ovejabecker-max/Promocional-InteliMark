@@ -36,7 +36,6 @@ const Rebecca = memo(() => {
   const [entryState, setEntryState] = useState({
     fromPortal: false,
     hasInitialized: false,
-    portalAnimationCompleted: false,
   });
 
   // Estados consolidados para CTA
@@ -59,6 +58,10 @@ const Rebecca = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const ctaSectionRef = useRef<HTMLElement>(null);
   const ctaStateRef = useRef(ctaState); // 🎯 Ref para acceso actual del estado
+
+  // Refs para spans typewriter (evita querySelector en observer)
+  const line1Ref = useRef<HTMLSpanElement>(null);
+  const line2Ref = useRef<HTMLSpanElement>(null);
 
   // Ancho de viewport memoizable para evitar leer window.innerWidth en cada render
   const [viewportWidth, setViewportWidth] = useState<number>(
@@ -149,13 +152,11 @@ const Rebecca = memo(() => {
           };
         }
 
-        // 3. Visibilidad botón CTA (histéresis)
-        const SHOW_RATIO = 0.95;
-        const HIDE_RATIO = 0.9;
-        if (!current.buttonVisible && ratio >= SHOW_RATIO) {
+        // 3. Visibilidad botón CTA (histéresis simplificada: show >=0.95, hide <0.85)
+        if (!current.buttonVisible && ratio >= 0.95) {
           if (!next) next = { ...current };
           next.buttonVisible = true;
-        } else if (current.buttonVisible && ratio < HIDE_RATIO) {
+        } else if (current.buttonVisible && ratio < 0.85) {
           if (!next) next = { ...current };
           next.buttonVisible = false;
         }
@@ -167,14 +168,10 @@ const Rebecca = memo(() => {
             ...next.effectsActivated,
             typewriter: true,
           };
-          const line1 = document.querySelector(
-            ".subtitle-line-1.typewriter-line"
-          );
-          const line2 = document.querySelector(
-            ".subtitle-line-2.typewriter-line"
-          );
-          if (line1) line1.classList.add("typewriter-active");
-          if (line2) line2.classList.add("typewriter-active");
+          if (line1Ref.current)
+            line1Ref.current.classList.add("typewriter-active");
+          if (line2Ref.current)
+            line2Ref.current.classList.add("typewriter-active");
         } else if (
           ratio < 0.1 &&
           (current.effectsActivated.typewriter ||
@@ -183,14 +180,10 @@ const Rebecca = memo(() => {
           if (!next) next = { ...current };
           next.effectsActivated = { typewriter: false, ctaSection: false };
           next.buttonVisible = false;
-          const line1 = document.querySelector(
-            ".subtitle-line-1.typewriter-line"
-          );
-          const line2 = document.querySelector(
-            ".subtitle-line-2.typewriter-line"
-          );
-          if (line1) line1.classList.remove("typewriter-active");
-          if (line2) line2.classList.remove("typewriter-active");
+          if (line1Ref.current)
+            line1Ref.current.classList.remove("typewriter-active");
+          if (line2Ref.current)
+            line2Ref.current.classList.remove("typewriter-active");
         }
 
         commitChange();
@@ -227,50 +220,22 @@ const Rebecca = memo(() => {
     ]
   );
 
-  // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones
+  // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones (consolidado)
   useEffect(() => {
     if (entryState.hasInitialized) return;
-    if (portalDetectionData.isFromPortal) {
-      setEntryState((prev) => ({
-        ...prev,
-        fromPortal: true,
-        hasInitialized: true,
-      }));
-      initializePortalContinuity(portalDetectionData.transitionData);
-    } else {
-      setEntryState((prev) => ({
-        ...prev,
-        fromPortal: false,
-        hasInitialized: true,
-      }));
-      initializeNormalEntry();
-    }
+    const fromPortal = portalDetectionData.isFromPortal;
+    initializeEntry(fromPortal);
+    setEntryState({ fromPortal, hasInitialized: true });
   }, [portalDetectionData, entryState.hasInitialized]);
 
-  // 🎬 FUNCIÓN: Inicializar continuidad desde portal
-  const initializePortalContinuity = (_transitionData: unknown) => {
+  // 🎬 FUNCIÓN: Inicializar entrada (portal o normal) - unificada
+  const initializeEntry = (_fromPortal: boolean) => {
     const container = containerRef.current;
     if (container) {
       container.style.opacity = "1";
       container.style.filter = "none";
       container.style.transform = "none";
       container.style.transition = "";
-      setEntryState((prev) => ({
-        ...prev,
-        portalAnimationCompleted: true,
-      }));
-    }
-  };
-
-  // 🎬 FUNCIÓN: Inicializar entrada normal
-  const initializeNormalEntry = () => {
-    const container = containerRef.current;
-    if (container) {
-      container.style.opacity = "1";
-      container.style.filter = "none";
-      container.style.transform = "none";
-      container.style.transition = "";
-      setEntryState((prev) => ({ ...prev, portalAnimationCompleted: true }));
     }
   };
 
@@ -286,11 +251,7 @@ const Rebecca = memo(() => {
         ref={containerRef}
         className={`rebecca-container ${
           entryState.fromPortal ? "from-portal" : "normal-entry"
-        } ${
-          entryState.portalAnimationCompleted
-            ? "animation-completed"
-            : "animating"
-        }`}
+        } ${entryState.hasInitialized ? "animation-completed" : "animating"}`}
       >
         <div className="main-content-wrapper">
           <h1 className="portal-title">
@@ -346,12 +307,14 @@ const Rebecca = memo(() => {
             <div className="cta-subtitle">
               <p className="cta-subtitle">
                 <span
+                  ref={line1Ref}
                   className="subtitle-line-1 typewriter-line"
                   data-text="COMENZÓ UN NUEVO CAMBIO MUNDIAL, LA ERA TECNOLÓGICA."
                 >
                   COMENZÓ UN NUEVO CAMBIO MUNDIAL, LA ERA TECNOLÓGICA.
                 </span>
                 <span
+                  ref={line2Ref}
                   className="subtitle-line-2 typewriter-line"
                   data-text="AVANZA MUY RÁPIDO Y NO ESPERARÁ A NADIE. NO TE QUEDES ATRÁS."
                 >
@@ -395,8 +358,10 @@ const Rebecca = memo(() => {
                   src={CTAButtonImage}
                   alt="WhatsApp Button"
                   className="cta-button-image"
-                  loading="eager"
+                  loading="lazy"
                   decoding="async"
+                  width="320"
+                  height="320"
                 />
 
                 <div className="cta-button-text-overlay center-absolute flex-center">

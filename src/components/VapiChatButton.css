@@ -359,7 +359,8 @@
 
 .vapi-chat-button--loading .vapi-button-container::after {
   opacity: 0.7;
-  animation: quantum-particles 3s linear infinite;
+  /* Reemplazo quantum-particles (archivo eliminado) por rotación holográfica lenta */
+  animation: holographic-rotation 6s linear infinite;
 }
 
 .vapi-chat-button--loading .cls-1 {
