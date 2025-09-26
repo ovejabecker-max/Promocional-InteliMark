@@ -710,18 +710,25 @@ body,
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", InteliMark,
     "Helvetica Neue", Arial, sans-serif;
   font-weight: 400;
-  font-size: 1.5rem; /* 🎯 FIXED: Tamaño fijo 24px */
+  /* Tamaño fluido seguro para móviles (más compacto) */
+  font-size: clamp(0.8rem, 2.8vw, 1.2rem);
   color: #ffffff;
   letter-spacing: 0em;
-  line-height: 0.95;
+  /* Altura de línea moderada para 1 sola línea legible */
+  line-height: 1.1;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
   opacity: 1;
+  /* Mantener en una sola línea para evitar salto vertical por carácter */
   white-space: nowrap;
-  overflow: hidden; /* 🔧 RESTAURADO: Necesario para el efecto typewriter */
+  overflow: hidden; /* Necesario para el efecto typewriter */
+  overflow-wrap: normal;
+  word-break: keep-all;
   border-right: 2px solid #ffffff;
   width: 0;
   text-align: center;
   margin: 0 auto;
+  /* Resguardo lateral moderado */
+  padding-inline: clamp(8px, 2vw, 16px);
   max-width: 100%;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
