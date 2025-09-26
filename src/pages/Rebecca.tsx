@@ -60,6 +60,41 @@ const Rebecca = memo(() => {
   const ctaSectionRef = useRef<HTMLElement>(null);
   const ctaStateRef = useRef(ctaState); // 🎯 Ref para acceso actual del estado
 
+  // Ancho de viewport memoizable para evitar leer window.innerWidth en cada render
+  const [viewportWidth, setViewportWidth] = useState<number>(
+    typeof window !== "undefined" ? window.innerWidth : 1920
+  );
+
+  // Debounce de resize para estabilidad y evitar thrash de layout
+  useEffect(() => {
+    let timeout: number | undefined;
+    const handle = () => {
+      if (timeout) window.clearTimeout(timeout);
+      timeout = window.setTimeout(() => {
+        setViewportWidth(window.innerWidth);
+      }, 120); // 120ms suficiente para suavizar
+    };
+    window.addEventListener("resize", handle, { passive: true });
+    return () => {
+      if (timeout) window.clearTimeout(timeout);
+      window.removeEventListener("resize", handle);
+    };
+  }, []);
+
+  // Cálculo memoizado del movimiento del título TRABAJEMOS / JUNTOS
+  const titleMotion = useMemo(() => {
+    const start = 0.3;
+    const end = 0.9;
+    const raw = ctaState.scrollPercent;
+    const progress = Math.max(0, Math.min(1, (raw - start) / (end - start)));
+    const travelWidth = viewportWidth * 0.7; // distancia máxima lateral
+    return {
+      leftX: -travelWidth * (1 - progress),
+      rightX: travelWidth * (1 - progress),
+      visible: raw >= start,
+    };
+  }, [ctaState.scrollPercent, viewportWidth]);
+
   // 🎯 OPTIMIZACIÓN: Mantener ref actualizada
   useEffect(() => {
     ctaStateRef.current = ctaState;
@@ -290,39 +325,22 @@ const Rebecca = memo(() => {
 
           <div className="cta-content">
             <h2 className="cta-title cta-title-container">
-              {(() => {
-                // 🎯 Normalizar progreso entre 0.3 y 0.9 para un movimiento suave
-                const start = 0.3;
-                const end = 0.9;
-                const raw = ctaState.scrollPercent;
-                const progress = Math.max(
-                  0,
-                  Math.min(1, (raw - start) / (end - start))
-                );
-                const w = window.innerWidth * 0.7;
-                const leftX = -w * (1 - progress); // -w → 0
-                const rightX = w * (1 - progress); //  w → 0
-                return (
-                  <>
-                    <span
-                      className={`cta-title-span trabajemos ${
-                        raw >= start ? "visible" : ""
-                      }`}
-                      style={{ transform: `translateX(${leftX}px)` }}
-                    >
-                      TRABAJEMOS
-                    </span>
-                    <span
-                      className={`cta-title-span juntos ${
-                        raw >= start ? "visible" : ""
-                      }`}
-                      style={{ transform: `translateX(${rightX}px)` }}
-                    >
-                      JUNTOS
-                    </span>
-                  </>
-                );
-              })()}
+              <span
+                className={`cta-title-span trabajemos ${
+                  titleMotion.visible ? "visible" : ""
+                }`}
+                style={{ transform: `translateX(${titleMotion.leftX}px)` }}
+              >
+                TRABAJEMOS
+              </span>
+              <span
+                className={`cta-title-span juntos ${
+                  titleMotion.visible ? "visible" : ""
+                }`}
+                style={{ transform: `translateX(${titleMotion.rightX}px)` }}
+              >
+                JUNTOS
+              </span>
             </h2>
 
             <div className="cta-subtitle">
