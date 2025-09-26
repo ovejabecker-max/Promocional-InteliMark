@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useRef } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Environment, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
 // Componente que carga y ajusta el modelo
@@ -134,7 +134,6 @@ export const RobotFooterModel: React.FC = () => {
           <AdjustCamera />
           <ambientLight intensity={0.7} />
           <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow />
-          <Environment preset="city" />
           <RobotModel targetAnglesRef={targetAnglesRef} />
         </Suspense>
       </Canvas>

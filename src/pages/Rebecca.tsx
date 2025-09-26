@@ -69,6 +69,40 @@ const Rebecca = memo(() => {
     typeof window !== "undefined" ? window.innerWidth : 1920
   );
 
+  // Progreso animado (suavizado) para el movimiento del título
+  const [animatedProgress, setAnimatedProgress] = useState(0);
+
+  // Normalización de progreso (0.3 → 0.9)
+  const normalizeScroll = (raw: number) => {
+    const start = 0.3;
+    const end = 0.9;
+    if (raw <= start) return 0;
+    if (raw >= end) return 1;
+    return (raw - start) / (end - start);
+  };
+
+  // rAF smoothing hacia el objetivo (lerp progresivo)
+  useEffect(() => {
+    let frame: number | null = null;
+    const target = normalizeScroll(ctaState.scrollPercent);
+    const step = () => {
+      setAnimatedProgress((prev) => {
+        const diff = target - prev;
+        if (Math.abs(diff) < 0.001) return target; // convergencia
+        return prev + diff * 0.15; // factor de suavizado
+      });
+      // Continuar mientras no converja
+      if (Math.abs(target - animatedProgress) > 0.001) {
+        frame = requestAnimationFrame(step);
+      }
+    };
+    frame = requestAnimationFrame(step);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctaState.scrollPercent]);
+
   // Debounce de resize para estabilidad y evitar thrash de layout
   useEffect(() => {
     let timeout: number | undefined;
@@ -87,17 +121,15 @@ const Rebecca = memo(() => {
 
   // Cálculo memoizado del movimiento del título TRABAJEMOS / JUNTOS
   const titleMotion = useMemo(() => {
-    const start = 0.3;
-    const end = 0.9;
-    const raw = ctaState.scrollPercent;
-    const progress = Math.max(0, Math.min(1, (raw - start) / (end - start)));
-    const travelWidth = viewportWidth * 0.7; // distancia máxima lateral
+    const travelWidth = viewportWidth * 0.7;
+    const leftX = -travelWidth * (1 - animatedProgress);
+    const rightX = travelWidth * (1 - animatedProgress);
     return {
-      leftX: -travelWidth * (1 - progress),
-      rightX: travelWidth * (1 - progress),
-      visible: raw >= start,
+      leftX,
+      rightX,
+      visible: animatedProgress > 0, // visible cuando inicia movimiento
     };
-  }, [ctaState.scrollPercent, viewportWidth]);
+  }, [animatedProgress, viewportWidth]);
 
   // 🎯 OPTIMIZACIÓN: Mantener ref actualizada
   useEffect(() => {
@@ -190,7 +222,8 @@ const Rebecca = memo(() => {
         commitChange();
       },
       {
-        threshold: [0, 0.1, 0.3, 0.9, 0.95, 1],
+        // Mayor granularidad (0..1 en pasos de 0.02) para suavidad del scroll
+        threshold: Array.from({ length: 51 }, (_, i) => i / 50),
       }
     );
 
