@@ -1,7 +1,7 @@
 // src/pages/Rebecca.tsx
 
 import { useEffect, useRef, useState, memo, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { usePortalTransition } from "../hooks/usePortalTransition";
 import { VapiChatButton } from "../components/VapiChatButton";
 import { vapiConfig } from "../config/vapi.config";
@@ -21,6 +21,7 @@ const Rebecca = memo(() => {
   // 🌀 HOOKS DE TRANSICIÓN: Detectar si viene de portal
   const location = useLocation();
   const portalTransition = usePortalTransition();
+  const navigate = useNavigate();
 
   const vapiProps = useVapi(vapiConfig);
   const { isSessionActive, messages } = vapiProps;
@@ -334,7 +335,12 @@ const Rebecca = memo(() => {
                   if (ctaState.clickProcessing) return;
 
                   setCtaState((prev) => ({ ...prev, clickProcessing: true }));
-                  window.open("https://wa.me/56949459379", "_blank");
+                  const newWindow = window.open(
+                    "https://wa.me/56949459379",
+                    "_blank",
+                    "noopener,noreferrer"
+                  );
+                  if (newWindow) newWindow.opener = null; // Seguridad extra
 
                   setTimeout(
                     () =>
@@ -384,11 +390,9 @@ const Rebecca = memo(() => {
                     marginLeft: "5px",
                     transform: "translateY(35px)",
                     position: "relative",
-                    zIndex: 2000000,
+                    zIndex: 1000, // Normalizado desde 2000000
                   }}
-                  onClick={() => {
-                    window.location.href = "/";
-                  }}
+                  onClick={() => navigate("/")}
                 >
                   <div className="ai-matrix-container">
                     <div className="data-matrix arrow-shape">
