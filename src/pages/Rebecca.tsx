@@ -67,118 +67,111 @@ const Rebecca = memo(() => {
 
   // Controlador de scroll CTA
   useEffect(() => {
+    // Batching optimizado: thresholds reducidos y un solo setState por frame
+    let framePending = false;
+    let scheduledState: typeof ctaStateRef.current | null = null;
+
+    const requestFlush = () => {
+      if (framePending) return;
+      framePending = true;
+      requestAnimationFrame(() => {
+        framePending = false;
+        if (scheduledState) {
+          setCtaState(scheduledState);
+          scheduledState = null;
+        }
+      });
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          const ratio = entry.intersectionRatio;
-          const currentState = ctaStateRef.current; // 🎯 Usar ref para estado actual
+        const entry = entries[0];
+        if (!entry) return;
+        const ratio = entry.intersectionRatio;
+        const current = ctaStateRef.current;
+        let next: typeof current | null = null;
 
-          setCtaState((prev) => ({ ...prev, scrollPercent: ratio }));
-
-          // 🎯 CTA Section (Matrix + Text) activation at 30%
-          if (ratio >= 0.3 && !currentState.effectsActivated.ctaSection) {
-            setCtaState((prev) => ({
-              ...prev,
-              effectsActivated: { ...prev.effectsActivated, ctaSection: true },
-            }));
-          } else if (ratio < 0.3 && currentState.effectsActivated.ctaSection) {
-            setCtaState((prev) => ({
-              ...prev,
-              effectsActivated: { ...prev.effectsActivated, ctaSection: false },
-            }));
+        const commitChange = () => {
+          if (next) {
+            scheduledState = next;
+            requestFlush();
           }
+        };
 
-          // 🎯 BOTÓN CTA: Mostrar cuando la sección está completamente visible (con tolerancia)
-          // Usamos las dimensiones del rectángulo de intersección vs el bounding rect del target
-          const bcr = entry.boundingClientRect;
-          const ir = entry.intersectionRect;
-          const tol = 6; // tolerancia más robusta por variaciones de layout/scrollbar
-          // Usar dimensiones de viewport “útiles” en lugar de innerWidth/innerHeight
-          const viewportW = document.documentElement.clientWidth;
-          const viewportH = document.documentElement.clientHeight;
-          // Cubre prácticamente todo el viewport (aunque el target sea más alto que la ventana)
-          const coversViewport =
-            ir.width >= viewportW - tol && ir.height >= viewportH - tol;
-          // Caso clásico: target y viewport del mismo tamaño
-          const fullyVisibleTarget =
-            ir.width >= bcr.width - tol && ir.height >= bcr.height - tol;
+        // 1. scrollPercent
+        if (current.scrollPercent !== ratio) {
+          if (!next) next = { ...current };
+          next.scrollPercent = ratio;
+        }
 
-          // Histéresis de respaldo basada en ratio
-          const SHOW_RATIO = 0.95; // más laxo para asegurar aparición
-          const HIDE_RATIO = 0.9; // histéresis para evitar parpadeos
-          const shouldShow =
-            coversViewport || fullyVisibleTarget || ratio >= SHOW_RATIO;
-          const shouldHide =
-            !coversViewport && !fullyVisibleTarget && ratio < HIDE_RATIO;
+        // 2. Activación sección CTA (matrix + text)
+        const shouldActivateSection = ratio >= 0.3;
+        if (shouldActivateSection !== current.effectsActivated.ctaSection) {
+          if (!next) next = { ...current };
+          next.effectsActivated = {
+            ...next.effectsActivated,
+            ctaSection: shouldActivateSection,
+          };
+        }
 
-          if (shouldShow && !currentState.buttonVisible) {
-            setCtaState((prev) => ({ ...prev, buttonVisible: true }));
-          } else if (shouldHide && currentState.buttonVisible) {
-            setCtaState((prev) => ({ ...prev, buttonVisible: false }));
-          }
+        // 3. Visibilidad botón CTA (histéresis)
+        const SHOW_RATIO = 0.95;
+        const HIDE_RATIO = 0.9;
+        if (!current.buttonVisible && ratio >= SHOW_RATIO) {
+          if (!next) next = { ...current };
+          next.buttonVisible = true;
+        } else if (current.buttonVisible && ratio < HIDE_RATIO) {
+          if (!next) next = { ...current };
+          next.buttonVisible = false;
+        }
 
-          // Typewriter activation at 95%
-          if (ratio >= 0.95 && !currentState.effectsActivated.typewriter) {
-            setCtaState((prev) => ({
-              ...prev,
-              effectsActivated: { ...prev.effectsActivated, typewriter: true },
-            }));
+        // 4. Typewriter (activar >=0.95, reset <0.1)
+        if (ratio >= 0.95 && !current.effectsActivated.typewriter) {
+          if (!next) next = { ...current };
+          next.effectsActivated = {
+            ...next.effectsActivated,
+            typewriter: true,
+          };
+          const line1 = document.querySelector(
+            ".subtitle-line-1.typewriter-line"
+          );
+          const line2 = document.querySelector(
+            ".subtitle-line-2.typewriter-line"
+          );
+          if (line1) line1.classList.add("typewriter-active");
+          if (line2) line2.classList.add("typewriter-active");
+        } else if (
+          ratio < 0.1 &&
+          (current.effectsActivated.typewriter ||
+            current.effectsActivated.ctaSection)
+        ) {
+          if (!next) next = { ...current };
+          next.effectsActivated = { typewriter: false, ctaSection: false };
+          next.buttonVisible = false;
+          const line1 = document.querySelector(
+            ".subtitle-line-1.typewriter-line"
+          );
+          const line2 = document.querySelector(
+            ".subtitle-line-2.typewriter-line"
+          );
+          if (line1) line1.classList.remove("typewriter-active");
+          if (line2) line2.classList.remove("typewriter-active");
+        }
 
-            const line1 = document.querySelector(
-              ".subtitle-line-1.typewriter-line"
-            );
-            const line2 = document.querySelector(
-              ".subtitle-line-2.typewriter-line"
-            );
-
-            if (line1) line1.classList.add("typewriter-active");
-            if (line2) line2.classList.add("typewriter-active");
-          }
-
-          // Reset all effects at 10%
-          if (
-            ratio < 0.1 &&
-            (currentState.effectsActivated.typewriter ||
-              currentState.effectsActivated.ctaSection)
-          ) {
-            setCtaState((prev) => ({
-              ...prev,
-              effectsActivated: {
-                typewriter: false,
-                ctaSection: false,
-              },
-              buttonVisible: false,
-            }));
-
-            const line1 = document.querySelector(
-              ".subtitle-line-1.typewriter-line"
-            );
-            const line2 = document.querySelector(
-              ".subtitle-line-2.typewriter-line"
-            );
-
-            if (line1) line1.classList.remove("typewriter-active");
-            if (line2) line2.classList.remove("typewriter-active");
-          }
-        });
+        commitChange();
       },
       {
-        // 🎯 Mayor granularidad para evitar saltos: 0..1 con paso de 0.01
-        threshold: Array.from({ length: 101 }, (_, i) => i / 100),
+        threshold: [0, 0.1, 0.3, 0.9, 0.95, 1],
       }
     );
 
     const sectionElement = ctaSectionRef.current;
-    if (sectionElement) {
-      observer.observe(sectionElement);
-    }
+    if (sectionElement) observer.observe(sectionElement);
 
     return () => {
-      if (sectionElement) {
-        observer.unobserve(sectionElement);
-      }
+      observer.disconnect();
     };
-  }, []); // 🎯 OPTIMIZADO: Sin dependencias para evitar re-creación del observer
+  }, []);
 
   //  OPTIMIZACIÓN: Estabilizar dependencias del portal para evitar re-ejecuciones
   const portalDetectionData = useMemo(
@@ -201,20 +194,13 @@ const Rebecca = memo(() => {
 
   // 🌀 EFECTO: Detectar entrada desde portal y configurar animaciones
   useEffect(() => {
-    // ✅ GUARD: Solo ejecutar si no se ha inicializado
     if (entryState.hasInitialized) return;
-
-    // 🚫 LOG ELIMINADO: Portal detection - verificación innecesaria para usuario final
-    // Solo mantenemos logs esenciales en desarrollo
-
     if (portalDetectionData.isFromPortal) {
       setEntryState((prev) => ({
         ...prev,
         fromPortal: true,
         hasInitialized: true,
       }));
-
-      // 🎬 INICIAR ANIMACIÓN DE CONTINUIDAD PORTAL
       initializePortalContinuity(portalDetectionData.transitionData);
     } else {
       setEntryState((prev) => ({
@@ -222,26 +208,18 @@ const Rebecca = memo(() => {
         fromPortal: false,
         hasInitialized: true,
       }));
-
-      // 🎬 INICIAR ANIMACIÓN NORMAL
       initializeNormalEntry();
     }
   }, [portalDetectionData, entryState.hasInitialized]);
 
   // 🎬 FUNCIÓN: Inicializar continuidad desde portal
   const initializePortalContinuity = (_transitionData: unknown) => {
-    // 🚫 LOG ELIMINADO: Portal continuity - proceso interno innecesario para usuario
-
-    // ✅ SIN ANIMACIÓN: Rebecca aparece directamente
     const container = containerRef.current;
     if (container) {
-      // Mostrar inmediatamente sin efectos
       container.style.opacity = "1";
       container.style.filter = "none";
       container.style.transform = "none";
       container.style.transition = "";
-
-      // Marcar como completado inmediatamente
       setEntryState((prev) => ({
         ...prev,
         portalAnimationCompleted: true,
@@ -251,17 +229,12 @@ const Rebecca = memo(() => {
 
   // 🎬 FUNCIÓN: Inicializar entrada normal
   const initializeNormalEntry = () => {
-    // 🚫 LOG ELIMINADO: Normal entry - proceso interno innecesario para usuario
-
     const container = containerRef.current;
     if (container) {
-      // ✅ SIN ANIMACIÓN: Mostrar inmediatamente
       container.style.opacity = "1";
       container.style.filter = "none";
       container.style.transform = "none";
       container.style.transition = "";
-
-      // Marcar como completado inmediatamente
       setEntryState((prev) => ({ ...prev, portalAnimationCompleted: true }));
     }
   };
