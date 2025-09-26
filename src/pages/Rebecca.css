@@ -32,9 +32,29 @@
     text-align: center;
   }
 
+  /* Contenedor del botón: centrar en eje horizontal */
+  .rebecca-container .footer-reveal .navigation-section {
+    align-items: center;
+    width: 100%;
+  }
+
   .rebecca-container .footer-reveal .navigation-section .ai-matrix-button {
     width: clamp(200px, 60vw, 280px);
     margin: 12px auto 0;
+    align-self: center;
+    /* Anular estilos inline del botón en móvil */
+    margin-left: 0 !important;
+    transform: none !important;
+  }
+
+  /* Extra por si se usa también la clase homepage-access-button en el botón */
+  .rebecca-container
+    .footer-reveal
+    .navigation-section
+    .homepage-access-button.ai-matrix-button {
+    margin-left: 0 !important;
+    transform: none !important;
+    align-self: center;
   }
 
   /* Centro: Robot 3D - sobrescribir tamaños inline en móviles */
