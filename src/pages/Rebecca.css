@@ -1278,6 +1278,12 @@ body,
   position: relative; /* Para posicionamiento absoluto de créditos */
 }
 
+/* Wrapper central (Robot + créditos) por debajo de la columna izquierda */
+.rebecca-container .footer-reveal .footer-content > div:nth-child(2) {
+  position: relative;
+  z-index: 1;
+}
+
 /* 📧 COLUMNA IZQUIERDA: Newsletter + AI Matrix Button */
 .footer-info {
   display: flex;
@@ -1300,6 +1306,18 @@ body,
   z-index: 100; /* 🎯 Z-INDEX ALTO PARA EL BOTÓN AI MATRIX */
   width: 100%; /* 🎯 AJUSTE: Ocupar todo el ancho disponible en footer-info */
   margin-top: 10px; /* 🎯 AJUSTE: Espacio adicional desde el newsletter */
+}
+
+/* Asegurar que la columna izquierda (con el botón) esté por encima del robot en desktop */
+.rebecca-container .footer-reveal .footer-info {
+  position: relative;
+  z-index: 2;
+}
+
+/* Y el contenedor del robot queda debajo en la jerarquía de apilamiento */
+.rebecca-container .footer-reveal .robot-footer-container {
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================================================
@@ -1358,13 +1376,15 @@ body,
   right: 0;
   bottom: 0;
   z-index: 9;
-  pointer-events: auto;
+  /* No interceptar eventos: permitir que el click llegue al <button> */
+  pointer-events: none;
 }
 
 /* 🎯 CONFIGURACIÓN Z-INDEX PARA BOTÓN AI */
 .navigation-section .ai-matrix-button {
   position: relative;
-  z-index: 8 !important;
+  /* Mantener por encima de elementos del footer (robot, efectos) */
+  z-index: 200 !important;
   margin-top: -70px;
 }
 

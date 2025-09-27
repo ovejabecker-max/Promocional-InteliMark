@@ -37,23 +37,8 @@ function ScrollToTop() {
   const location = useLocation();
 
   useEffect(() => {
-    // ✅ RESTAURAR SCROLL AL INICIO en cada cambio de ruta
-
-    // Múltiples métodos para máxima compatibilidad
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-
-    // ✅ VERIFICACIÓN ADICIONAL: Asegurar que se mantenga en el top
-    const ensureScrollTop = () => {
-      if (window.scrollY > 0) {
-        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      }
-    };
-
-    // Ejecutar después del render
-    setTimeout(ensureScrollTop, 0);
-    setTimeout(ensureScrollTop, 100);
+    // Restaurar scroll de forma simple en cada cambio de ruta
+    window.scrollTo(0, 0);
   }, [location]);
 
   return null;
@@ -96,47 +81,7 @@ function App() {
       <TransitionProvider>
         <AppContent />
         {/* 🔔 Sistema de notificaciones unificado */}
-        <Toaster
-          position="top-right"
-          reverseOrder={false}
-          gutter={8}
-          containerClassName=""
-          containerStyle={{}}
-          toastOptions={{
-            // Configuración por defecto para todos los toasts
-            duration: 4000,
-            style: {
-              background: "transparent",
-              color: "#da8023",
-              fontSize: "10px !important", // Reducido a 10px para evaluación estética
-              fontFamily:
-                "Oxanium, Inter, Segoe UI, InteliMark system-ui, Avenir, Helvetica, Arial, sans-serif !important",
-              fontWeight: "700",
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-              border: "none",
-              borderRadius: "0",
-              padding: "8px",
-              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-              boxShadow: "none",
-            },
-            // Configuraciones específicas por tipo
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: "#10b981",
-                secondary: "#ffffff",
-              },
-            },
-            error: {
-              duration: 6000,
-              iconTheme: {
-                primary: "#ef4444",
-                secondary: "#ffffff",
-              },
-            },
-          }}
-        />
+        <Toaster position="top-right" />
       </TransitionProvider>
     </AnimationProvider>
   );

@@ -14,19 +14,7 @@ div[data-hot-toast-id] > div {
   font-size: 10px !important;
 }
 
-/* Selector para el wrapper del toast */
-.Toastify__toast {
-  font-family: "Oxanium", Inter, Segoe UI, InteliMark, system-ui, Avenir,
-    Helvetica, Arial, sans-serif !important;
-  font-size: 10px !important;
-}
-
-/* Forzar Oxanium en cualquier elemento que contenga toast */
-[class*="toast"] {
-  font-family: "Oxanium", Inter, Segoe UI, InteliMark, system-ui, Avenir,
-    Helvetica, Arial, sans-serif !important;
-  font-size: 10px !important;
-}
+/* Eliminado CSS específico de react-toastify (.Toastify__toast) y selectores genéricos ambiguos */
 
 /* Especificidad máxima para react-hot-toast */
 div[role="status"] {

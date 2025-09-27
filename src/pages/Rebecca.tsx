@@ -227,8 +227,8 @@ const Rebecca = memo(() => {
         commitChange();
       },
       {
-        // Mayor granularidad (0..1 en pasos de 0.02) para suavidad del scroll
-        threshold: Array.from({ length: 51 }, (_, i) => i / 50),
+        // Granularidad suficiente y más eficiente (0..1 en pasos de 0.1)
+        threshold: Array.from({ length: 11 }, (_, i) => i / 10),
       }
     );
 
@@ -510,6 +510,7 @@ const Rebecca = memo(() => {
                 <button
                   className="homepage-access-button ai-matrix-button"
                   ref={aiButtonRef}
+                  type="button"
                   style={{
                     marginLeft: "5px",
                     transform: "translateY(35px)",
@@ -517,6 +518,12 @@ const Rebecca = memo(() => {
                     zIndex: 1000, // Normalizado desde 2000000
                   }}
                   onClick={() => navigate("/")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      navigate("/");
+                    }
+                  }}
                 >
                   <div className="ai-matrix-container">
                     <div className="data-matrix arrow-shape">

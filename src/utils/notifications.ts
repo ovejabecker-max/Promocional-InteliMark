@@ -26,23 +26,8 @@ export class NotificationManager {
     return toast.success(message, {
       duration: config.duration,
       position: config.position,
-      style: {
-        background: "transparent",
-        color: "#da8023",
-        fontFamily:
-          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
-        fontWeight: "700",
-        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
-        border: "none",
-        borderRadius: "0",
-        padding: "8px",
-        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-        boxShadow: "none",
-        textTransform: "uppercase",
-        letterSpacing: "1px",
-        ...config.style,
-      },
-      icon: "", // Sin icono
+      // Estilos unificados vía CSS (styles/toast-overrides.css)
+      icon: "",
     });
   }
 
@@ -54,23 +39,7 @@ export class NotificationManager {
     return toast.error(message, {
       duration: config.duration,
       position: config.position,
-      style: {
-        background: "transparent",
-        color: "#da8023",
-        fontFamily:
-          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
-        fontWeight: "700",
-        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
-        border: "none",
-        borderRadius: "0",
-        padding: "8px",
-        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-        boxShadow: "none",
-        textTransform: "uppercase",
-        letterSpacing: "1px",
-        ...config.style,
-      },
-      icon: "", // Sin icono
+      icon: "",
     });
   }
 
@@ -82,23 +51,7 @@ export class NotificationManager {
     return toast(message, {
       duration: config.duration,
       position: config.position,
-      style: {
-        background: "transparent",
-        color: "#da8023",
-        fontFamily:
-          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
-        fontWeight: "700",
-        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
-        border: "none",
-        borderRadius: "0",
-        padding: "8px",
-        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-        boxShadow: "none",
-        textTransform: "uppercase",
-        letterSpacing: "1px",
-        ...config.style,
-      },
-      icon: "", // Sin icono
+      icon: "",
     });
   }
 
@@ -110,23 +63,7 @@ export class NotificationManager {
     return toast(message, {
       duration: config.duration,
       position: config.position,
-      style: {
-        background: "transparent",
-        color: "#da8023", // Color naranjo final
-        fontFamily:
-          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
-        fontWeight: "700",
-        fontSize: "10px !important", // Tamaño final reducido 20%
-        border: "none",
-        borderRadius: "0",
-        padding: "8px",
-        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-        boxShadow: "none",
-        textTransform: "uppercase",
-        letterSpacing: "1px",
-        ...config.style,
-      },
-      icon: "", // Sin icono
+      icon: "",
     });
   }
 
@@ -137,23 +74,7 @@ export class NotificationManager {
     const config = { ...this.defaultOptions, ...options };
     return toast.loading(message, {
       position: config.position,
-      style: {
-        background: "transparent",
-        color: "#da8023",
-        fontFamily:
-          "Oxanium, Inter, Segoe UI, InteliMark, system-ui, Avenir, Helvetica, Arial, sans-serif !important",
-        fontWeight: "700",
-        fontSize: "10px !important", // Reducido de 16px a 13px (20% menos)
-        border: "none",
-        borderRadius: "0",
-        padding: "8px",
-        textShadow: "2px 2px 4px rgba(0, 0, 0, 0.3)",
-        boxShadow: "none",
-        textTransform: "uppercase",
-        letterSpacing: "1px",
-        ...config.style,
-      },
-      icon: "", // Sin icono
+      icon: "",
     });
   }
 
@@ -191,13 +112,7 @@ export class NotificationManager {
     // Duración más larga para errores críticos
     const duration = error.isRecoverable ? 4000 : 6000;
 
-    this.error(message, {
-      duration,
-      style: {
-        maxWidth: "400px",
-        fontSize: "10px !important", // Reducido de 14px a 13px
-      },
-    });
+    this.error(message, { duration });
 
     // Para errores no recuperables, mostrar instrucciones adicionales
     if (!error.isRecoverable) {
@@ -216,13 +131,7 @@ export class NotificationManager {
       const instruction = instructions[error.type];
       if (instruction) {
         setTimeout(() => {
-          this.info(instruction, {
-            duration: 8000,
-            style: {
-              maxWidth: "450px",
-              fontSize: "10px !important", // Consistente con otros tamaños
-            },
-          });
+          this.info(instruction, { duration: 8000 });
         }, 1000);
       }
     }
