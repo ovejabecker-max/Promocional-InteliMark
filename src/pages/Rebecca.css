@@ -689,11 +689,11 @@ body,
   top: 16px;
   left: 16px;
   z-index: 30;
-  background: rgba(0, 0, 0, 0.6);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 6px;
-  padding: 6px 8px;
+  background: transparent;
+  color: inherit;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   font-family: var(--font-tech);
   font-weight: 700;
   letter-spacing: 1px;
@@ -705,16 +705,16 @@ body,
   gap: 8px;
 }
 .open-home-embed-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
 }
 .open-home-embed-btn:active {
-  transform: translateY(1px);
+  transform: none;
 }
 
 .open-home-embed-icon {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
   filter: drop-shadow(0 0 4px rgba(218, 128, 35, 0.55));
