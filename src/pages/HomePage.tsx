@@ -18,7 +18,7 @@ import {
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTransition } from "../hooks/useTransition";
 import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
@@ -267,7 +267,9 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
   const transitionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const navigate = useNavigate();
-  const userScrolledRef = useRef(false);
+  const location = useLocation();
+  const navState = (location.state || null) as { fromRebeccaAiMatrix?: boolean } | null;
+  const fromAiMatrix = Boolean(navState?.fromRebeccaAiMatrix);
 
   // 🌀 NUEVO: Hook de gestión de transiciones
   const transitionContext = useTransition();
@@ -702,24 +704,6 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
     triggerPortalTransitionRef.current = triggerPortalTransition;
   }, [triggerPortalTransition]);
 
-  // Marcar interacción del usuario para habilitar transición por scroll
-  useEffect(() => {
-    const onWheel = (_e: WheelEvent) => (userScrolledRef.current = true);
-    const onTouchMove = (_e: TouchEvent) => (userScrolledRef.current = true);
-    const onKeyDown = (e: KeyboardEvent) => {
-      const keys = ["ArrowDown", "PageDown", "Space", " "];
-      if (keys.includes(e.key)) userScrolledRef.current = true;
-    };
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
-
   const renderTrail = useCallback(() => {
     const canvas = trailCanvasRef.current;
     if (!canvas) return;
@@ -943,78 +927,72 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
           },
         });
 
-        // Evitar triggers si no hay scroll real (contenido insuficiente)
-        const hasScrollable =
-          document.documentElement.scrollHeight - window.innerHeight > 10;
-        if (!hasScrollable) {
-          return;
+        // Si venimos desde el botón AI Matrix, no crear el trigger de portal
+        if (!fromAiMatrix) {
+          ScrollTrigger.create({
+            trigger: scrollElement,
+            start: "top top",
+            end: "bottom bottom",
+            scroller: scrollerElement,
+            onUpdate: (self) => {
+              const progress = self.progress * 100;
+
+              if (
+                progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
+                progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+                !glitchTriggeredRef.current
+              ) {
+                glitchTriggeredRef.current = true;
+                setIsDigitalGlitch(true);
+                setTimeout(
+                  () => setIsDigitalGlitch(false),
+                  SCROLL_CONFIG.GLITCH_DURATION
+                );
+              }
+
+              if (
+                progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+                !portalTriggeredRef.current &&
+                !isTransitioningRef.current
+              ) {
+                portalTriggeredRef.current = true;
+                setIsTransitioning(true);
+
+                transitionContextRef.current.startTransition({
+                  type: "portal",
+                  direction: "home-to-rebecca",
+                  fromPage: "home",
+                  toPage: "rebecca",
+                  portalData: {
+                    cameraPosition: cameraRef.current
+                      ? {
+                          x: cameraRef.current.position.x,
+                          y: cameraRef.current.position.y,
+                          z: cameraRef.current.position.z,
+                        }
+                      : undefined,
+                    sceneRotation: sceneRef.current
+                      ? {
+                          x: sceneRef.current.rotation.x,
+                          y: sceneRef.current.rotation.y,
+                          z: sceneRef.current.rotation.z,
+                        }
+                      : undefined,
+                    lastScrollPercentage: progress,
+                    glitchTriggered: glitchTriggeredRef.current,
+                  },
+                });
+
+                if (!embedded) {
+                  document.body.style.overflow = "hidden";
+                }
+                if (!embedded) {
+                  triggerPortalTransitionRef.current();
+                }
+              }
+            },
+          });
         }
-
-        ScrollTrigger.create({
-          trigger: scrollElement,
-          start: "top top",
-          end: "bottom bottom",
-          scroller: scrollerElement,
-          onUpdate: (self) => {
-            const progress = self.progress * 100;
-
-            if (
-              progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
-              progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
-              !glitchTriggeredRef.current
-            ) {
-              glitchTriggeredRef.current = true;
-              setIsDigitalGlitch(true);
-              setTimeout(
-                () => setIsDigitalGlitch(false),
-                SCROLL_CONFIG.GLITCH_DURATION
-              );
-            }
-
-            if (
-              progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
-              !portalTriggeredRef.current &&
-              !isTransitioningRef.current &&
-              userScrolledRef.current // Solo tras interacción del usuario
-            ) {
-              portalTriggeredRef.current = true;
-              setIsTransitioning(true);
-
-              transitionContextRef.current.startTransition({
-                type: "portal",
-                direction: "home-to-rebecca",
-                fromPage: "home",
-                toPage: "rebecca",
-                portalData: {
-                  cameraPosition: cameraRef.current
-                    ? {
-                        x: cameraRef.current.position.x,
-                        y: cameraRef.current.position.y,
-                        z: cameraRef.current.position.z,
-                      }
-                    : undefined,
-                  sceneRotation: sceneRef.current
-                    ? {
-                        x: sceneRef.current.rotation.x,
-                        y: sceneRef.current.rotation.y,
-                        z: sceneRef.current.rotation.z,
-                      }
-                    : undefined,
-                  lastScrollPercentage: progress,
-                  glitchTriggered: glitchTriggeredRef.current,
-                },
-              });
-
-              if (!embedded) {
-                document.body.style.overflow = "hidden";
-              }
-              if (!embedded) {
-                triggerPortalTransitionRef.current();
-              }
-            }
-          },
-        });
-
         timeline.to(
           cameraRef.current!.position,
           {
@@ -1108,7 +1086,7 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
       navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
-  }, [active, isCanvasReady, embedded]);
+  }, [active, isCanvasReady, embedded, fromAiMatrix]);
 
   return (
     <div ref={mainRef} className={`homepage-container`}>

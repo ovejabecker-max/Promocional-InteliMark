@@ -180,8 +180,8 @@ const Rebecca = memo(() => {
           next.scrollPercent = ratio;
         }
 
-  // 2. Activación sección CTA (matrix + text) con umbral más permisivo
-  const shouldActivateSection = ratio >= 0.2;
+        // 2. Activación sección CTA (matrix + text) con umbral más permisivo
+        const shouldActivateSection = ratio >= 0.2;
         if (shouldActivateSection !== current.effectsActivated.ctaSection) {
           if (!next) next = { ...current };
           next.effectsActivated = {
@@ -190,17 +190,17 @@ const Rebecca = memo(() => {
           };
         }
 
-  // 3. Visibilidad botón CTA (histéresis): show >=0.4, hide <0.25
-  if (!current.buttonVisible && ratio >= 0.4) {
+        // 3. Visibilidad botón CTA (histéresis): show >=0.4, hide <0.25
+        if (!current.buttonVisible && ratio >= 0.4) {
           if (!next) next = { ...current };
           next.buttonVisible = true;
-  } else if (current.buttonVisible && ratio < 0.25) {
+        } else if (current.buttonVisible && ratio < 0.25) {
           if (!next) next = { ...current };
           next.buttonVisible = false;
         }
 
-  // 4. Typewriter (activar >=0.35, reset <0.1)
-  if (ratio >= 0.35 && !current.effectsActivated.typewriter) {
+        // 4. Typewriter (activar >=0.35, reset <0.1)
+        if (ratio >= 0.35 && !current.effectsActivated.typewriter) {
           if (!next) next = { ...current };
           next.effectsActivated = {
             ...next.effectsActivated,
@@ -517,11 +517,13 @@ const Rebecca = memo(() => {
                     position: "relative",
                     zIndex: 1000, // Normalizado desde 2000000
                   }}
-                  onClick={() => navigate("/")}
+                  onClick={() =>
+                    navigate("/", { state: { fromRebeccaAiMatrix: true } })
+                  }
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      navigate("/");
+                      navigate("/", { state: { fromRebeccaAiMatrix: true } });
                     }
                   }}
                 >
