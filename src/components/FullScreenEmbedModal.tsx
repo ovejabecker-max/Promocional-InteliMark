@@ -33,14 +33,46 @@ export const FullScreenEmbedModal: React.FC<FullScreenEmbedModalProps> = ({
     }
   }, [isOpen]);
 
-  // Cerrar con ESC
+  // Cerrar con ESC (tanto en el documento padre como dentro del iframe)
   useEffect(() => {
     if (!isOpen) return;
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
+
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+
+    let iframeWin: Window | null = null;
+    const attachIframeKeyListener = () => {
+      const iframe = iframeRef.current;
+      if (iframe && iframe.contentWindow) {
+        iframeWin = iframe.contentWindow;
+        try {
+          iframeWin.addEventListener("keydown", onKey);
+        } catch (_e) {
+          // Si por alguna razón no se puede (cross-origin), lo ignoramos.
+        }
+      }
+    };
+
+    // Intento inmediato y también tras eventos de carga del iframe
+    attachIframeKeyListener();
+    const onLoad = () => attachIframeKeyListener();
+    const iframeEl = iframeRef.current;
+    iframeEl?.addEventListener("load", onLoad);
+
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      iframeEl?.removeEventListener("load", onLoad);
+      if (iframeWin) {
+        try {
+          iframeWin.removeEventListener("keydown", onKey);
+        } catch (_e) {
+          // Ignorar si no es posible remover
+        }
+      }
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
