@@ -17,6 +17,7 @@ import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
 import "./Rebecca.css";
 import FullScreenEmbedModal from "../components/FullScreenEmbedModal";
+import Home3DIcon from "../assets/Home3D.png";
 
 const Rebecca = memo(() => {
   // 🌀 HOOKS DE TRANSICIÓN: Detectar si viene de portal
@@ -366,7 +367,16 @@ const Rebecca = memo(() => {
             aria-label="Abrir experiencia 3D"
             onClick={() => setUiState((s) => ({ ...s, showHomeEmbed: true }))}
           >
-            ENTRAR 3D
+            <img
+              src={Home3DIcon}
+              alt="Icono experiencia 3D"
+              className="open-home-embed-icon"
+              width={28}
+              height={28}
+              loading="eager"
+              decoding="async"
+            />
+            <span className="sr-only">Entrar 3D</span>
           </button>
           <h1 className="portal-title">
             {entryState.fromPortal
