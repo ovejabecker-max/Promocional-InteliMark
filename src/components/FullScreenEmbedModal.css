@@ -109,3 +109,8 @@
 .fs-embed-close:hover {
   background: rgba(255, 255, 255, 0.08);
 }
+
+/* Cuando el modal está abierto, ocultar el cursor CAD de Rebecca en el documento padre */
+body.fs-embed-open .cad-cursor-overlay {
+  display: none !important;
+}

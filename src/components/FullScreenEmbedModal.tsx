@@ -20,10 +20,12 @@ export const FullScreenEmbedModal: React.FC<FullScreenEmbedModalProps> = ({
     if (isOpen) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
+      document.body.classList.add("fs-embed-open");
       // doble rAF para permitir animación de entrada
       requestAnimationFrame(() => requestAnimationFrame(() => setReady(true)));
       return () => {
         document.body.style.overflow = prev;
+        document.body.classList.remove("fs-embed-open");
         setReady(false);
       };
     } else {
