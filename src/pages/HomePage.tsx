@@ -267,6 +267,7 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
   const transitionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const navigate = useNavigate();
+  const userScrolledRef = useRef(false);
 
   // 🌀 NUEVO: Hook de gestión de transiciones
   const transitionContext = useTransition();
@@ -701,6 +702,24 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
     triggerPortalTransitionRef.current = triggerPortalTransition;
   }, [triggerPortalTransition]);
 
+  // Marcar interacción del usuario para habilitar transición por scroll
+  useEffect(() => {
+    const onWheel = (_e: WheelEvent) => (userScrolledRef.current = true);
+    const onTouchMove = (_e: TouchEvent) => (userScrolledRef.current = true);
+    const onKeyDown = (e: KeyboardEvent) => {
+      const keys = ["ArrowDown", "PageDown", "Space", " "];
+      if (keys.includes(e.key)) userScrolledRef.current = true;
+    };
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
   const renderTrail = useCallback(() => {
     const canvas = trailCanvasRef.current;
     if (!canvas) return;
@@ -924,6 +943,13 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
           },
         });
 
+        // Evitar triggers si no hay scroll real (contenido insuficiente)
+        const hasScrollable =
+          document.documentElement.scrollHeight - window.innerHeight > 10;
+        if (!hasScrollable) {
+          return;
+        }
+
         ScrollTrigger.create({
           trigger: scrollElement,
           start: "top top",
@@ -948,7 +974,8 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
             if (
               progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
               !portalTriggeredRef.current &&
-              !isTransitioningRef.current
+              !isTransitioningRef.current &&
+              userScrolledRef.current // Solo tras interacción del usuario
             ) {
               portalTriggeredRef.current = true;
               setIsTransitioning(true);
