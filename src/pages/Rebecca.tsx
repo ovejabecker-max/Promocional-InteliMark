@@ -180,8 +180,8 @@ const Rebecca = memo(() => {
           next.scrollPercent = ratio;
         }
 
-        // 2. Activación sección CTA (matrix + text)
-        const shouldActivateSection = ratio >= 0.3;
+  // 2. Activación sección CTA (matrix + text) con umbral más permisivo
+  const shouldActivateSection = ratio >= 0.2;
         if (shouldActivateSection !== current.effectsActivated.ctaSection) {
           if (!next) next = { ...current };
           next.effectsActivated = {
@@ -190,17 +190,17 @@ const Rebecca = memo(() => {
           };
         }
 
-        // 3. Visibilidad botón CTA (histéresis simplificada: show >=0.95, hide <0.85)
-        if (!current.buttonVisible && ratio >= 0.95) {
+  // 3. Visibilidad botón CTA (histéresis): show >=0.4, hide <0.25
+  if (!current.buttonVisible && ratio >= 0.4) {
           if (!next) next = { ...current };
           next.buttonVisible = true;
-        } else if (current.buttonVisible && ratio < 0.85) {
+  } else if (current.buttonVisible && ratio < 0.25) {
           if (!next) next = { ...current };
           next.buttonVisible = false;
         }
 
-        // 4. Typewriter (activar >=0.95, reset <0.1)
-        if (ratio >= 0.95 && !current.effectsActivated.typewriter) {
+  // 4. Typewriter (activar >=0.35, reset <0.1)
+  if (ratio >= 0.35 && !current.effectsActivated.typewriter) {
           if (!next) next = { ...current };
           next.effectsActivated = {
             ...next.effectsActivated,

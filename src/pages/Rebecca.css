@@ -940,7 +940,7 @@ body,
   overflow-wrap: normal;
   word-break: keep-all;
   border-right: 2px solid #ffffff;
-  width: 0;
+  width: auto; /* Visible por defecto; animación ajustará si se activa */
   text-align: center;
   margin: 0 auto;
   /* Resguardo lateral moderado */
@@ -988,7 +988,7 @@ body,
 
 /* Efecto typewriter sincronizado - Línea 1 */
 .cta-subtitle .subtitle-line-1.typewriter-line {
-  width: 0;
+  width: 0; /* La animación controla el ensanchado */
   opacity: 1;
 }
 
@@ -999,7 +999,7 @@ body,
 
 /* Efecto typewriter sincronizado - Línea 2 */
 .cta-subtitle .subtitle-line-2.typewriter-line {
-  width: 0;
+  width: 0; /* La animación controla el ensanchado */
   opacity: 1;
 }
 
@@ -1023,14 +1023,14 @@ body,
   justify-content: center;
   align-items: center;
 
-  /* Estado inicial optimizado */
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(14px) scale(0.98);
-  filter: blur(2px);
-  transition: opacity 4s ease-in-out, visibility 6s ease-in-out,
-    transform 5s ease-in-out, filter 6s ease-in-out;
-  pointer-events: none;
+  /* Estado inicial más permisivo (visible por defecto) */
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+  transition: opacity 0.4s ease, visibility 0.4s ease,
+    transform 0.4s ease, filter 0.4s ease;
+  pointer-events: auto;
 
   /* 🎯 DIMENSIONES ESPECÍFICAS */
   max-width: 200px !important;
@@ -1039,6 +1039,7 @@ body,
 
 /* ✨ ESTADO VISIBLE */
 .cta-button-container.visible {
+  /* Mantener estado visible coherente (clase ahora idempotente) */
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
