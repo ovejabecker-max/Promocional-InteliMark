@@ -50,7 +50,9 @@
     left: auto !important;
     right: auto !important;
     top: auto !important;
-    transform: translateX(50px) !important; /* desplazamiento a la derecha */
+    transform: translateX(
+      var(--aimatrix-align-dx, 0px)
+    ) !important; /* desplazamiento dinámico */
     margin-left: 0 !important;
     display: block;
   }
@@ -61,7 +63,9 @@
     .navigation-section
     .homepage-access-button.ai-matrix-button {
     margin-left: 0 !important;
-    transform: translateX(50px) !important; /* mantener desplazamiento */
+    transform: translateX(
+      var(--aimatrix-align-dx, 0px)
+    ) !important; /* desplazamiento dinámico */
     align-self: center;
   }
 
@@ -96,6 +100,9 @@
     max-width: min(100%, 560px);
     width: 100%;
     padding-left: 0;
+    align-self: center !important; /* ⚖️ Anula el align-self:flex-start de desktop */
+    margin-left: auto;
+    margin-right: auto;
     transform: none !important;
   }
 

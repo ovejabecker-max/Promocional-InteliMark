@@ -59,6 +59,8 @@ const Rebecca = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const ctaSectionRef = useRef<HTMLElement>(null);
   const ctaStateRef = useRef(ctaState); // 🎯 Ref para acceso actual del estado
+  const aiButtonRef = useRef<HTMLButtonElement>(null);
+  const robotHostRef = useRef<HTMLDivElement>(null);
 
   // Refs para spans typewriter (evita querySelector en observer)
   const line1Ref = useRef<HTMLSpanElement>(null);
@@ -262,6 +264,74 @@ const Rebecca = memo(() => {
     setEntryState({ fromPortal, hasInitialized: true });
   }, [portalDetectionData, entryState.hasInitialized]);
 
+  // 📐 Alinear el botón AI Matrix con el centro del contenedor del robot (solo responsive)
+  useEffect(() => {
+    const footer = document.getElementById("footer-reveal");
+    let cleanupFns: Array<() => void> = [];
+
+    const computeAndSet = () => {
+      if (!footer) return;
+      // Solo aplicar en responsive (coincide con media query <= 900px)
+      const isMobile = window.innerWidth <= 900;
+      if (!isMobile) {
+        footer.style.removeProperty("--aimatrix-align-dx");
+        return;
+      }
+      const btn = aiButtonRef.current;
+      const host = robotHostRef.current;
+      const robot = host?.querySelector(
+        ".robot-footer-container"
+      ) as HTMLElement | null;
+      if (!btn || !robot) return;
+
+      const b = btn.getBoundingClientRect();
+      const r = robot.getBoundingClientRect();
+      const bCenter = b.left + b.width / 2;
+      const rCenter = r.left + r.width / 2;
+      const dx = Math.round(rCenter - bCenter);
+      footer.style.setProperty("--aimatrix-align-dx", `${dx}px`);
+    };
+
+    let rafId = 0;
+    let attempts = 0;
+    const ensureReady = () => {
+      attempts++;
+      const btn = aiButtonRef.current;
+      const host = robotHostRef.current;
+      const robot = host?.querySelector(
+        ".robot-footer-container"
+      ) as HTMLElement | null;
+      if (footer && btn && robot) {
+        // Observadores para cambios de tamaño
+        const ro = new ResizeObserver(() => computeAndSet());
+        ro.observe(btn);
+        ro.observe(robot);
+        cleanupFns.push(() => ro.disconnect());
+
+        const onResize = () => computeAndSet();
+        window.addEventListener("resize", onResize, { passive: true } as any);
+        window.addEventListener("orientationchange", onResize as any);
+        cleanupFns.push(() => {
+          window.removeEventListener("resize", onResize as any);
+          window.removeEventListener("orientationchange", onResize as any);
+        });
+
+        // Primer cálculo
+        computeAndSet();
+        return;
+      }
+      if (attempts < 120) {
+        rafId = requestAnimationFrame(ensureReady);
+      }
+    };
+    rafId = requestAnimationFrame(ensureReady);
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      cleanupFns.forEach((fn) => fn());
+    };
+  }, []);
+
   // 🎬 FUNCIÓN: Inicializar entrada (portal o normal) - unificada
   const initializeEntry = (_fromPortal: boolean) => {
     const container = containerRef.current;
@@ -419,6 +489,7 @@ const Rebecca = memo(() => {
               <div className="navigation-section">
                 <button
                   className="homepage-access-button ai-matrix-button"
+                  ref={aiButtonRef}
                   style={{
                     marginLeft: "5px",
                     transform: "translateY(35px)",
@@ -456,6 +527,7 @@ const Rebecca = memo(() => {
                 transform: "translateY(20px)",
                 gap: 0,
               }}
+              ref={robotHostRef}
             >
               <RobotFooterModel />
 
