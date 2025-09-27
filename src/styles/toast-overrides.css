@@ -1,32 +1,21 @@
-/* Estilos específicos para react-hot-toast para forzar Oxanium */
-
-/* Selector específico para todos los elementos de toast */
-div[data-hot-toast-id] {
-  font-family: "Oxanium", Inter, Segoe UI, InteliMark, system-ui, Avenir,
-    Helvetica, Arial, sans-serif !important;
-  font-size: 10px !important;
-}
-
-/* Selector más específico para el contenido del toast */
-div[data-hot-toast-id] > div {
-  font-family: "Oxanium", Inter, Segoe UI, InteliMark, system-ui, Avenir,
-    Helvetica, Arial, sans-serif !important;
-  font-size: 10px !important;
-}
-
-/* Eliminado CSS específico de react-toastify (.Toastify__toast) y selectores genéricos ambiguos */
-
-/* Especificidad máxima para react-hot-toast */
-div[role="status"] {
-  font-family: "Oxanium", Inter, Segoe UI, InteliMark, system-ui, Avenir,
-    Helvetica, Arial, sans-serif !important;
-  font-size: 10px !important;
-}
-
-/* Estilos para el contenedor principal de toast */
-#__next div[role="status"],
+/* Estilos unificados para react-hot-toast */
+/* Contenedor de toasts (role=status) */
 body div[role="status"] {
   font-family: "Oxanium", Inter, Segoe UI, InteliMark, system-ui, Avenir,
     Helvetica, Arial, sans-serif !important;
   font-size: 10px !important;
+}
+
+/* Cada toast */
+body div[role="status"] [data-hot-toast-id] {
+  background: transparent !important;
+  color: #da8023 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 8px !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
 }

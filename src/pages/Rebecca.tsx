@@ -180,8 +180,8 @@ const Rebecca = memo(() => {
           next.scrollPercent = ratio;
         }
 
-        // 2. Activación sección CTA (matrix + text) con umbral más permisivo
-        const shouldActivateSection = ratio >= 0.2;
+        // 2. Activación sección CTA (matrix + text)
+        const shouldActivateSection = ratio >= 0.3;
         if (shouldActivateSection !== current.effectsActivated.ctaSection) {
           if (!next) next = { ...current };
           next.effectsActivated = {
@@ -190,17 +190,17 @@ const Rebecca = memo(() => {
           };
         }
 
-        // 3. Visibilidad botón CTA (histéresis): show >=0.4, hide <0.25
-        if (!current.buttonVisible && ratio >= 0.4) {
+        // 3. Visibilidad botón CTA (histéresis simplificada: show >=0.95, hide <0.85)
+        if (!current.buttonVisible && ratio >= 0.95) {
           if (!next) next = { ...current };
           next.buttonVisible = true;
-        } else if (current.buttonVisible && ratio < 0.25) {
+        } else if (current.buttonVisible && ratio < 0.85) {
           if (!next) next = { ...current };
           next.buttonVisible = false;
         }
 
-        // 4. Typewriter (activar >=0.35, reset <0.1)
-        if (ratio >= 0.35 && !current.effectsActivated.typewriter) {
+        // 4. Typewriter (activar >=0.95, reset <0.1)
+        if (ratio >= 0.95 && !current.effectsActivated.typewriter) {
           if (!next) next = { ...current };
           next.effectsActivated = {
             ...next.effectsActivated,
@@ -227,8 +227,8 @@ const Rebecca = memo(() => {
         commitChange();
       },
       {
-        // Granularidad suficiente y más eficiente (0..1 en pasos de 0.1)
-        threshold: Array.from({ length: 11 }, (_, i) => i / 10),
+        // Mayor granularidad (0..1 en pasos de 0.02) para suavidad del scroll
+        threshold: Array.from({ length: 51 }, (_, i) => i / 50),
       }
     );
 
@@ -510,22 +510,13 @@ const Rebecca = memo(() => {
                 <button
                   className="homepage-access-button ai-matrix-button"
                   ref={aiButtonRef}
-                  type="button"
                   style={{
                     marginLeft: "5px",
                     transform: "translateY(35px)",
                     position: "relative",
                     zIndex: 1000, // Normalizado desde 2000000
                   }}
-                  onClick={() =>
-                    navigate("/", { state: { fromRebeccaAiMatrix: true } })
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      navigate("/", { state: { fromRebeccaAiMatrix: true } });
-                    }
-                  }}
+                  onClick={() => navigate("/")}
                 >
                   <div className="ai-matrix-container">
                     <div className="data-matrix arrow-shape">

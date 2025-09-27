@@ -18,22 +18,16 @@ export class NotificationManager {
     position: "top-right",
   };
 
-  /**
-   * Muestra una notificación de éxito
-   */
+  // Estilos visuales se definen en CSS global (styles/toast-overrides.css)
   static success(message: string, options?: NotificationOptions) {
     const config = { ...this.defaultOptions, ...options };
     return toast.success(message, {
       duration: config.duration,
       position: config.position,
-      // Estilos unificados vía CSS (styles/toast-overrides.css)
       icon: "",
     });
   }
 
-  /**
-   * Muestra una notificación de error
-   */
   static error(message: string, options?: NotificationOptions) {
     const config = { ...this.defaultOptions, ...options };
     return toast.error(message, {
@@ -43,9 +37,6 @@ export class NotificationManager {
     });
   }
 
-  /**
-   * Muestra una notificación de advertencia
-   */
   static warning(message: string, options?: NotificationOptions) {
     const config = { ...this.defaultOptions, ...options };
     return toast(message, {
@@ -55,9 +46,6 @@ export class NotificationManager {
     });
   }
 
-  /**
-   * Muestra una notificación informativa
-   */
   static info(message: string, options?: NotificationOptions) {
     const config = { ...this.defaultOptions, ...options };
     return toast(message, {
@@ -67,9 +55,6 @@ export class NotificationManager {
     });
   }
 
-  /**
-   * Muestra una notificación de carga
-   */
   static loading(message: string, options?: NotificationOptions) {
     const config = { ...this.defaultOptions, ...options };
     return toast.loading(message, {

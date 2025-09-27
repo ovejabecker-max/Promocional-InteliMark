@@ -940,7 +940,7 @@ body,
   overflow-wrap: normal;
   word-break: keep-all;
   border-right: 2px solid #ffffff;
-  width: auto; /* Visible por defecto; animación ajustará si se activa */
+  width: 0;
   text-align: center;
   margin: 0 auto;
   /* Resguardo lateral moderado */
@@ -988,7 +988,7 @@ body,
 
 /* Efecto typewriter sincronizado - Línea 1 */
 .cta-subtitle .subtitle-line-1.typewriter-line {
-  width: 0; /* La animación controla el ensanchado */
+  width: 0;
   opacity: 1;
 }
 
@@ -999,7 +999,7 @@ body,
 
 /* Efecto typewriter sincronizado - Línea 2 */
 .cta-subtitle .subtitle-line-2.typewriter-line {
-  width: 0; /* La animación controla el ensanchado */
+  width: 0;
   opacity: 1;
 }
 
@@ -1023,14 +1023,14 @@ body,
   justify-content: center;
   align-items: center;
 
-  /* Estado inicial más permisivo (visible por defecto) */
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0) scale(1);
-  filter: blur(0);
-  transition: opacity 0.4s ease, visibility 0.4s ease,
-    transform 0.4s ease, filter 0.4s ease;
-  pointer-events: auto;
+  /* Estado inicial optimizado */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px) scale(0.98);
+  filter: blur(2px);
+  transition: opacity 4s ease-in-out, visibility 6s ease-in-out,
+    transform 5s ease-in-out, filter 6s ease-in-out;
+  pointer-events: none;
 
   /* 🎯 DIMENSIONES ESPECÍFICAS */
   max-width: 200px !important;
@@ -1039,7 +1039,6 @@ body,
 
 /* ✨ ESTADO VISIBLE */
 .cta-button-container.visible {
-  /* Mantener estado visible coherente (clase ahora idempotente) */
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
@@ -1279,12 +1278,6 @@ body,
   position: relative; /* Para posicionamiento absoluto de créditos */
 }
 
-/* Wrapper central (Robot + créditos) por debajo de la columna izquierda */
-.rebecca-container .footer-reveal .footer-content > div:nth-child(2) {
-  position: relative;
-  z-index: 1;
-}
-
 /* 📧 COLUMNA IZQUIERDA: Newsletter + AI Matrix Button */
 .footer-info {
   display: flex;
@@ -1307,18 +1300,6 @@ body,
   z-index: 100; /* 🎯 Z-INDEX ALTO PARA EL BOTÓN AI MATRIX */
   width: 100%; /* 🎯 AJUSTE: Ocupar todo el ancho disponible en footer-info */
   margin-top: 10px; /* 🎯 AJUSTE: Espacio adicional desde el newsletter */
-}
-
-/* Asegurar que la columna izquierda (con el botón) esté por encima del robot en desktop */
-.rebecca-container .footer-reveal .footer-info {
-  position: relative;
-  z-index: 2;
-}
-
-/* Y el contenedor del robot queda debajo en la jerarquía de apilamiento */
-.rebecca-container .footer-reveal .robot-footer-container {
-  position: relative;
-  z-index: 1;
 }
 
 /* ============================================================================
@@ -1377,15 +1358,13 @@ body,
   right: 0;
   bottom: 0;
   z-index: 9;
-  /* No interceptar eventos: permitir que el click llegue al <button> */
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 /* 🎯 CONFIGURACIÓN Z-INDEX PARA BOTÓN AI */
 .navigation-section .ai-matrix-button {
   position: relative;
-  /* Mantener por encima de elementos del footer (robot, efectos) */
-  z-index: 200 !important;
+  z-index: 8 !important;
   margin-top: -70px;
 }
 

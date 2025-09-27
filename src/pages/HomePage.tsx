@@ -18,7 +18,7 @@ import {
 import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTransition } from "../hooks/useTransition";
 import LogoWithGlitchEffect from "../components/LogoWithGlitchEffect";
 import AnimatedTextPhrase1 from "../components/AnimatedTextPhrase1";
@@ -267,9 +267,6 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
   const transitionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const navState = (location.state || null) as { fromRebeccaAiMatrix?: boolean } | null;
-  const fromAiMatrix = Boolean(navState?.fromRebeccaAiMatrix);
 
   // 🌀 NUEVO: Hook de gestión de transiciones
   const transitionContext = useTransition();
@@ -927,72 +924,70 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
           },
         });
 
-        // Si venimos desde el botón AI Matrix, no crear el trigger de portal
-        if (!fromAiMatrix) {
-          ScrollTrigger.create({
-            trigger: scrollElement,
-            start: "top top",
-            end: "bottom bottom",
-            scroller: scrollerElement,
-            onUpdate: (self) => {
-              const progress = self.progress * 100;
+        ScrollTrigger.create({
+          trigger: scrollElement,
+          start: "top top",
+          end: "bottom bottom",
+          scroller: scrollerElement,
+          onUpdate: (self) => {
+            const progress = self.progress * 100;
 
-              if (
-                progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
-                progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
-                !glitchTriggeredRef.current
-              ) {
-                glitchTriggeredRef.current = true;
-                setIsDigitalGlitch(true);
-                setTimeout(
-                  () => setIsDigitalGlitch(false),
-                  SCROLL_CONFIG.GLITCH_DURATION
-                );
+            if (
+              progress >= SCROLL_CONFIG.GLITCH_TRIGGER_PERCENTAGE &&
+              progress < SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+              !glitchTriggeredRef.current
+            ) {
+              glitchTriggeredRef.current = true;
+              setIsDigitalGlitch(true);
+              setTimeout(
+                () => setIsDigitalGlitch(false),
+                SCROLL_CONFIG.GLITCH_DURATION
+              );
+            }
+
+            if (
+              progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
+              !portalTriggeredRef.current &&
+              !isTransitioningRef.current
+            ) {
+              portalTriggeredRef.current = true;
+              setIsTransitioning(true);
+
+              transitionContextRef.current.startTransition({
+                type: "portal",
+                direction: "home-to-rebecca",
+                fromPage: "home",
+                toPage: "rebecca",
+                portalData: {
+                  cameraPosition: cameraRef.current
+                    ? {
+                        x: cameraRef.current.position.x,
+                        y: cameraRef.current.position.y,
+                        z: cameraRef.current.position.z,
+                      }
+                    : undefined,
+                  sceneRotation: sceneRef.current
+                    ? {
+                        x: sceneRef.current.rotation.x,
+                        y: sceneRef.current.rotation.y,
+                        z: sceneRef.current.rotation.z,
+                      }
+                    : undefined,
+                  lastScrollPercentage: progress,
+                  glitchTriggered: glitchTriggeredRef.current,
+                },
+              });
+
+              if (!embedded) {
+                document.body.style.overflow = "hidden";
               }
-
-              if (
-                progress >= SCROLL_CONFIG.PORTAL_TRIGGER_PERCENTAGE &&
-                !portalTriggeredRef.current &&
-                !isTransitioningRef.current
-              ) {
-                portalTriggeredRef.current = true;
-                setIsTransitioning(true);
-
-                transitionContextRef.current.startTransition({
-                  type: "portal",
-                  direction: "home-to-rebecca",
-                  fromPage: "home",
-                  toPage: "rebecca",
-                  portalData: {
-                    cameraPosition: cameraRef.current
-                      ? {
-                          x: cameraRef.current.position.x,
-                          y: cameraRef.current.position.y,
-                          z: cameraRef.current.position.z,
-                        }
-                      : undefined,
-                    sceneRotation: sceneRef.current
-                      ? {
-                          x: sceneRef.current.rotation.x,
-                          y: sceneRef.current.rotation.y,
-                          z: sceneRef.current.rotation.z,
-                        }
-                      : undefined,
-                    lastScrollPercentage: progress,
-                    glitchTriggered: glitchTriggeredRef.current,
-                  },
-                });
-
-                if (!embedded) {
-                  document.body.style.overflow = "hidden";
-                }
-                if (!embedded) {
-                  triggerPortalTransitionRef.current();
-                }
+              if (!embedded) {
+                triggerPortalTransitionRef.current();
               }
-            },
-          });
-        }
+            }
+          },
+        });
+
         timeline.to(
           cameraRef.current!.position,
           {
@@ -1086,7 +1081,7 @@ const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
       navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
-  }, [active, isCanvasReady, embedded, fromAiMatrix]);
+  }, [active, isCanvasReady, embedded]);
 
   return (
     <div ref={mainRef} className={`homepage-container`}>

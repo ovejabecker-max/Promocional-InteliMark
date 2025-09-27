@@ -37,8 +37,23 @@ function ScrollToTop() {
   const location = useLocation();
 
   useEffect(() => {
-    // Restaurar scroll de forma simple en cada cambio de ruta
-    window.scrollTo(0, 0);
+    // ✅ RESTAURAR SCROLL AL INICIO en cada cambio de ruta
+
+    // Múltiples métodos para máxima compatibilidad
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    // ✅ VERIFICACIÓN ADICIONAL: Asegurar que se mantenga en el top
+    const ensureScrollTop = () => {
+      if (window.scrollY > 0) {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      }
+    };
+
+    // Ejecutar después del render
+    setTimeout(ensureScrollTop, 0);
+    setTimeout(ensureScrollTop, 100);
   }, [location]);
 
   return null;
@@ -81,7 +96,17 @@ function App() {
       <TransitionProvider>
         <AppContent />
         {/* 🔔 Sistema de notificaciones unificado */}
-        <Toaster position="top-right" />
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          gutter={8}
+          toastOptions={{
+            // Duraciones por tipo; estilos visuales centralizados en CSS
+            duration: 4000,
+            success: { duration: 3000 },
+            error: { duration: 6000 },
+          }}
+        />
       </TransitionProvider>
     </AnimationProvider>
   );
