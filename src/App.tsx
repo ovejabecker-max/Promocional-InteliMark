@@ -78,6 +78,8 @@ function AppContent() {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
+              {/* Ruta embebida: desactiva transición de portal y navegación */}
+              <Route path="/home-embed" element={<HomePage embedded />} />
               <Route path="/rebecca" element={<Rebecca />} />
             </Routes>
           </Suspense>

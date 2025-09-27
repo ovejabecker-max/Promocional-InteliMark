@@ -16,6 +16,7 @@ import CadCursor from "../components/CadCursor";
 import CTAButtonImage from "../assets/CTAButtonV2.png";
 import ContenedorCreditos from "../assets/contenedor_creditos.png";
 import "./Rebecca.css";
+import FullScreenEmbedModal from "../components/FullScreenEmbedModal";
 
 const Rebecca = memo(() => {
   // 🌀 HOOKS DE TRANSICIÓN: Detectar si viene de portal
@@ -53,6 +54,7 @@ const Rebecca = memo(() => {
   // Estados de UI
   const [uiState, setUiState] = useState({
     showCreditsModal: false,
+    showHomeEmbed: false,
   });
 
   // Referencias
@@ -267,7 +269,7 @@ const Rebecca = memo(() => {
   // 📐 Alinear el botón AI Matrix con el centro del contenedor del robot (solo responsive)
   useEffect(() => {
     const footer = document.getElementById("footer-reveal");
-    let cleanupFns: Array<() => void> = [];
+    const cleanupFns: Array<() => void> = [];
 
     const computeAndSet = () => {
       if (!footer) return;
@@ -309,11 +311,11 @@ const Rebecca = memo(() => {
         cleanupFns.push(() => ro.disconnect());
 
         const onResize = () => computeAndSet();
-        window.addEventListener("resize", onResize, { passive: true } as any);
-        window.addEventListener("orientationchange", onResize as any);
+        window.addEventListener("resize", onResize, { passive: true });
+        window.addEventListener("orientationchange", onResize);
         cleanupFns.push(() => {
-          window.removeEventListener("resize", onResize as any);
-          window.removeEventListener("orientationchange", onResize as any);
+          window.removeEventListener("resize", onResize);
+          window.removeEventListener("orientationchange", onResize);
         });
 
         // Primer cálculo
@@ -358,6 +360,14 @@ const Rebecca = memo(() => {
         } ${entryState.hasInitialized ? "animation-completed" : "animating"}`}
       >
         <div className="main-content-wrapper">
+          {/* Botón para abrir HomePage embebida en ventana a pantalla completa */}
+          <button
+            className="open-home-embed-btn"
+            aria-label="Abrir experiencia 3D"
+            onClick={() => setUiState((s) => ({ ...s, showHomeEmbed: true }))}
+          >
+            ENTRAR 3D
+          </button>
           <h1 className="portal-title">
             {entryState.fromPortal
               ? "¡Bienvenido al futuro!"
@@ -594,6 +604,13 @@ const Rebecca = memo(() => {
           setUiState((prev) => ({ ...prev, showCreditsModal: false }))
         }
         backgroundImage={ContenedorCreditos}
+      />
+
+      {/* Modal a pantalla completa que carga HomePage en modo embebido */}
+      <FullScreenEmbedModal
+        isOpen={uiState.showHomeEmbed}
+        onClose={() => setUiState((s) => ({ ...s, showHomeEmbed: false }))}
+        src="/home-embed"
       />
     </>
   );

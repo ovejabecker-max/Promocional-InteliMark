@@ -242,9 +242,11 @@ const TextPhrase2: FC<{ scrollPercentage: number; textScale?: number }> = memo(
 
 TextPhrase2.displayName = "TextPhrase2";
 
-interface HomePageProps {}
+interface HomePageProps {
+  embedded?: boolean;
+}
 
-const HomePage: FC<HomePageProps> = () => {
+const HomePage: FC<HomePageProps> = ({ embedded = false }) => {
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const sceneRef = useRef<THREE.Group | null>(null);
   const mainRef = useRef<HTMLDivElement | null>(null);
@@ -473,6 +475,8 @@ const HomePage: FC<HomePageProps> = () => {
   const mouseStoppedTimeoutRef = useRef<number | null>(null);
 
   const triggerPortalTransition = useCallback(() => {
+    // En modo embebido, no ejecutar transición de portal ni navegación
+    if (embedded) return;
     const canvas = canvasRef.current;
     const scene = sceneRef.current;
     const camera = cameraRef.current;
@@ -684,7 +688,13 @@ const HomePage: FC<HomePageProps> = () => {
         navigationExecutedRef.current = false;
       }, 1000);
     });
-  }, [navigate, areSoundsEnabled, transitionContext, createAudioElement]);
+  }, [
+    navigate,
+    areSoundsEnabled,
+    transitionContext,
+    createAudioElement,
+    embedded,
+  ]);
 
   // Enlazar función en ref estable
   useEffect(() => {
@@ -968,8 +978,12 @@ const HomePage: FC<HomePageProps> = () => {
                 },
               });
 
-              document.body.style.overflow = "hidden";
-              triggerPortalTransitionRef.current();
+              if (!embedded) {
+                document.body.style.overflow = "hidden";
+              }
+              if (!embedded) {
+                triggerPortalTransitionRef.current();
+              }
             }
           },
         });
@@ -1058,14 +1072,16 @@ const HomePage: FC<HomePageProps> = () => {
     requestAnimationFrame(() => requestAnimationFrame(setupScrollTrigger));
 
     return () => {
-      document.body.style.overflow = "";
+      if (!embedded) {
+        document.body.style.overflow = "";
+      }
       ctx?.revert();
       portalTriggeredRef.current = false;
       glitchTriggeredRef.current = false;
       navigationExecutedRef.current = false;
       setIsTransitioning(false);
     };
-  }, [active, isCanvasReady]);
+  }, [active, isCanvasReady, embedded]);
 
   return (
     <div ref={mainRef} className={`homepage-container`}>

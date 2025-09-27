@@ -683,6 +683,30 @@ body,
   overflow: hidden; /* 🎯 AGREGADO: Contener todos los efectos dentro de la sección principal */
 }
 
+/* Botón para abrir el modal de HomePage embebida */
+.open-home-embed-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: var(--font-tech);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.open-home-embed-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.open-home-embed-btn:active {
+  transform: translateY(1px);
+}
+
 /* SECCIÓN CTA - REORGANIZACIÓN CRONOLÓGICA COMPLETA */
 
 /* ============================================================================

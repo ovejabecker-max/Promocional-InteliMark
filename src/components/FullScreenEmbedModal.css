@@ -1,0 +1,111 @@
+.fs-embed-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  /* Color de marca para el glow (fallback si no existe la variable global) */
+  --imk-orange: var(--color-orange-primary, #da8023);
+}
+
+.fs-embed-modal {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0;
+  transform: scale(0.985);
+  transition: opacity 180ms ease, transform 220ms ease;
+}
+.fs-embed-modal.ready {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Resplandor naranja en los bordes exteriores */
+.fs-embed-modal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid color-mix(in oklab, var(--imk-orange) 60%, #ffffff 0%);
+  box-shadow: 0 0 18px 2px
+      color-mix(in oklab, var(--imk-orange) 60%, transparent),
+    0 0 64px 8px color-mix(in oklab, var(--imk-orange) 35%, transparent),
+    inset 0 0 24px 4px color-mix(in oklab, var(--imk-orange) 30%, transparent);
+  z-index: 2;
+  animation: fs-glow 3.2s ease-in-out infinite;
+}
+
+/* Capa suave adicional para enfatizar esquinas y bordes con gradientes */
+.fs-embed-modal::before {
+  content: "";
+  position: absolute;
+  inset: -2px; /* leve sangrado para que el glow no se recorte */
+  pointer-events: none;
+  background: radial-gradient(
+      120% 40% at 50% -10%,
+      color-mix(in oklab, var(--imk-orange) 18%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      120% 40% at 50% 110%,
+      color-mix(in oklab, var(--imk-orange) 18%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      40% 120% at -10% 50%,
+      color-mix(in oklab, var(--imk-orange) 16%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      40% 120% at 110% 50%,
+      color-mix(in oklab, var(--imk-orange) 16%, transparent),
+      transparent 60%
+    );
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+
+@keyframes fs-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 14px 2px
+        color-mix(in oklab, var(--imk-orange) 55%, transparent),
+      0 0 52px 6px color-mix(in oklab, var(--imk-orange) 30%, transparent),
+      inset 0 0 20px 3px color-mix(in oklab, var(--imk-orange) 24%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 22px 3px
+        color-mix(in oklab, var(--imk-orange) 75%, transparent),
+      0 0 78px 10px color-mix(in oklab, var(--imk-orange) 44%, transparent),
+      inset 0 0 28px 5px color-mix(in oklab, var(--imk-orange) 36%, transparent);
+  }
+}
+
+.fs-embed-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #000; /* evita flash blanco */
+}
+
+.fs-embed-close {
+  position: fixed;
+  top: 14px;
+  left: 14px; /* esquina superior izquierda como pidió el usuario */
+  z-index: 10001;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.fs-embed-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
