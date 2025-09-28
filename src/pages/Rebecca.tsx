@@ -56,6 +56,12 @@ const Rebecca = memo(() => {
   const [uiState, setUiState] = useState({
     showCreditsModal: false,
     showHomeEmbed: false,
+    homeEmbedOrigin: null as null | {
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+    },
   });
 
   // Referencias
@@ -414,7 +420,21 @@ const Rebecca = memo(() => {
           <button
             className="open-home-embed-btn"
             aria-label="Abrir experiencia 3D"
-            onClick={() => setUiState((s) => ({ ...s, showHomeEmbed: true }))}
+            onClick={(e) => {
+              const btn = e.currentTarget as HTMLButtonElement;
+              const rect = btn.getBoundingClientRect();
+              const origin = {
+                x: Math.round(rect.left + rect.width / 2),
+                y: Math.round(rect.top + rect.height / 2),
+                w: Math.round(rect.width),
+                h: Math.round(rect.height),
+              };
+              setUiState((s) => ({
+                ...s,
+                showHomeEmbed: true,
+                homeEmbedOrigin: origin,
+              }));
+            }}
           >
             <img
               src={Home3DIcon}
@@ -668,8 +688,15 @@ const Rebecca = memo(() => {
       {/* Modal a pantalla completa que carga HomePage en modo embebido */}
       <FullScreenEmbedModal
         isOpen={uiState.showHomeEmbed}
-        onClose={() => setUiState((s) => ({ ...s, showHomeEmbed: false }))}
+        onClose={() =>
+          setUiState((s) => ({
+            ...s,
+            showHomeEmbed: false,
+            homeEmbedOrigin: null,
+          }))
+        }
         src="/home-embed"
+        origin={uiState.homeEmbedOrigin || undefined}
       />
     </>
   );

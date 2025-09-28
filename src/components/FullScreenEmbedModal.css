@@ -24,6 +24,27 @@
   transform: scale(1);
 }
 
+/* Morph desde rombo pequeño en el botón hasta fullscreen */
+.fs-embed-modal.morph {
+  /* duración/curva principal del morph */
+  --morph-dur: 3.5s;
+  --morph-ease: cubic-bezier(0.2, 0.7, 0, 1);
+  transition: transform var(--morph-dur) var(--morph-ease),
+    clip-path var(--morph-dur) var(--morph-ease), opacity 160ms ease;
+}
+.fs-embed-modal.pre.morph {
+  /* posicionar el centro del modal (50vw/50vh) en el centro del botón (ox/oy) */
+  transform: translate(calc(var(--ox) - 50vw), calc(var(--oy) - 50vh))
+    scale(var(--oScale, 0.2)) rotate(45deg);
+  opacity: 1; /* overlay apagado dará contexto, el modal ya visible */
+  /* reforzar forma de rombo */
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.fs-embed-modal.ready.morph {
+  transform: translate(0, 0) scale(1) rotate(0deg);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
 /* Resplandor naranja en los bordes exteriores */
 .fs-embed-modal::after {
   content: "";

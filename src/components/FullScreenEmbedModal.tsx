@@ -5,15 +5,18 @@ interface FullScreenEmbedModalProps {
   isOpen: boolean;
   onClose: () => void;
   src: string; // URL a cargar, ej: /home-embed
+  origin?: { x: number; y: number; w: number; h: number }; // origen para morph
 }
 
 export const FullScreenEmbedModal: React.FC<FullScreenEmbedModalProps> = ({
   isOpen,
   onClose,
   src,
+  origin,
 }) => {
   const [ready, setReady] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Bloquear scroll del body cuando el modal está abierto
   useEffect(() => {
@@ -82,19 +85,42 @@ export const FullScreenEmbedModal: React.FC<FullScreenEmbedModalProps> = ({
       <button className="fs-embed-close" aria-label="Cerrar" onClick={onClose}>
         ✕
       </button>
-      <div className={`fs-embed-modal ${ready ? "ready" : "pre"}`}>
-        <iframe
-          ref={iframeRef}
-          src={src}
-          title="Vista embebida"
-          className="fs-embed-frame"
-          loading="eager"
-          // sandbox para seguridad: permitir solo lo necesario
-          sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock"
-          // política de permisos reducida
-          allow="fullscreen; accelerometer; gyroscope; clipboard-read; clipboard-write"
-        />
-      </div>
+      {(() => {
+        let styleVars:
+          | (React.CSSProperties & Record<string, string>)
+          | undefined = undefined;
+        if (origin) {
+          const w = typeof window !== "undefined" ? window.innerWidth : 1;
+          const h = typeof window !== "undefined" ? window.innerHeight : 1;
+          const scale = Math.max(origin.w / w, origin.h / h) * 1.35;
+          styleVars = {
+            "--ox": `${origin.x}px`,
+            "--oy": `${origin.y}px`,
+            "--oScale": `${scale}`,
+          } as React.CSSProperties & Record<string, string>;
+        }
+        return (
+          <div
+            ref={containerRef}
+            className={`fs-embed-modal ${ready ? "ready" : "pre"} ${
+              origin ? "morph" : ""
+            }`}
+            style={styleVars}
+          >
+            <iframe
+              ref={iframeRef}
+              src={src}
+              title="Vista embebida"
+              className="fs-embed-frame"
+              loading="eager"
+              // sandbox para seguridad: permitir solo lo necesario
+              sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock"
+              // política de permisos reducida
+              allow="fullscreen; accelerometer; gyroscope; clipboard-read; clipboard-write"
+            />
+          </div>
+        );
+      })()}
     </div>
   );
 };
