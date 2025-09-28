@@ -28,6 +28,22 @@ export const SimpleCreditsModal: React.FC<SimpleCreditsModalProps> = ({
     }
   }, [isOpen]);
 
+  // Cerrar con tecla Escape cuando el modal esté abierto
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Compatibilidad con 'Escape' y 'Esc'
+      if (e.key === "Escape" || e.key === "Esc") {
+        e.preventDefault();
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -36,7 +52,12 @@ export const SimpleCreditsModal: React.FC<SimpleCreditsModalProps> = ({
       onClick={onClose}
       style={{ cursor: "pointer" }}
     >
-      <div className={`simple-credits-modal ${ready ? "animate" : "pre"}`}>
+      <div
+        className={`simple-credits-modal ${ready ? "animate" : "pre"}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Créditos"
+      >
         <img
           src={backgroundImage}
           alt="Marco tecnológico de créditos"
