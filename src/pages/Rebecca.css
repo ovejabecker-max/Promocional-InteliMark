@@ -928,23 +928,27 @@ body,
   font-weight: 400;
   /* Tamaño fluido seguro para móviles (más compacto) */
   font-size: clamp(0.8rem, 2.8vw, 1.2rem);
-  color: #ffffff;
+  /* Ocultar texto hasta activar typewriter */
+  color: transparent;
   letter-spacing: 0em;
   /* Altura de línea moderada para 1 sola línea legible */
   line-height: 1.1;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  /* Evitar glow antes de activar */
+  text-shadow: none;
   opacity: 1;
   /* Mantener en una sola línea para evitar salto vertical por carácter */
   white-space: nowrap;
   overflow: hidden; /* Necesario para el efecto typewriter */
   overflow-wrap: normal;
   word-break: keep-all;
-  border-right: 2px solid #ffffff;
+  /* Cursor invisible hasta activar */
+  border-right: 2px solid transparent;
   width: 0;
   text-align: center;
   margin: 0 auto;
   /* Resguardo lateral moderado */
-  padding-inline: clamp(8px, 2vw, 16px);
+  /* Importante: sin padding para no filtrar letras antes de tiempo */
+  padding-inline: 0;
   max-width: 100%;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -955,6 +959,8 @@ body,
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
   will-change: transform, color, text-shadow, filter;
+  /* Asegurar invisibilidad total hasta la activación */
+  visibility: hidden;
 }
 
 /* 📝 ANIMACIÓN TYPEWRITER OPTIMIZADA */
@@ -993,6 +999,11 @@ body,
 }
 
 .cta-subtitle .subtitle-line-1.typewriter-line.typewriter-active {
+  /* Hacer visible y estilizar al activar */
+  visibility: visible;
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  border-right-color: #ffffff;
   animation: typewriter 2s ease-out 0s forwards,
     blink 4s ease-in-out 0s forwards;
 }
@@ -1004,6 +1015,11 @@ body,
 }
 
 .cta-subtitle .subtitle-line-2.typewriter-line.typewriter-active {
+  /* Hacer visible y estilizar al activar */
+  visibility: visible;
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  border-right-color: #ffffff;
   animation: typewriter 2s ease-out 2.5s forwards,
     blink 4s ease-in-out 2.5s forwards;
 }
