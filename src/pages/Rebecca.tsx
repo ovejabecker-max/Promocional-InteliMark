@@ -69,6 +69,47 @@ const Rebecca = memo(() => {
   const line1Ref = useRef<HTMLSpanElement>(null);
   const line2Ref = useRef<HTMLSpanElement>(null);
 
+  // Configurar variables CSS y listeners para typewriter por carácter
+  useEffect(() => {
+    const setupLine = (
+      el: HTMLSpanElement | null,
+      opts: { durationSec: number; delaySec: number }
+    ) => {
+      if (!el) return () => {};
+      // Usamos data-text para contar caracteres visibles
+      const text = el.dataset.text || el.textContent || "";
+      const steps = text.length;
+      // Variables CSS para la animación en pasos
+      el.style.setProperty("--tw-steps", String(steps));
+      el.style.setProperty("--tw-duration", `${opts.durationSec}s`);
+      el.style.setProperty("--tw-delay", `${opts.delaySec}s`);
+      // Asegurar width final consistente por pasos (ancho 1ch por carácter)
+      el.style.setProperty("--tw-width", `calc(${steps} * 1ch)`);
+
+      const onAnimEnd = (e: AnimationEvent) => {
+        if (e.animationName === "typewriter") {
+          // Marcar como completo: muestra texto completo y oculta caret
+          el.classList.add("typewriter-complete");
+        }
+      };
+      el.addEventListener("animationend", onAnimEnd);
+      return () => el.removeEventListener("animationend", onAnimEnd);
+    };
+
+    const clean1 = setupLine(line1Ref.current, {
+      durationSec: 2.8,
+      delaySec: 0,
+    });
+    const clean2 = setupLine(line2Ref.current, {
+      durationSec: 2.8,
+      delaySec: 3.3,
+    });
+    return () => {
+      clean1 && clean1();
+      clean2 && clean2();
+    };
+  }, []);
+
   // Ancho de viewport memoizable para evitar leer window.innerWidth en cada render
   const [viewportWidth, setViewportWidth] = useState<number>(
     typeof window !== "undefined" ? window.innerWidth : 1920
@@ -206,10 +247,14 @@ const Rebecca = memo(() => {
             ...next.effectsActivated,
             typewriter: true,
           };
-          if (line1Ref.current)
+          if (line1Ref.current) {
+            line1Ref.current.classList.remove("typewriter-complete");
             line1Ref.current.classList.add("typewriter-active");
-          if (line2Ref.current)
+          }
+          if (line2Ref.current) {
+            line2Ref.current.classList.remove("typewriter-complete");
             line2Ref.current.classList.add("typewriter-active");
+          }
         } else if (
           ratio < 0.1 &&
           (current.effectsActivated.typewriter ||
@@ -218,10 +263,14 @@ const Rebecca = memo(() => {
           if (!next) next = { ...current };
           next.effectsActivated = { typewriter: false, ctaSection: false };
           next.buttonVisible = false;
-          if (line1Ref.current)
+          if (line1Ref.current) {
             line1Ref.current.classList.remove("typewriter-active");
-          if (line2Ref.current)
+            line1Ref.current.classList.remove("typewriter-complete");
+          }
+          if (line2Ref.current) {
             line2Ref.current.classList.remove("typewriter-active");
+            line2Ref.current.classList.remove("typewriter-complete");
+          }
         }
 
         commitChange();

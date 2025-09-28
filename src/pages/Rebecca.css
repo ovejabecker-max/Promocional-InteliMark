@@ -963,13 +963,14 @@ body,
   visibility: hidden;
 }
 
-/* 📝 ANIMACIÓN TYPEWRITER OPTIMIZADA */
+/* 📝 ANIMACIÓN TYPEWRITER OPTIMIZADA (basada en caracteres) */
+/* Usamos una variable CSS --tw-width que representa el ancho final del texto */
 @keyframes typewriter {
   0% {
     width: 0;
   }
   100% {
-    width: 100%;
+    width: var(--tw-width, 0);
   }
 }
 
@@ -1004,8 +1005,14 @@ body,
   color: #ffffff;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
   border-right-color: #ffffff;
-  animation: typewriter 3.5s ease-out 0s forwards,
-    blink 4s ease-in-out 0s forwards;
+  /* Fuente monoespaciada temporal para pasos por carácter precisos */
+  font-family: var(--tw-font, "Courier New", monospace);
+  /* Ancho final en función de caracteres: N * 1ch (puede ser ajustado por JS) */
+  --tw-width: calc(var(--tw-steps, 30) * 1ch);
+  /* Animación en pasos por carácter */
+  animation: typewriter var(--tw-duration, 2.8s) steps(var(--tw-steps, 30), end)
+      var(--tw-delay, 0s) forwards,
+    blink var(--tw-blink-duration, 4s) step-end var(--tw-delay, 0s) forwards;
 }
 
 /* Efecto typewriter sincronizado - Línea 2 */
@@ -1020,8 +1027,13 @@ body,
   color: #ffffff;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
   border-right-color: #ffffff;
-  animation: typewriter 3.5s ease-out 3.3s forwards,
-    blink 4s ease-in-out 3.3s forwards;
+  /* Fuente monoespaciada temporal para pasos por carácter precisos */
+  font-family: var(--tw-font, "Courier New", monospace);
+  /* Ancho final en función de caracteres */
+  --tw-width: calc(var(--tw-steps, 30) * 1ch);
+  animation: typewriter var(--tw-duration, 2.8s) steps(var(--tw-steps, 30), end)
+      var(--tw-delay, 3.3s) forwards,
+    blink var(--tw-blink-duration, 4s) step-end var(--tw-delay, 3.3s) forwards;
 }
 
 /* ============================================================================
@@ -1143,6 +1155,14 @@ body,
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 107, 53, 0.4);
   filter: brightness(1.05);
   transition: all 0.3s ease;
+  /* Asegurar texto completamente visible tras completar */
+  color: #ffffff !important;
+  visibility: visible !important;
+  /* Restaurar fuente original tras completar */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", InteliMark,
+    "Helvetica Neue", Arial, sans-serif !important;
+  /* Ancho natural del texto tras completar */
+  width: auto !important;
 }
 
 /* 🎯 EFECTOS DE HOVER PARA BOTÓN WHATSAPP */
