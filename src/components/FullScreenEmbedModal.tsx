@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import "./FullScreenEmbedModal.css";
 
 interface FullScreenEmbedModalProps {
@@ -15,17 +15,61 @@ export const FullScreenEmbedModal: React.FC<FullScreenEmbedModalProps> = ({
   origin,
 }) => {
   const [ready, setReady] = useState(false);
+  const [closing, setClosing] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<number | null>(null);
 
-  // Bloquear scroll del body cuando el modal está abierto
+  const show = isOpen || closing;
+
+  const getCloseDurationMs = useCallback((): number => {
+    const el = containerRef.current;
+    if (el) {
+      const cs = getComputedStyle(el);
+      // Intentar leer la variable de duración del morph si existe
+      const durVar = cs.getPropertyValue("--morph-dur").trim();
+      if (durVar) {
+        if (durVar.endsWith("ms")) return parseFloat(durVar);
+        if (durVar.endsWith("s")) return parseFloat(durVar) * 1000;
+        const n = parseFloat(durVar);
+        if (!Number.isNaN(n)) return n;
+      }
+    }
+    // Fallback: si no hay morph, usar una duración breve (coincide con transform 220ms aprox)
+    return origin ? 3500 : 240;
+  }, [origin]);
+
+  const beginClose = useCallback(() => {
+    if (closing) return;
+    // Si no está abierto visualmente, no hacer nada
+    if (!show) return;
+    setClosing(true);
+    // Quitar el estado ready para activar la transición a "pre" (rombo y/o fade)
+    setReady(false);
+    // Programar el cierre real una vez termine la transición
+    const ms = getCloseDurationMs();
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+    }
+    closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = null;
+      setClosing(false);
+      onClose();
+    }, ms);
+  }, [closing, show, getCloseDurationMs, onClose]);
+
+  // Bloquear scroll del body cuando el modal está visible (abierto o cerrando)
   useEffect(() => {
-    if (isOpen) {
+    if (show) {
       const prev = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       document.body.classList.add("fs-embed-open");
       // doble rAF para permitir animación de entrada
-      requestAnimationFrame(() => requestAnimationFrame(() => setReady(true)));
+      if (isOpen) {
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => setReady(true))
+        );
+      }
       return () => {
         document.body.style.overflow = prev;
         document.body.classList.remove("fs-embed-open");
@@ -34,14 +78,14 @@ export const FullScreenEmbedModal: React.FC<FullScreenEmbedModalProps> = ({
     } else {
       setReady(false);
     }
-  }, [isOpen]);
+  }, [show, isOpen]);
 
   // Cerrar con ESC (tanto en el documento padre como dentro del iframe)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!show) return;
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") beginClose();
     };
 
     window.addEventListener("keydown", onKey);
@@ -76,13 +120,26 @@ export const FullScreenEmbedModal: React.FC<FullScreenEmbedModalProps> = ({
         }
       }
     };
-  }, [isOpen, onClose]);
+  }, [show, beginClose]);
 
-  if (!isOpen) return null;
+  // Limpiar timers al desmontar
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
+
+  if (!show) return null;
 
   return (
     <div className="fs-embed-overlay" role="dialog" aria-modal="true">
-      <button className="fs-embed-close" aria-label="Cerrar" onClick={onClose}>
+      <button
+        className="fs-embed-close"
+        aria-label="Cerrar"
+        onClick={beginClose}
+      >
         ✕
       </button>
       {(() => {
