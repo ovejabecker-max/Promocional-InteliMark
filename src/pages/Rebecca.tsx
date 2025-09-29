@@ -103,12 +103,14 @@ const Rebecca = memo(() => {
     };
 
     const clean1 = setupLine(line1Ref.current, {
-      durationSec: 2.8,
+      // Velocidad más rápida: antes 2.8s -> ahora 1.6s
+      durationSec: 1.6,
       delaySec: 0,
     });
     const clean2 = setupLine(line2Ref.current, {
-      durationSec: 2.8,
-      delaySec: 3.3,
+      // Mantener ~0.5s de pausa tras terminar la línea 1 (1.6s + 0.5s)
+      durationSec: 1.6,
+      delaySec: 2.1,
     });
     return () => {
       clean1 && clean1();
