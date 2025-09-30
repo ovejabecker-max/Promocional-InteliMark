@@ -927,7 +927,7 @@ body,
     "Helvetica Neue", Arial, sans-serif;
   font-weight: 400;
   /* Tamaño fluido seguro para móviles (más compacto) */
-  font-size: clamp(0.8rem, 2.8vw, 1.2rem);
+  font-size: clamp(0.96rem, 3.36vw, 1.44rem);
   /* Ocultar texto hasta activar typewriter */
   color: transparent;
   letter-spacing: 0em;
@@ -1005,8 +1005,8 @@ body,
   color: #ffffff;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
   border-right-color: #ffffff;
-  /* Fuente monoespaciada temporal para pasos por carácter precisos */
-  font-family: var(--tw-font, "Courier New", monospace);
+  /* Mantener la misma tipografía durante la animación */
+  /* (Se elimina la fuente monoespaciada temporal) */
   /* Ancho final en función de caracteres: N * 1ch (puede ser ajustado por JS) */
   --tw-width: calc(var(--tw-steps, 30) * 1ch);
   /* Animación en pasos por carácter */
@@ -1027,8 +1027,8 @@ body,
   color: #ffffff;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
   border-right-color: #ffffff;
-  /* Fuente monoespaciada temporal para pasos por carácter precisos */
-  font-family: var(--tw-font, "Courier New", monospace);
+  /* Mantener la misma tipografía durante la animación */
+  /* (Se elimina la fuente monoespaciada temporal) */
   /* Ancho final en función de caracteres */
   --tw-width: calc(var(--tw-steps, 30) * 1ch);
   animation: typewriter var(--tw-duration, 2.8s) steps(var(--tw-steps, 30), end)
@@ -1179,7 +1179,16 @@ body,
 }
 
 .cta-button-wrapper.hover-active .cta-button-image {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  /* Glow por el borde del PNG: drop-shadow respeta el canal alfa */
+  filter:
+    /* Sombra base para profundidad */ drop-shadow(
+      0 2px 4px rgba(0, 0, 0, 0.15)
+    )
+    /* Borde luminoso naranjo InteliMark (capas progresivas) */
+    drop-shadow(0 0 2px var(--color-orange-alpha-60))
+    drop-shadow(0 0 6px var(--color-orange-alpha-40))
+    drop-shadow(0 0 12px var(--color-orange-alpha-30))
+    drop-shadow(0 0 18px var(--color-orange-alpha-20));
 }
 
 /* 🎯 5. EFECTOS DE HOVER PARA TEXTO "WHATSAPP" */
