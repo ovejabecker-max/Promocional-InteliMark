@@ -259,18 +259,7 @@
   }
 }
 
-/* 📱 RESPONSIVE ULTRA TECH */
-@media (max-width: 768px) {
-  .vapi-button-container {
-    width: 80px; /* 🎯 REDUCIDO: de 110px a 80px */
-    height: 80px; /* 🎯 REDUCIDO: de 110px a 80px */
-  }
-
-  .vapi-chat-button {
-    width: 70px; /* 🎯 REDUCIDO: de 100px a 70px */
-    height: 70px; /* 🎯 REDUCIDO: de 100px a 70px */
-  }
-}
+/* 📱 RESPONSIVE ULTRA TECH: reglas unificadas más abajo */
 
 /* 🎯 BOTÓN PRINCIPAL - NÚCLEO TECNOLÓGICO */
 .vapi-chat-button {
