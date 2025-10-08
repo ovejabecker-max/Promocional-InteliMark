@@ -4,8 +4,31 @@ import { vapiLogger } from "./logger";
 import { NotificationManager } from "./notifications";
 
 // Clasificador de errores para determinar el tipo y recuperabilidad
-export const classifyVapiError = (error: Error): VapiErrorType => {
-  const message = error.message.toLowerCase();
+export const classifyVapiError = (error: unknown): VapiErrorType => {
+  // Normalizar el mensaje de error de forma segura incluso si `error` no
+  // es una instancia de Error o no tiene `message`.
+  // Detectar objetos Response (fetch) con status
+  try {
+    if (typeof error === "object" && error !== null) {
+      const maybeStatus = (error as Record<string, unknown>)["status"];
+      if (typeof maybeStatus === "number" && maybeStatus === 403) {
+        return "authentication_failed";
+      }
+    }
+  } catch (_e) {
+    // ignore
+  }
+  let rawMessage: string;
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    typeof (error as Record<string, unknown>)["message"] === "string"
+  ) {
+    rawMessage = (error as Record<string, unknown>)["message"] as string;
+  } else {
+    rawMessage = String(error ?? "");
+  }
+  const message = rawMessage.toLowerCase();
 
   // Errores de autenticación
   if (
@@ -70,7 +93,7 @@ export const isErrorRecoverable = (errorType: VapiErrorType): boolean => {
 
 // Factory para crear objetos VapiError estandarizados
 export const createVapiError = (
-  originalError: Error,
+  originalError: unknown,
   customMessage?: string
 ): VapiError => {
   const errorType = classifyVapiError(originalError);
@@ -92,12 +115,18 @@ export const createVapiError = (
     unknown_error: "Ocurrió un error inesperado. Intenta nuevamente.",
   };
 
+  // Preferir customMessage; si no existe, usar el mensaje amigable.
   const message = customMessage || userFriendlyMessages[errorType];
+
+  // Mantener originalError solo si es una instancia de Error, de lo
+  // contrario almacenamos undefined para evitar objetos inesperados.
+  const safeOriginalError =
+    originalError instanceof Error ? originalError : undefined;
 
   return {
     type: errorType,
     message,
-    originalError,
+    originalError: safeOriginalError,
     timestamp: new Date(),
     isRecoverable,
   };

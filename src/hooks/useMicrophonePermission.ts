@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { vapiLogger } from "../utils/logger";
 import { NotificationManager } from "../utils/notifications";
 
@@ -37,6 +37,8 @@ export const useMicrophonePermission = (): UseMicrophonePermissionReturn => {
       isSupported: false,
       hasCheckedInitially: false,
     });
+  // Promise en vuelo para evitar múltiples solicitudes simultáneas
+  const requestInFlightRef = useRef<Promise<boolean> | null>(null);
 
   // Verificar si el navegador soporta getUserMedia
   const checkBrowserSupport = useCallback((): boolean => {
@@ -103,106 +105,124 @@ export const useMicrophonePermission = (): UseMicrophonePermissionReturn => {
 
   // Solicitar permisos de micrófono
   const requestPermission = useCallback(async (): Promise<boolean> => {
-    setPermissionState((prev) => ({
-      ...prev,
-      status: "checking",
-      error: undefined,
-    }));
+    // Si ya hay una solicitud en curso, reutilizarla
+    if (requestInFlightRef.current) return requestInFlightRef.current;
 
-    try {
-      if (!checkBrowserSupport()) {
-        const error = "Su navegador no soporta acceso al micrófono";
-        setPermissionState((prev) => ({
-          ...prev,
-          status: "unsupported",
-          isSupported: false,
-          error,
-        }));
-        NotificationManager.error(error);
-        return false;
-      }
-
-      vapiLogger.info("Solicitando permisos de micrófono");
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false,
-      });
-
-      // Detener el stream inmediatamente ya que solo queríamos verificar permisos
-      stream.getTracks().forEach((track) => track.stop());
-
+    const inFlight = (async (): Promise<boolean> => {
       setPermissionState((prev) => ({
         ...prev,
-        status: "granted",
-        isSupported: true,
+        status: "checking",
         error: undefined,
       }));
 
-      vapiLogger.info("Permisos de micrófono concedidos");
-      NotificationManager.success(
-        "Permisos de micrófono concedidos correctamente"
-      );
+      try {
+        if (!checkBrowserSupport()) {
+          const error = "Su navegador no soporta acceso al micrófono";
+          setPermissionState((prev) => ({
+            ...prev,
+            status: "unsupported",
+            isSupported: false,
+            error,
+          }));
+          NotificationManager.error(error);
+          return false;
+        }
 
-      return true;
-    } catch (error) {
-      const mediaError = error as DOMException;
-      let errorMessage = "Error desconocido al acceder al micrófono";
-      let status: MicrophonePermissionStatus = "denied";
+        vapiLogger.info("Solicitando permisos de micrófono");
 
-      switch (mediaError.name) {
-        case "NotAllowedError":
-        case "PermissionDeniedError":
-          errorMessage =
-            "Permisos de micrófono denegados. Por favor, permita el acceso al micrófono en su navegador.";
-          status = "denied";
-          break;
-        case "NotFoundError":
-        case "DevicesNotFoundError":
-          errorMessage =
-            "No se encontró ningún micrófono. Por favor, conecte un micrófono e intente de nuevo.";
-          status = "denied";
-          break;
-        case "NotReadableError":
-        case "TrackStartError":
-          errorMessage =
-            "El micrófono está siendo usado por otra aplicación. Por favor, cierre otras aplicaciones que puedan estar usando el micrófono.";
-          status = "denied";
-          break;
-        case "OverconstrainedError":
-        case "ConstraintNotSatisfiedError":
-          errorMessage =
-            "La configuración del micrófono no es compatible con su dispositivo.";
-          status = "denied";
-          break;
-        case "NotSupportedError":
-          errorMessage = "Su navegador no soporta acceso al micrófono.";
-          status = "unsupported";
-          break;
-        case "AbortError":
-          errorMessage = "Solicitud de micrófono cancelada.";
-          status = "prompt";
-          break;
-        default:
-          errorMessage = `Error al acceder al micrófono: ${mediaError.message}`;
-          break;
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+          video: false,
+        });
+
+        // Detener el stream inmediatamente ya que solo queríamos verificar permisos
+        stream.getTracks().forEach((track) => track.stop());
+
+        setPermissionState((prev) => ({
+          ...prev,
+          status: "granted",
+          isSupported: true,
+          error: undefined,
+        }));
+
+        vapiLogger.info("Permisos de micrófono concedidos");
+        NotificationManager.success(
+          "Permisos de micrófono concedidos correctamente"
+        );
+
+        return true;
+      } catch (error) {
+        const mediaError = error as DOMException;
+        let errorMessage = "Error desconocido al acceder al micrófono";
+        let status: MicrophonePermissionStatus = "denied";
+
+        switch (mediaError.name) {
+          case "NotAllowedError":
+          case "PermissionDeniedError":
+            errorMessage =
+              "Permisos de micrófono denegados. Por favor, permita el acceso al micrófono en su navegador.";
+            status = "denied";
+            break;
+          case "NotFoundError":
+          case "DevicesNotFoundError":
+            errorMessage =
+              "No se encontró ningún micrófono. Por favor, conecte un micrófono e intente de nuevo.";
+            status = "denied";
+            break;
+          case "NotReadableError":
+          case "TrackStartError":
+            errorMessage =
+              "El micrófono está siendo usado por otra aplicación. Por favor, cierre otras aplicaciones que puedan estar usando el micrófono.";
+            status = "denied";
+            break;
+          case "OverconstrainedError":
+          case "ConstraintNotSatisfiedError":
+            errorMessage =
+              "La configuración del micrófono no es compatible con su dispositivo.";
+            status = "denied";
+            break;
+          case "NotSupportedError":
+            errorMessage = "Su navegador no soporta acceso al micrófono.";
+            status = "unsupported";
+            break;
+          case "AbortError":
+            errorMessage = "Solicitud de micrófono cancelada.";
+            status = "prompt";
+            break;
+          default:
+            errorMessage = `Error al acceder al micrófono: ${mediaError.message}`;
+            break;
+        }
+
+        setPermissionState((prev) => ({
+          ...prev,
+          status,
+          isSupported: status !== "unsupported",
+          error: errorMessage,
+        }));
+
+        vapiLogger.error(
+          "Error al solicitar permisos de micrófono",
+          mediaError,
+          {
+            errorName: mediaError.name,
+            errorMessage: mediaError.message,
+          }
+        );
+
+        NotificationManager.error(errorMessage);
+
+        return false;
       }
+    })();
 
-      setPermissionState((prev) => ({
-        ...prev,
-        status,
-        isSupported: status !== "unsupported",
-        error: errorMessage,
-      }));
-
-      vapiLogger.error("Error al solicitar permisos de micrófono", mediaError, {
-        errorName: mediaError.name,
-        errorMessage: mediaError.message,
-      });
-
-      NotificationManager.error(errorMessage);
-
-      return false;
+    requestInFlightRef.current = inFlight;
+    try {
+      const result = await inFlight;
+      return result;
+    } finally {
+      // Limpiar promesa en vuelo
+      requestInFlightRef.current = null;
     }
   }, [checkBrowserSupport]);
 
