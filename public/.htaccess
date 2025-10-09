@@ -1,3 +1,21 @@
+<IfModule mod_rewrite.c>
+  # Habilitar reescritura para SPA
+  RewriteEngine On
+  RewriteBase /
+
+  # Si el archivo o directorio existe, servirlo normalmente
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Para cualquier otra ruta, servir 404.html (que guarda la ruta y redirige al SPA)
+  RewriteRule ^ /404.html [L]
+</IfModule>
+
+# Fallback para servidores que soportan FallbackResource (opcional)
+<IfModule mod_dir.c>
+  FallbackResource /404.html
+</IfModule>
 # Configuracion .htaccess para InteliMark
 
 # Habilitar compresion
