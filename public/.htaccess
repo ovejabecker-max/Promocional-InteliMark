@@ -1,68 +1,56 @@
+# .htaccess - producción para InteliMark
+
+# 1) Reescritura: fallback a index.html para SPA (recarga directa y rutas)
 <IfModule mod_rewrite.c>
-  # Habilitar reescritura para SPA
   RewriteEngine On
   RewriteBase /
-
   # Si el archivo o directorio existe, servirlo normalmente
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
-
-  # Para cualquier otra ruta, servir 404.html (que guarda la ruta y redirige al SPA)
-  RewriteRule ^ /404.html [L]
+  # Para cualquier otra ruta, devolver index.html (fallback SPA)
+  RewriteRule . /index.html [L]
 </IfModule>
 
-# Fallback para servidores que soportan FallbackResource (opcional)
+# 2) FallbackResource si el servidor lo soporta
 <IfModule mod_dir.c>
-  FallbackResource /404.html
+  FallbackResource /index.html
 </IfModule>
-# Configuracion .htaccess para InteliMark
 
-# Habilitar compresion
+# 3) Compresión y cache estática
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/plain
-    AddOutputFilterByType DEFLATE text/html
-    AddOutputFilterByType DEFLATE text/xml
-    AddOutputFilterByType DEFLATE text/css
-    AddOutputFilterByType DEFLATE application/xml
-    AddOutputFilterByType DEFLATE application/xhtml+xml
-    AddOutputFilterByType DEFLATE application/rss+xml
-    AddOutputFilterByType DEFLATE application/javascript
-    AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
 </IfModule>
 
-# Cache headers para archivos estaticos
 <IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType image/ico "access plus 1 year"
-    ExpiresByType image/x-icon "access plus 1 year"
-    ExpiresByType audio/mp3 "access plus 1 month"
-    ExpiresByType audio/mpeg "access plus 1 month"
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/ico "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresByType audio/mp3 "access plus 1 month"
+  ExpiresByType audio/mpeg "access plus 1 month"
 </IfModule>
 
-# Rewrite rules para SPA (React Router)
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /
-    RewriteRule ^index\.html$ - [L]
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule . /index.html [L]
-</IfModule>
-
-# Seguridad headers
+# 4) Headers de seguridad (consistentes): permitir framing same-origin y desde el dominio oficial
 <IfModule mod_headers.c>
-    Header always set X-Content-Type-Options nosniff
-    Header always set X-Frame-Options DENY
-    Header always set X-XSS-Protection "1; mode=block"
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-    # CSP actualizada para permitir Google Fonts y Web Workers (Three.js)
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' blob:; connect-src 'self' https: wss: ws:; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none';"
+  Header always set X-Content-Type-Options nosniff
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  # CSP: permitir Google Fonts y workers; permitir framing desde los dominios oficiales
+  Header always set Content-Security-Policy "default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' blob:; connect-src 'self' https: wss: ws:; worker-src 'self' blob:; frame-ancestors 'self' https://intelimark.cl https://www.intelimark.cl; object-src 'none';"
 </IfModule>

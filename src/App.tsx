@@ -3,7 +3,6 @@ import {
   Routes,
   Route,
   useLocation,
-  useNavigate,
 } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
@@ -16,21 +15,7 @@ import { useOptimizedTabAnimations } from "./hooks/useOptimizedTabAnimations";
 import { PageLoader } from "./components/PageLoader";
 import "./App.css";
 
-// ✅ COMPONENTE PARA MANEJAR REDIRECCIONES SPA
-function SPARedirectHandler() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Verificar si hay una ruta guardada desde 404.html
-    const redirectPath = sessionStorage.getItem("redirectPath");
-    if (redirectPath) {
-      sessionStorage.removeItem("redirectPath");
-      navigate(redirectPath, { replace: true });
-    }
-  }, [navigate]);
-
-  return null;
-}
+// (El manejador de redirecciones SPA se eliminó: el servidor ahora devuelve index.html para rutas desconocidas)
 
 // ✅ COMPONENTE PARA RESTAURAR SCROLL EN NAVEGACIÓN
 function ScrollToTop() {
@@ -72,7 +57,6 @@ function AppContent() {
       }}
     >
       <div className="app">
-        <SPARedirectHandler />
         <ScrollToTop />
         <main className="app-main">
           <Suspense fallback={<PageLoader />}>

@@ -4,15 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redirigiendo... | InteliMark</title>
-    <script>
-      // Redirección automática para SPA routing
-      // Guarda la ruta intentada y redirige al index.html
-      sessionStorage.setItem(
-        "redirectPath",
-        location.pathname + location.search + location.hash
-      );
-      location.replace("/");
-    </script>
+    <!-- No automatic redirect: server handles SPA fallback to index.html -->
     <style>
       body {
         font-family: Arial, sans-serif;
