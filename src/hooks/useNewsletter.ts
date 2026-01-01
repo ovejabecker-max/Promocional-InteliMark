@@ -40,7 +40,7 @@ export const useNewsletter = () => {
 
       try {
         const googleScriptURL =
-          "https://script.google.com/macros/s/AKfycbwxEGdjC28M49Fy1q4uaxMSfRo35jMvRBNI3R0XqDCfIREcyZWKQ9nbDPqOQy44xnHOIQ/exec";
+          "https://script.google.com/a/macros/intelimark.cl/s/AKfycbwxEGdjC28M49Fy1q4uaxMSfRo35jMvRBNI3R0XqDCfIREcyZWKQ9nbDPqOQy44xnHOIQ/exec";
 
         // Usar fetch con FormData para mejor compatibilidad
         const formData = new FormData();
