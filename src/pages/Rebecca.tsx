@@ -81,7 +81,7 @@ const Rebecca = memo(() => {
       el: HTMLSpanElement | null,
       opts: { durationSec: number; delaySec: number }
     ) => {
-      if (!el) return () => {};
+      if (!el) return () => { };
       // Usamos data-text para contar caracteres visibles
       const text = el.dataset.text || el.textContent || "";
       const steps = text.length;
@@ -413,9 +413,8 @@ const Rebecca = memo(() => {
       />
       <div
         ref={containerRef}
-        className={`rebecca-container ${
-          entryState.fromPortal ? "from-portal" : "normal-entry"
-        } ${entryState.hasInitialized ? "animation-completed" : "animating"}`}
+        className={`rebecca-container ${entryState.fromPortal ? "from-portal" : "normal-entry"
+          } ${entryState.hasInitialized ? "animation-completed" : "animating"}`}
       >
         <div className="main-content-wrapper">
           {/* Botón para abrir HomePage embebida en ventana a pantalla completa */}
@@ -470,9 +469,8 @@ const Rebecca = memo(() => {
 
         <section
           ref={ctaSectionRef}
-          className={`call-to-action-section ${
-            ctaState.effectsActivated.ctaSection ? "active-effect" : ""
-          }`}
+          className={`call-to-action-section ${ctaState.effectsActivated.ctaSection ? "active-effect" : ""
+            }`}
           id="cta-section"
         >
           {ctaState.effectsActivated.ctaSection && (
@@ -482,17 +480,15 @@ const Rebecca = memo(() => {
           <div className="cta-content">
             <h2 className="cta-title cta-title-container">
               <span
-                className={`cta-title-span trabajemos ${
-                  titleMotion.visible ? "visible" : ""
-                }`}
+                className={`cta-title-span trabajemos ${titleMotion.visible ? "visible" : ""
+                  }`}
                 style={{ transform: `translateX(${titleMotion.leftX}px)` }}
               >
                 TRABAJEMOS
               </span>
               <span
-                className={`cta-title-span juntos ${
-                  titleMotion.visible ? "visible" : ""
-                }`}
+                className={`cta-title-span juntos ${titleMotion.visible ? "visible" : ""
+                  }`}
                 style={{ transform: `translateX(${titleMotion.rightX}px)` }}
               >
                 JUNTOS
@@ -519,9 +515,8 @@ const Rebecca = memo(() => {
             </div>
 
             <div
-              className={`cta-button-container ${
-                ctaState.buttonVisible ? "visible" : "hidden"
-              }`}
+              className={`cta-button-container ${ctaState.buttonVisible ? "visible" : "hidden"
+                }`}
             >
               <div
                 className="cta-button-wrapper"
@@ -530,7 +525,7 @@ const Rebecca = memo(() => {
 
                   setCtaState((prev) => ({ ...prev, clickProcessing: true }));
                   const newWindow = window.open(
-                    "https://wa.me/56949459379",
+                    "https://wa.me/56949171953",
                     "_blank",
                     "noopener,noreferrer"
                   );
@@ -658,7 +653,7 @@ const Rebecca = memo(() => {
                 <div className="contact-icon">
                   <div>📱</div>
                 </div>
-                <p>+56 9 4945 9379</p>
+                <p>+56 9 4917 1953</p>
                 <span className="contact-label">WhatsApp / Llamadas</span>
               </div>
 
