@@ -6,13 +6,13 @@ export const vapiConfigProd: VapiConfig = {
   // Solo variables de entorno - NO valores hardcodeados
   publicKey: import.meta.env.VITE_VAPI_PUBLIC_KEY!,
   assistantId: import.meta.env.VITE_VAPI_ASSISTANT_ID!,
-  // Configuración de reconexión más conservadora para producción
+  // Reconexión automática DESACTIVADA - solo conexión manual por clic del usuario
   autoReconnect: {
-    enabled: true,
-    maxAttempts: 3,
-    initialDelay: 3000, // 3 segundos
-    maxDelay: 15000, // 15 segundos
-    backoffFactor: 2, // Duplicar delay en cada intento
+    enabled: false,
+    maxAttempts: 0,
+    initialDelay: 3000,
+    maxDelay: 15000,
+    backoffFactor: 2,
   },
 };
 
@@ -20,13 +20,13 @@ export const vapiConfigProd: VapiConfig = {
 export const vapiConfigDev: VapiConfig = {
   publicKey: import.meta.env.VITE_VAPI_PUBLIC_KEY!,
   assistantId: import.meta.env.VITE_VAPI_ASSISTANT_ID!,
-  // Configuración de reconexión más agresiva para desarrollo
+  // Reconexión automática DESACTIVADA - solo conexión manual por clic del usuario
   autoReconnect: {
-    enabled: true,
-    maxAttempts: 5,
-    initialDelay: 1000, // 1 segundo
-    maxDelay: 5000, // 5 segundos
-    backoffFactor: 1.5, // Crecimiento más gradual
+    enabled: false,
+    maxAttempts: 0,
+    initialDelay: 1000,
+    maxDelay: 5000,
+    backoffFactor: 1.5,
   },
 };
 

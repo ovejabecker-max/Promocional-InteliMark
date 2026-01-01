@@ -212,9 +212,12 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
       // Notificar al usuario sobre el error
       notifyUser(vapiError);
 
-      // Intentar reconexión automática si es apropiado
+      // Intentar reconexión automática SOLO si está habilitado en la configuración
       const reconnectionManager = reconnectionManagerRef.current;
+      const autoReconnectEnabled = config.autoReconnect?.enabled ?? false;
+
       if (
+        autoReconnectEnabled &&
         reconnectionManager &&
         vapiError.isRecoverable &&
         reconnectionManager.shouldAttemptReconnection(vapiError.type)
@@ -246,6 +249,10 @@ export const useVapi = (config: VapiConfig): VapiHookReturn => {
           );
           // El error ya se maneja en el manager, no necesitamos hacer más aquí
         }
+      } else if (!autoReconnectEnabled) {
+        vapiLogger.info(
+          "Reconexión automática desactivada - esperando acción del usuario"
+        );
       }
     });
 
