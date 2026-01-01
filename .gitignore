@@ -1,4 +1,6 @@
-# Logs
+# ============================================================================
+# ARCHIVOS DE REGISTRO Y DEPENDENCIAS
+# ============================================================================
 logs
 *.log
 npm-debug.log*
@@ -10,10 +12,30 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
-.env
 
-# Editor directories and files
+# ============================================================================
+# VARIABLES DE ENTORNO Y CREDENCIALES (CRÍTICO - NUNCA COMMITEAR)
+# ============================================================================
+.env
+.env.local
+.env.*.local
+.env.production
+.env.production.local
+.env.development.local
+
+# Archivos de configuración local con credenciales
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+secrets.json
+config.local.js
+config.local.ts
+
+# ============================================================================
+# IDE Y EDITOR (VS Code, WebStorm, etc.)
+# ============================================================================
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -23,3 +45,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ============================================================================
+# ARCHIVOS DEL SISTEMA OPERATIVO
+# ============================================================================
+Thumbs.db
+.AppleDouble
+.LSOverride
+*.tmp
+*.temp
+
+# ============================================================================
+# ARCHIVOS DE COMPILACIÓN Y CACHÉ
+# ============================================================================
+.cache/
+*.cache
+.eslintcache
+.stylelintcache
