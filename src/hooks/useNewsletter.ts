@@ -1,6 +1,4 @@
 // src/hooks/useNewsletter.ts
-// ✨ HOOK ESPECIALIZADO PARA NEWSLETTER - REFACTORIZADO Y OPTIMIZADO
-
 import { useState, useCallback } from "react";
 
 interface NewsletterState {
@@ -39,33 +37,37 @@ export const useNewsletter = () => {
       });
 
       try {
-        const googleScriptURL =
-          "https://script.google.com/macros/s/AKfycbzmTXg_bDWSQ-P_RNL5OVz2R9m0vLNN701BxBURHfzOS8XwNkZWEaM7-mH81RZcElAD/exec";
+        // REEMPLAZA ESTA URL CON LA QUE COPIASTE EN EL PASO ANTERIOR
+        const googleScriptURL = "https://script.google.com/macros/s/AKfycbxaol_emXs2-nZBRXaHWIjK9mRyCtEplevYdEZhpvsDpPP4gfjX9wV1tTb5CK_81D2p/exec";
 
-        // Usar fetch con FormData para mejor compatibilidad
         const formData = new FormData();
         formData.append("email", email);
 
+        // MEJORA: Uso de 'mode: no-cors' para evitar bloqueos de navegador con Google Scripts
+        // si solo necesitas enviar el dato y no leer un JSON de vuelta.
         await fetch(googleScriptURL, {
           method: "POST",
           body: formData,
+          mode: "no-cors",
         });
 
-        // Asumir éxito si no hay error de red
+        // Al usar no-cors, no podemos leer el body, pero si llegamos aquí, 
+        // la petición salió del navegador hacia Google.
         setState({
           isSubmitting: false,
           message: "✅ ¡Gracias! Te mantendremos informado.",
           messageType: "success",
         });
 
-        // Auto-limpiar mensaje después de 5 segundos
         setTimeout(() => {
           setState((prev) => ({ ...prev, message: "", messageType: "idle" }));
         }, 5000);
-      } catch (_error) {
+
+      } catch (error) {
+        console.error("Newsletter Error:", error);
         setState({
           isSubmitting: false,
-          message: "Error al registrar el correo. Inténtalo nuevamente.",
+          message: "Error de conexión. Inténtalo nuevamente.",
           messageType: "error",
         });
       }
@@ -74,17 +76,8 @@ export const useNewsletter = () => {
   );
 
   const resetState = useCallback(() => {
-    setState({
-      isSubmitting: false,
-      message: "",
-      messageType: "idle",
-    });
+    setState({ isSubmitting: false, message: "", messageType: "idle" });
   }, []);
 
-  return {
-    ...state,
-    submitEmail,
-    resetState,
-    validateEmail,
-  };
+  return { ...state, submitEmail, resetState, validateEmail };
 };
