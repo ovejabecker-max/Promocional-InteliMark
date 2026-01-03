@@ -38,7 +38,7 @@ export const useNewsletter = () => {
 
       try {
         // REEMPLAZA ESTA URL CON LA QUE COPIASTE EN EL PASO ANTERIOR
-        const googleScriptURL = "https://script.google.com/macros/s/AKfycbxaol_emXs2-nZBRXaHWIjK9mRyCtEplevYdEZhpvsDpPP4gfjX9wV1tTb5CK_81D2p/exec";
+        const googleScriptURL = "https://script.google.com/macros/s/AKfycby6eBpLojG1dzCtxK7vfr9UJsTkk1fyeIHdMtFcLfG3WR1A7SVJvCW9ZxqKOBAJiFTF/exec";
 
         const formData = new FormData();
         formData.append("email", email);
